@@ -9,10 +9,10 @@ import 'package:riverpod_learn/features/movies/domain/entities/dictionary.dart';
 part 'provider.g.dart';
 // part 'dict.freezed.dart';
 @riverpod
-Future <List<Dictionary>> dictionary(DictionaryRef ref) async {
+Future <List<Dictionary>> dictionary(DictionaryRef ref,{required Map<String,dynamic> params}) async {
   final response = await http.get(
     const URL().getUri(
-      endpoint: "good",
+      endpoint:params["text"],
     ),
   );
   final decodedResponse = jsonDecode(response.body);

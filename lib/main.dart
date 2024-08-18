@@ -58,8 +58,9 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Consumer(builder: (context, ref, child) {
+        final Map<String, dynamic> params = {"text": "expect"};
         final AsyncValue<List<Dictionary>> dictValues =
-            ref.watch(dictionaryProvider);
+            ref.watch(dictionaryProvider.call(params: params));
         return dictValues.when(
           loading: () => const Center(
             child: CircularProgressIndicator(),
@@ -67,8 +68,9 @@ class _MyHomePageState extends State<MyHomePage> {
           error: (error, stackTrace) => const Text("data"),
           data: (dictValues) => Flexible(
             child: ListView.builder(
+              itemCount: dictValues.length,
               itemBuilder: (context, id) => Text(
-                dictValues[id].meanings?[id].definitions?[id].definition ?? "",
+                dictValues[id].meanings?[0].definitions?[0].definition ?? "",
               ),
             ),
           ),
@@ -76,7 +78,9 @@ class _MyHomePageState extends State<MyHomePage> {
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // await get();
+          final Map<String, dynamic> params = {"text": "expect"};
+
+          dictionaryProvider.call(params: params);
         },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
