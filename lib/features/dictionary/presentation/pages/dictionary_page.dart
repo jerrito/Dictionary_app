@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
-import 'package:riverpod_learn/core/widgets/text_field.dart';
 import 'package:riverpod_learn/core/widgets/text_form_field.dart';
-import 'package:riverpod_learn/features/dictionary/domain/entities/dictionary.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/providers/provider.dart';
+import 'package:riverpod_learn/locator.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({
@@ -24,6 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
+  final dictionaryBloc = sl<DictionaryBloc>();
   final searchController = TextEditingController();
 
   @override
@@ -44,6 +43,13 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             DefaultTextFormField(
+              onSubmitted: (p0) {
+                print(p0);
+                final Map<String, dynamic> params = {
+                  "text": searchController.text,
+                };
+                dictionaryBloc.add(SearchDictionaryEvent(params: params));
+              },
               focusNode: FocusNode(),
               hint: "Search any word",
               onChanged: (value) {},
@@ -54,6 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Space.height(context, 0.2),
             BlocConsumer(
+                bloc: dictionaryBloc,
                 builder: (context, state) {
                   if (state is SearchDictionaryLoading) {
                     return const Center(
@@ -65,29 +72,50 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
                   if (state is SearchDictionaryLoaded) {
                     final itemCount = state.dictionaryInfo.length;
-                    return ListView.builder(
-                        itemCount: itemCount,
-                        itemBuilder: (context, index) {
-                          final data = state.dictionaryInfo[index];
-                          final meanings =
-                              data.meanings?[data.meanings!.length];
-                          return Text(meanings?.partOfSpeech ?? "");
-                        });
+                    return CustomScrollView(
+                      shrinkWrap: true,
+                      slivers: [
+                        SliverList.builder(
+                            itemCount: itemCount,
+                            itemBuilder: (context, index) {
+                              final data = state.dictionaryInfo[index];
+                              final meaningsLength =
+                                  state.dictionaryInfo[index].meanings?.length;
+                              // // print(meaningsLength);
+                              // final meanings = data.meanings?[index];
+                              // final definitionsLength =
+                              //     data.meanings?[index].definitions![index];
+                              // // print(definitionsLength);
+                              // final definition = meanings?.definitions?[index];
+                              return Text(data.meanings![meaningsLength!]
+                                      .partOfSpeech ??
+                                  "");
+                            })
+                      ],
+                    );
+
+                    // Expanded(
+                    //   child: ListView.builder(
+                    //       itemCount: itemCount,
+                    //       itemBuilder: (context, index) {
+                    //         final data = state.dictionaryInfo[index];
+                    //         final meaningsLength = data.meanings?.length;
+                    //         print(meaningsLength);
+                    //         final meanings = data.meanings?[meaningsLength!];
+                    //         final definitionsLength = data
+                    //             .meanings?[meaningsLength!].definitions?.length;
+                    //         print(definitionsLength);
+                    //         final definition =
+                    //             meanings?.definitions?[definitionsLength!];
+                    //         return Text("");
+                    //       }),
+                    // );
                   }
                   return const SizedBox();
                 },
                 listener: (context, state) {})
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final Map<String, dynamic> params = {"text": "expect"};
-
-          dictionaryProvider.call(params: params);
-        },
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }

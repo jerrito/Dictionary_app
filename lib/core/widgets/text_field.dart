@@ -5,7 +5,7 @@ class DefaultTextField extends StatelessWidget {
   final String? errorText, hint;
   final bool showSuffixIcon;
   final FocusNode focusNode;
-  final void Function(String value)? onChange;
+  final void Function(String value)? onChange, onSubmitted;
   final void Function()? suffixOnTap;
   final TextEditingController controller;
   const DefaultTextField({
@@ -14,8 +14,9 @@ class DefaultTextField extends StatelessWidget {
     required this.errorText,
     required this.hint,
     required this.focusNode,
-    this.onChange,
     required this.showSuffixIcon,
+    required this.onChange,
+    required this.onSubmitted,
     required this.suffixOnTap,
   });
 
@@ -27,12 +28,12 @@ class DefaultTextField extends StatelessWidget {
       controller: controller,
       onChanged: onChange,
       focusNode: focusNode,
-      onTapOutside: (_)=>FocusManager.instance.primaryFocus?.unfocus(),
+      onSubmitted: onSubmitted,
+      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(Sizes.height(context, 0.01))
-        ),
+            borderRadius: BorderRadius.circular(Sizes.height(context, 0.01))),
         hintText: hint,
         suffixIcon: showSuffixIcon
             ? GestureDetector(

@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:riverpod_learn/core/size.dart';
-import 'package:riverpod_learn/features/dictionary/domain/entities/dictionary.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/pages/dictionary_page.dart';
-import 'package:riverpod_learn/features/dictionary/presentation/providers/provider.dart';
 import 'package:riverpod_learn/locator.dart';
 
 void main() async {
