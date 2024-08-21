@@ -1,4 +1,4 @@
-import 'package:riverpod_learn/features/movies/domain/entities/phonetics.dart';
+import 'package:riverpod_learn/features/dictionary/domain/entities/phonetics.dart';
 
 class PhoneticsModel extends Phonetics {
   const PhoneticsModel({

@@ -1,4 +1,4 @@
-import 'package:riverpod_learn/features/movies/domain/entities/meanings.dart';
+import 'package:riverpod_learn/features/dictionary/domain/entities/meanings.dart';
 
 class MeaningModel extends Meanings {
   const MeaningModel({

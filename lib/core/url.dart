@@ -5,10 +5,9 @@
 //  const Endpoints();
 // }
 class URL {
-  const URL();
   static const baseUrl = "api.dictionaryapi.dev";
 
-  Uri getUri(
+  static Uri getUri(
       {String? path,
       Map<String, dynamic>? queryParams,
       required String endpoint}) {

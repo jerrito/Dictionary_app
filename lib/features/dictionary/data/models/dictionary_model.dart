@@ -1,6 +1,6 @@
-import 'package:riverpod_learn/features/movies/data/models/meaning_model.dart';
-import 'package:riverpod_learn/features/movies/data/models/phonetics_model.dart';
-import 'package:riverpod_learn/features/movies/domain/entities/dictionary.dart';
+import 'package:riverpod_learn/features/dictionary/data/models/meaning_model.dart';
+import 'package:riverpod_learn/features/dictionary/data/models/phonetics_model.dart';
+import 'package:riverpod_learn/features/dictionary/domain/entities/dictionary.dart';
 
 class DictionaryModel extends Dictionary {
   const DictionaryModel({
