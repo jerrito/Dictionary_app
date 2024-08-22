@@ -4,7 +4,6 @@ import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/core/widgets/text_form_field.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
-import 'package:riverpod_learn/features/dictionary/presentation/providers/provider.dart';
 import 'package:riverpod_learn/features/word/data/datasources/local_ds.dart';
 import 'package:riverpod_learn/locator.dart';
 
@@ -36,10 +35,11 @@ class _MyHomePageState extends State<MyHomePage> {
         leading: IconButton(
             onPressed: () async {
               final list = await WordLocalDatasourceImpl()
-                  .suggestWords(params: {"text": "fak"}, context: context);
+                  .suggestWords(params: {"text": "fak",
+                  "context":context},);
               print(list);
             },
-            icon: Icon(Icons.add)),
+            icon: const Icon(Icons.add)),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -60,7 +60,9 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               focusNode: FocusNode(),
               hint: "Search any word",
-              onChanged: (value) {},
+              onChanged: (value) {
+                
+              },
               validator: (value) {
                 return null;
               },

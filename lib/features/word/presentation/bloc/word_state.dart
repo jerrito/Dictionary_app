@@ -7,3 +7,18 @@ abstract class WordState extends Equatable {
   List<Object> get props => [];
 }
 class WordInitial extends WordState {}
+
+
+final class SearchWordLoaded extends WordState{
+final   List<dynamic> words;
+
+  const SearchWordLoaded({required this.words});
+}
+
+final class SearchWordError extends WordState{
+final   String message;
+
+  const SearchWordError({required this.message});
+}
+
+final class SearchWordLoading extends WordState{}

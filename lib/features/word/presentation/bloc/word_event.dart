@@ -6,3 +6,8 @@ abstract class WordEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class SearchWordEvent extends WordEvent {
+  final Map<String, dynamic> params;
+  const SearchWordEvent({required this.params});
+}
