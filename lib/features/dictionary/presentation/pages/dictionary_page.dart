@@ -5,6 +5,7 @@ import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/core/widgets/text_form_field.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/providers/provider.dart';
+import 'package:riverpod_learn/features/word/data/datasources/local_ds.dart';
 import 'package:riverpod_learn/locator.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -32,6 +33,13 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(""),
+        leading: IconButton(
+            onPressed: () async {
+              final list = await WordLocalDatasourceImpl()
+                  .suggestWords(params: {"text": "fak"}, context: context);
+              print(list);
+            },
+            icon: Icon(Icons.add)),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -71,25 +79,26 @@ class _MyHomePageState extends State<MyHomePage> {
                     return Text(state.errorMessage);
                   }
                   if (state is SearchDictionaryLoaded) {
-                    final itemCount = state.dictionaryInfo.length;
+                    final itemCount = state.dictionaryInfo[0].meanings?.length;
                     return CustomScrollView(
                       shrinkWrap: true,
                       slivers: [
                         SliverList.builder(
                             itemCount: itemCount,
                             itemBuilder: (context, index) {
-                              final data = state.dictionaryInfo[index];
+                              final meanings =
+                                  state.dictionaryInfo[0].meanings?[0];
                               final meaningsLength =
-                                  state.dictionaryInfo[index].meanings?.length;
-                              // // print(meaningsLength);
+                                  state.dictionaryInfo[0].meanings?.length;
+                              print(meaningsLength);
                               // final meanings = data.meanings?[index];
                               // final definitionsLength =
                               //     data.meanings?[index].definitions![index];
                               // // print(definitionsLength);
                               // final definition = meanings?.definitions?[index];
-                              return Text(data.meanings![meaningsLength!]
-                                      .partOfSpeech ??
-                                  "");
+                              return Text(
+                                  meanings?.definitions?[index].definition ??
+                                      "");
                             })
                       ],
                     );
