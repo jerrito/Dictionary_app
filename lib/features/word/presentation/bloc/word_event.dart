@@ -7,7 +7,15 @@ abstract class WordEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class SearchWordEvent extends WordEvent {
+class WordSuggestEvent extends WordEvent {
   final Map<String, dynamic> params;
-  const SearchWordEvent({required this.params});
+  const WordSuggestEvent({required this.params});
 }
+
+class DecodeWordsEvent extends WordEvent {
+  final Map<String, dynamic> params;
+
+  const DecodeWordsEvent({required this.params});
+}
+
+class InitAppEvent extends WordEvent {}

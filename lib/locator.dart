@@ -6,6 +6,11 @@ import 'package:riverpod_learn/features/dictionary/data/repositories/dictionary_
 import 'package:riverpod_learn/features/dictionary/domain/repositories/dictionary_repository.dart';
 import 'package:riverpod_learn/features/dictionary/domain/usecases/search_dictionary.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
+import 'package:riverpod_learn/features/word/data/datasources/local_ds.dart';
+import 'package:riverpod_learn/features/word/data/repositories/word_repo_impl.dart';
+import 'package:riverpod_learn/features/word/domain/repositories/word_repository.dart';
+import 'package:riverpod_learn/features/word/domain/usecases/suggest_word.dart';
+import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 
 final sl = GetIt.instance;
 initDependencies() {
@@ -21,6 +26,35 @@ initDependencies() {
     ),
   );
   dictionaryIm();
+  word();
+}
+
+// word locator
+word() {
+  //bloc
+  sl.registerFactory(
+    () => WordBloc(
+      suggestWord: sl(),
+    ),
+  );
+
+  // usecases
+  sl.registerLazySingleton(
+    () => SuggestWord(
+      repository: sl(),
+    ),
+  );
+// repository
+  sl.registerLazySingleton<WordSuggestionRepository>(
+    () => WordSuggestionRepositoryImpl(
+      wordLocalDatasource: sl(),
+    ),
+  );
+
+// data source
+  sl.registerLazySingleton<WordLocalDatasource>(
+    () => WordLocalDatasourceImpl(),
+  );
 }
 
 //dictionary location

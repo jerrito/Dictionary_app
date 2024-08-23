@@ -24,7 +24,6 @@ class DefaultTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       maxLines: 1,
-      maxLength: 350,
       controller: controller,
       onChanged: onChange,
       focusNode: focusNode,
@@ -32,8 +31,6 @@ class DefaultTextField extends StatelessWidget {
       onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(Sizes.height(context, 0.01))),
         hintText: hint,
         suffixIcon: showSuffixIcon
             ? GestureDetector(
