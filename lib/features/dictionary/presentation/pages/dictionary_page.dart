@@ -102,13 +102,15 @@ class _DictionaryPageState extends State<DictionaryPage> {
                             final data = state.words[index];
                             return SuggestedWord(
                                 word: data,
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ResultsPage(
-                                                word: data,
-                                              )));
+                                onTap: () async {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ResultsPage(
+                                        word: data,
+                                      ),
+                                    ),
+                                  );
                                 });
                           }),
                     );
