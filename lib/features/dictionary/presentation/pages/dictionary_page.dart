@@ -6,6 +6,8 @@ import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/core/widgets/text_form_field.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/pages/results_page.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/widgets/suggested_word.dart';
 import 'package:riverpod_learn/features/word/data/datasources/local_ds.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
@@ -98,7 +100,16 @@ class _DictionaryPageState extends State<DictionaryPage> {
                           itemCount: items,
                           itemBuilder: (context, index) {
                             final data = state.words[index];
-                            return Text(data);
+                            return SuggestedWord(
+                                word: data,
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ResultsPage(
+                                                word: data,
+                                              )));
+                                });
                           }),
                     );
                   }
