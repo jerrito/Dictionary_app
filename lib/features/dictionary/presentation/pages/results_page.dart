@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_widget.dart';
 import 'package:riverpod_learn/locator.dart';
 
 class ResultsPage extends StatefulWidget {
@@ -41,7 +42,7 @@ class _ResultsPageState extends State<ResultsPage> {
                   return Text(state.errorMessage);
                 }
                 if (state is SearchDictionaryLoaded) {
-                  final itemCount = state.dictionaryInfo.length;
+                  final itemCount = state.dictionaryInfo[0].meanings?.length;
                   print(itemCount);
                   return CustomScrollView(
                     shrinkWrap: true,
@@ -49,7 +50,7 @@ class _ResultsPageState extends State<ResultsPage> {
                       SliverList.builder(
                           itemCount: itemCount,
                           itemBuilder: (context, index) {
-                            final data = state.dictionaryInfo[index];
+                            final data = state.dictionaryInfo[0];
                             // final meaningsLength = data.meanings?.length;
                             final meanings = data.meanings?[index];
                             //print(meaningsLength);
@@ -59,8 +60,26 @@ class _ResultsPageState extends State<ResultsPage> {
                             //     .definitions
                             //     ?.length;
                             // // print(definitionsLength);
-                            final definition = meanings?.definitions?[index];
-                            return Text(definition?.definition ?? "");
+                            //final definition = meanings?.definitions?[index];
+                            return DefinitionWidget(
+                              index: "${index + 1}",
+                              partOfSpeech: meanings?.partOfSpeech ?? "",
+                              definition: List.generate(
+                                  meanings!.definitions!.length,
+                                  (int index) => Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical:
+                                                Sizes.height(context, 0.005)),
+                                        child: Text(
+                                          meanings.definitions?[index]
+                                                  .definition ??
+                                              "",
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                      )),
+                            );
                           })
                     ],
                   );
