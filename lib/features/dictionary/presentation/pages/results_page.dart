@@ -27,83 +27,106 @@ class _ResultsPageState extends State<ResultsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-      child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: Sizes.width(context, 0.04)),
-          child: BlocConsumer(
-              bloc: dictionaryBloc,
-              builder: (context, state) {
-                if (state is SearchDictionaryLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (state is SearchDictionaryError) {
-                  return Text(state.errorMessage);
-                }
-                if (state is SearchDictionaryLoaded) {
-                  final itemCount = state.dictionaryInfo[0].meanings?.length;
-                  print(itemCount);
-                  return CustomScrollView(
-                    shrinkWrap: true,
-                    slivers: [
-                      SliverList.builder(
-                          itemCount: itemCount,
-                          itemBuilder: (context, index) {
-                            final data = state.dictionaryInfo[0];
-                            // final meaningsLength = data.meanings?.length;
-                            final meanings = data.meanings?[index];
-                            //print(meaningsLength);
-                            // final meanings = data.meanings?[index];
-                            // final definitionsLength = data
-                            //     .meanings?[meaningsLength ?? 0]
-                            //     .definitions
-                            //     ?.length;
-                            // // print(definitionsLength);
-                            //final definition = meanings?.definitions?[index];
-                            return DefinitionWidget(
-                              index: "${index + 1}",
-                              partOfSpeech: meanings?.partOfSpeech ?? "",
-                              definition: List.generate(
-                                  meanings!.definitions!.length,
-                                  (int index) => Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical:
-                                                Sizes.height(context, 0.005)),
-                                        child: Text(
-                                          meanings.definitions?[index]
-                                                  .definition ??
-                                              "",
-                                          style: const TextStyle(
-                                            fontSize: 18,
+      body: CustomScrollView(
+        // shrinkWrap: true,
+        slivers: [
+          SliverAppBar(
+            backgroundColor: const Color.fromARGB(188, 36, 36, 179),
+            pinned: true,
+            expandedHeight: Sizes.height(context, 0.3),
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                widget.word,
+                style: const TextStyle(color: Colors.white, fontSize: 22),
+              ),
+            ),
+          ),
+          SliverPadding(
+            padding: EdgeInsets.symmetric(
+              horizontal: Sizes.width(
+                context,
+                0.04,
+              ),
+            ),
+            sliver: SliverToBoxAdapter(
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(
+                  Sizes.height(
+                    context,
+                    0.1,
+                  ),
+                )),
+                child: BlocConsumer(
+                    bloc: dictionaryBloc,
+                    builder: (context, state) {
+                      if (state is SearchDictionaryLoading) {
+                        return const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ],
+                        );
+                      }
+                      if (state is SearchDictionaryError) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(state.errorMessage),
+                          ],
+                        );
+                      }
+                      if (state is SearchDictionaryLoaded) {
+                        final itemCount =
+                            state.dictionaryInfo[0].meanings?.length;
+                        print(itemCount);
+                        return ListView.builder(
+                            shrinkWrap: true,
+                            // physics: const NeverScrollableScrollPhysics(),
+                            itemCount: itemCount,
+                            itemBuilder: (context, index) {
+                              final data = state.dictionaryInfo[0];
+                              // final meaningsLength = data.meanings?.length;
+                              final meanings = data.meanings?[index];
+                              //print(meaningsLength);
+                              // final meanings = data.meanings?[index];
+                              // final definitionsLength = data
+                              //     .meanings?[meaningsLength ?? 0]
+                              //     .definitions
+                              //     ?.length;
+                              // // print(definitionsLength);
+                              //final definition = meanings?.definitions?[index];
+                              return DefinitionWidget(
+                                index: "${index + 1}",
+                                partOfSpeech: meanings?.partOfSpeech ?? "",
+                                definition: List.generate(
+                                    meanings!.definitions!.length,
+                                    (int index) => Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical:
+                                                  Sizes.height(context, 0.005)),
+                                          child: Text(
+                                            meanings.definitions?[index]
+                                                    .definition ??
+                                                "",
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                            ),
                                           ),
-                                        ),
-                                      )),
-                            );
-                          })
-                    ],
-                  );
-
-                  // Expanded(
-                  //   child: ListView.builder(
-                  //       itemCount: itemCount,
-                  //       itemBuilder: (context, index) {
-                  //         final data = state.dictionaryInfo[index];
-                  //         final meaningsLength = data.meanings?.length;
-                  //         print(meaningsLength);
-                  //         final meanings = data.meanings?[meaningsLength!];
-                  //         final definitionsLength = data
-                  //             .meanings?[meaningsLength!].definitions?.length;
-                  //         print(definitionsLength);
-                  //         final definition =
-                  //             meanings?.definitions?[definitionsLength!];
-                  //         return Text("");
-                  //       }),
-                  // );
-                }
-                return const SizedBox();
-              },
-              listener: (context, state) {})),
-    ));
+                                        )),
+                              );
+                            });
+                      }
+                      return const SizedBox();
+                    },
+                    listener: (context, state) {}),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
