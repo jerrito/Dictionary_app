@@ -24,11 +24,12 @@ class DictionaryRemoteDatasourceImpl implements DictionaryRemoteDatasource {
     print(decodedResponse);
     if (response.statusCode == 200) {
       return List<DictionaryModel>.from(
-          decodedResponse.map((e) => DictionaryModel.fromJson(e)));
+        decodedResponse.map(
+          (e) => DictionaryModel.fromJson(e),
+        ),
+      );
     } else {
       throw (decodedResponse["message"]);
     }
   }
 }
-
-

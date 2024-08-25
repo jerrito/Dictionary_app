@@ -51,6 +51,7 @@ dependencies:
   data_connection_checker_nulls: ^0.0.2
   get_it: ^7.7.0
   bloc_concurrency: ^0.2.5
+  audioplayers: ^5.2.1
 
 dev_dependencies:
   flutter_test:
