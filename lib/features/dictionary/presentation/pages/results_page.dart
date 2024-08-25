@@ -124,7 +124,23 @@ class _ResultsPageState extends State<ResultsPage> {
                           return Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(state.errorMessage),
+                              Center(
+                                  child: Text(
+                                state.errorMessage,
+                              )),
+                              Space.height(context, 0.02),
+                              GestureDetector(
+                                  onTap: () {
+                                    final Map<String, dynamic> params = {
+                                      "text": widget.word
+                                    };
+                                    dictionaryBloc.add(
+                                      SearchDictionaryEvent(
+                                        params: params,
+                                      ),
+                                    );
+                                  },
+                                  child: const Text("Retry"))
                             ],
                           );
                         }
@@ -159,6 +175,7 @@ class _ResultsPageState extends State<ResultsPage> {
                             }),
                           );
                         }
+
                         return const SizedBox();
                       },
                       listener: (context, state) {
@@ -171,16 +188,6 @@ class _ResultsPageState extends State<ResultsPage> {
                           setState(() {});
                         }
                       }),
-                  Positioned(
-                   //  bottom: -10,
-                    child: Container(
-                        padding: EdgeInsets.all(
-                          Sizes.height(context, 0.01),
-                        ),
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle, color: Colors.amber),
-                        child: const Icon(Icons.bookmark_outline)),
-                  )
                 ],
               ),
             ),

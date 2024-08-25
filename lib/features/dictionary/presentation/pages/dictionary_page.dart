@@ -32,6 +32,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
   final wordSuggestBloc = sl<WordBloc>();
   final searchController = TextEditingController();
   WordsProvider? wordsProvider;
+  bool isSearchEmpty = false;
   @override
   Widget build(BuildContext context) {
     // String.fromEnvironment(name)
@@ -39,19 +40,22 @@ class _DictionaryPageState extends State<DictionaryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        leading: const SizedBox(),
+        foregroundColor: Colors.white,
+        backgroundColor: const Color.fromARGB(184, 30, 30, 128),
         title: DefaultTextFormField(
           onSubmitted: (p0) {
-            print(p0);
-            final Map<String, dynamic> params = {
-              "text": searchController.text,
-            };
-            dictionaryBloc.add(SearchDictionaryEvent(params: params));
+            if (p0?.isNotEmpty ?? false) {
+              final Map<String, dynamic> params = {
+                "text": searchController.text,
+              };
+              dictionaryBloc.add(SearchDictionaryEvent(params: params));
+            }
           },
           focusNode: FocusNode(),
           hint: "Search any word",
           onChanged: (value) {
-            print(words);
+            // print(value.);
             final Map<String, dynamic> params = {
               "text": value,
               "decodedWords": words
@@ -61,20 +65,31 @@ class _DictionaryPageState extends State<DictionaryPage> {
                 params: params,
               ),
             );
+             if (value?.isNotEmpty ?? false) {
+              isSearchEmpty = true;
+              setState(() {});
+            } else {
+              isSearchEmpty = false;
+              setState(() {});
+            }
           },
           validator: (value) {
+            if (value?.isNotEmpty ?? false) {
+              isSearchEmpty = true;
+              print("dd");
+              setState(() {});
+            } else {
+              isSearchEmpty = false;
+              setState(() {});
+            }
             return null;
           },
+          showSuffixIcon: isSearchEmpty,
           controller: searchController,
+          suffixOnTap: () {
+            searchController.clear();
+          },
         ),
-        leading: IconButton(
-            onPressed: () async {
-              final list = await WordLocalDatasourceImpl().suggestWords(
-                params: {"text": "fak", "context": context},
-              );
-              print(list);
-            },
-            icon: const Icon(Icons.add)),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
