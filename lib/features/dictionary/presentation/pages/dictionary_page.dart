@@ -44,12 +44,17 @@ class _DictionaryPageState extends State<DictionaryPage> {
         foregroundColor: Colors.white,
         backgroundColor: const Color.fromARGB(184, 30, 30, 128),
         title: DefaultTextFormField(
-          onSubmitted: (p0) {
+          onSubmitted: (p0) async {
+            print(p0);
             if (p0?.isNotEmpty ?? false) {
-              final Map<String, dynamic> params = {
-                "text": searchController.text,
-              };
-              dictionaryBloc.add(SearchDictionaryEvent(params: params));
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ResultsPage(
+                    word: p0!,
+                  ),
+                ),
+              );
             }
           },
           focusNode: FocusNode(),
@@ -65,24 +70,13 @@ class _DictionaryPageState extends State<DictionaryPage> {
                 params: params,
               ),
             );
-             if (value?.isNotEmpty ?? false) {
-              isSearchEmpty = true;
-              setState(() {});
-            } else {
-              isSearchEmpty = false;
-              setState(() {});
-            }
-          },
-          validator: (value) {
             if (value?.isNotEmpty ?? false) {
               isSearchEmpty = true;
-              print("dd");
               setState(() {});
             } else {
               isSearchEmpty = false;
               setState(() {});
             }
-            return null;
           },
           showSuffixIcon: isSearchEmpty,
           controller: searchController,

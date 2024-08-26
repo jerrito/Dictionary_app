@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
+import 'package:riverpod_learn/features/database/entity/dicitionary.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_widget.dart';
 import 'package:riverpod_learn/locator.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:riverpod_learn/main.dart';
 
 class ResultsPage extends StatefulWidget {
   const ResultsPage({super.key, required this.word});
@@ -178,14 +180,20 @@ class _ResultsPageState extends State<ResultsPage> {
 
                         return const SizedBox();
                       },
-                      listener: (context, state) {
+                      listener: (context, state) async {
                         if (state is SearchDictionaryLoaded) {
                           final data = state.dictionaryInfo[0];
                           isLoaded = true;
                           phonetic = data.phonetic;
-                          audioUrl = data.phonetics?[0].audio;
-                          print(audioUrl);
-                          setState(() {});
+                          if (data.phonetics?.isNotEmpty ?? false) {
+                            audioUrl = data.phonetics?[0].audio;
+                            setState(() {});
+                          }
+                          await database?.wordDao.insertData(
+                            DatabaseDictionary(
+                              dictionaryConveter: data,
+                            ),
+                          );
                         }
                       }),
                 ],

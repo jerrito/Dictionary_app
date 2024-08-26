@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:riverpod_learn/features/database/database.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/pages/dictionary_page.dart';
 import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
 import 'package:riverpod_learn/initial_page.dart';
 import 'package:riverpod_learn/locator.dart';
 
+AppDatabase? database;
 void main() async {
   // await dotenv.load(fileName: ".env");
   await initDependencies();
-
+  database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   runApp(
     const MyApp(),
   );
