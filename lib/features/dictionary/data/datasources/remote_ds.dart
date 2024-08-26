@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:riverpod_learn/core/url.dart';
 import 'package:riverpod_learn/features/dictionary/data/models/dictionary_model.dart';
@@ -23,9 +24,12 @@ class DictionaryRemoteDatasourceImpl implements DictionaryRemoteDatasource {
     print(decodedResponse);
     if (response.statusCode == 200) {
       return List<DictionaryModel>.from(
-          decodedResponse.map((e) => DictionaryModel.fromJson(e)));
+        decodedResponse.map(
+          (e) => DictionaryModel.fromJson(e),
+        ),
+      );
     } else {
-      throw Exception("Error getting data");
+      throw (decodedResponse["message"]);
     }
   }
 }

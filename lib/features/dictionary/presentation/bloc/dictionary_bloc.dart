@@ -14,6 +14,7 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
       (event, emit) async {
         emit(SearchDictionaryLoading());
         final response = await searchDictionary.call(event.params);
+        print(response);
         emit(
           response.fold(
             (e) => SearchDictionaryError(
@@ -25,7 +26,7 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
           ),
         );
       },
-      transformer: restartable(),
+      // transformer: restartable(),
     );
   }
 }

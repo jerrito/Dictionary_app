@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:riverpod_learn/core/size.dart';
 
 class DefaultTextField extends StatelessWidget {
   final String? errorText, hint;
@@ -23,8 +22,8 @@ class DefaultTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      style: const TextStyle(color: Colors.white),
       maxLines: 1,
-      maxLength: 350,
       controller: controller,
       onChanged: onChange,
       focusNode: focusNode,
@@ -32,8 +31,8 @@ class DefaultTextField extends StatelessWidget {
       onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(Sizes.height(context, 0.01))),
+        suffixIconColor: Colors.white,
+        hintStyle: const TextStyle(color: Colors.white),
         hintText: hint,
         suffixIcon: showSuffixIcon
             ? GestureDetector(
