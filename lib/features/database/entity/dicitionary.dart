@@ -1,23 +1,21 @@
 import 'package:equatable/equatable.dart';
 import 'package:floor/floor.dart';
-import 'package:riverpod_learn/features/database/entity/phonetic_type_conveter.dart';
 import 'package:riverpod_learn/features/dictionary/domain/entities/dictionary.dart';
 
-
 @entity
-class DatabaseDictionary extends Equatable {
+class DictionaryResponse extends Equatable {
   @primaryKey
   final int? id;
-  final Dictionary dictionaryConveter;
+  final Dictionary dictionary;
 
-  const DatabaseDictionary({
+  const DictionaryResponse({
     this.id,
-    required this.dictionaryConveter,
+    required this.dictionary,
   });
 
   @override
   List<Object?> get props => [
         id,
-        dictionaryConveter,
+        dictionary,
       ];
 }

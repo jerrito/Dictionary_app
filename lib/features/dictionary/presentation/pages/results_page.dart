@@ -190,8 +190,8 @@ class _ResultsPageState extends State<ResultsPage> {
                             setState(() {});
                           }
                           await database?.wordDao.insertData(
-                            DatabaseDictionary(
-                              dictionaryConveter: data,
+                            DictionaryResponse(
+                              dictionary: data,
                             ),
                           );
                         }

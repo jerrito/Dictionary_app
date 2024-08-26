@@ -96,7 +96,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `DatabaseDictionary` (`id` INTEGER, `dictionaryConveter` TEXT NOT NULL, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `DictionaryResponse` (`id` INTEGER, `dictionary` TEXT NOT NULL, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -114,28 +114,76 @@ class _$WordDao extends WordDao {
   _$WordDao(
     this.database,
     this.changeListener,
-  ) : _databaseDictionaryInsertionAdapter = InsertionAdapter(
+  )   : _queryAdapter = QueryAdapter(database, changeListener),
+        _dictionaryResponseInsertionAdapter = InsertionAdapter(
             database,
-            'DatabaseDictionary',
-            (DatabaseDictionary item) => <String, Object?>{
+            'DictionaryResponse',
+            (DictionaryResponse item) => <String, Object?>{
                   'id': item.id,
-                  'dictionaryConveter':
-                      _dictionaryConveter.encode(item.dictionaryConveter)
-                });
+                  'dictionary':
+                      _dictionaryResponseConveter.encode(item.dictionary)
+                },
+            changeListener),
+        _dictionaryResponseDeletionAdapter = DeletionAdapter(
+            database,
+            'DictionaryResponse',
+            ['id'],
+            (DictionaryResponse item) => <String, Object?>{
+                  'id': item.id,
+                  'dictionary':
+                      _dictionaryResponseConveter.encode(item.dictionary)
+                },
+            changeListener);
 
   final sqflite.DatabaseExecutor database;
 
   final StreamController<String> changeListener;
 
-  final InsertionAdapter<DatabaseDictionary>
-      _databaseDictionaryInsertionAdapter;
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<DictionaryResponse>
+      _dictionaryResponseInsertionAdapter;
+
+  final DeletionAdapter<DictionaryResponse> _dictionaryResponseDeletionAdapter;
 
   @override
-  Future<void> insertData(DatabaseDictionary dictionary) async {
-    await _databaseDictionaryInsertionAdapter.insert(
-        dictionary, OnConflictStrategy.abort);
+  Stream<List<DictionaryResponse>> getList() {
+    return _queryAdapter.queryListStream('SELECT * FROM DictionaryResponse',
+        mapper: (Map<String, Object?> row) => DictionaryResponse(
+            id: row['id'] as int?,
+            dictionary: _dictionaryResponseConveter
+                .decode(row['dictionary'] as String)),
+        queryableName: 'DictionaryResponse',
+        isView: false);
+  }
+
+  @override
+  Future<DictionaryResponse?> getDictionaryResponse(int id) async {
+    return _queryAdapter.query('SELECT * FROM DictionaryResponse WHERE id= ?1',
+        mapper: (Map<String, Object?> row) => DictionaryResponse(
+            id: row['id'] as int?,
+            dictionary: _dictionaryResponseConveter
+                .decode(row['dictionary'] as String)),
+        arguments: [id]);
+  }
+
+  @override
+  Future<void> insertData(DictionaryResponse response) async {
+    await _dictionaryResponseInsertionAdapter.insert(
+        response, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteDictionaryResponse(DictionaryResponse response) async {
+    await _dictionaryResponseDeletionAdapter.delete(response);
+  }
+
+  @override
+  Future<void> deleteListDictionaryResponse(
+      List<DictionaryResponse> list) async {
+    await _dictionaryResponseDeletionAdapter.deleteList(list);
   }
 }
 
 // ignore_for_file: unused_element
-final _dictionaryConveter = DictionaryConveter();
+final _dictionaryResponseConveter = DictionaryResponseConveter();
