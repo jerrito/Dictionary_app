@@ -31,6 +31,7 @@ class _InitialPageState extends State<InitialPage> {
           if (state is DecodedWordsLoaded) {
             final words=state.data;
             wordsProvider?.words=words;
+            // wordsProvider?.words?.keys.elementAt(index);
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context)=>
             const  DictionaryPage())

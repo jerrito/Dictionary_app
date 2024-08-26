@@ -33,9 +33,16 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
+        darkTheme: ThemeData(
+          fontFamily: "BarlowCondensed",
+          primaryColor: Colors.white,
+          brightness: Brightness.dark,
+          // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
         theme: ThemeData(
-fontFamily:"BarlowCondensed",
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          fontFamily: "BarlowCondensed",
+          // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
         home: const InitialPage(),

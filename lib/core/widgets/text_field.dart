@@ -31,7 +31,7 @@ class DefaultTextField extends StatelessWidget {
       onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        iconColor: Colors.white,
+        suffixIconColor: Colors.white,
         hintStyle: const TextStyle(color: Colors.white),
         hintText: hint,
         suffixIcon: showSuffixIcon
