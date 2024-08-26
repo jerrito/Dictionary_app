@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/features/database/entity/dicitionary.dart';
+import 'package:riverpod_learn/features/dictionary/data/models/dictionary_model.dart';
+import 'package:riverpod_learn/features/dictionary/domain/entities/dictionary.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_widget.dart';
 import 'package:riverpod_learn/locator.dart';
@@ -191,7 +193,7 @@ class _ResultsPageState extends State<ResultsPage> {
                           }
                           await database?.wordDao.insertData(
                             DictionaryResponse(
-                              dictionary: data,
+                              dictionary: DictionaryModel.fromJson(data.toMap()) ,
                             ),
                           );
                         }
