@@ -22,6 +22,7 @@ class DefaultTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      cursorColor: Colors.white,
       style: const TextStyle(color: Colors.white),
       maxLines: 1,
       controller: controller,

@@ -27,4 +27,5 @@ class DictionaryModel extends Dictionary {
           ),
         ),
       );
+
 }

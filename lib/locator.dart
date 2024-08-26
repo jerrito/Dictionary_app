@@ -13,7 +13,7 @@ import 'package:riverpod_learn/features/word/domain/usecases/suggest_word.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 
 final sl = GetIt.instance;
-initDependencies() {
+initDependencies() async{
   // data connection
   sl.registerLazySingleton(
     () => DataConnectionChecker(),

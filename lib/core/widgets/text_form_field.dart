@@ -9,7 +9,6 @@ class DefaultTextFormField extends StatelessWidget {
   final TextEditingController controller;
   final void Function(String?)? onChanged, onSubmitted;
   final FocusNode? focusNode;
-  final String? Function(String?)? validator;
 
   const DefaultTextFormField({
     super.key,
@@ -21,14 +20,12 @@ class DefaultTextFormField extends StatelessWidget {
     required this.hint,
     required this.onChanged,
     required this.onSubmitted,
-    required this.validator,
     required this.controller,
   });
 
   @override
   Widget build(BuildContext context) {
     return FormField<String>(
-      validator: validator,
       initialValue: initialValue,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       builder: (field) => DefaultTextField(
@@ -40,7 +37,6 @@ class DefaultTextFormField extends StatelessWidget {
         controller: controller,
         suffixOnTap: suffixOnTap,
         errorText: field.errorText,
-        
       ),
     );
   }
