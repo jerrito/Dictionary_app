@@ -7,6 +7,7 @@ import 'package:riverpod_learn/features/dictionary/data/models/dictionary_model.
 import 'package:riverpod_learn/features/dictionary/domain/entities/dictionary.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_widget.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/widgets/drawer.dart';
 import 'package:riverpod_learn/locator.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:riverpod_learn/main.dart';
@@ -22,6 +23,7 @@ class ResultsPage extends StatefulWidget {
 class _ResultsPageState extends State<ResultsPage> {
   final dictionaryBloc = sl<DictionaryBloc>();
   final player = AudioPlayer();
+  final scaffold=GlobalKey<ScaffoldState>();
   bool isLoaded = false, hasAudio = false;
   String? phonetic, audioUrl;
 
@@ -37,14 +39,22 @@ class _ResultsPageState extends State<ResultsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const MyDrawer(),
       backgroundColor: const Color.fromARGB(185, 56, 56, 117),
       body: CustomScrollView(
         // shrinkWrap: true,
         slivers: [
           SliverAppBar(
+            leading: GestureDetector(
+              onTap: (){
+                Navigator.pop(context);
+              },
+              child: const Icon(Icons.chevron_left_outlined)),
             actions: [
               IconButton(
-                onPressed: () async {},
+                onPressed: () async {
+                  scaffold.currentState?.openDrawer();
+                },
                 icon: const Icon(
                   Icons.more_vert,
                 ),
@@ -100,7 +110,9 @@ class _ResultsPageState extends State<ResultsPage> {
               padding:
                   EdgeInsets.symmetric(horizontal: Sizes.width(context, 0.04)),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).brightness != Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
                 borderRadius: BorderRadius.circular(
                   Sizes.height(
                     context,
@@ -170,7 +182,12 @@ class _ResultsPageState extends State<ResultsPage> {
                                             meanings.definitions?[index]
                                                     .definition ??
                                                 "",
-                                            style: const TextStyle(
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? Colors.white
+                                                  : Colors.black,
                                               fontSize: 18,
                                             ),
                                           ),
@@ -191,11 +208,7 @@ class _ResultsPageState extends State<ResultsPage> {
                             audioUrl = data.phonetics?[0].audio;
                             setState(() {});
                           }
-                          await database?.wordDao.insertData(
-                            DictionaryResponse(
-                              dictionary: DictionaryModel.fromJson(data.toMap()) ,
-                            ),
-                          );
+                       await  dictionaryBloc.insertData(data.toMap(),widget.word);
                         }
                       }),
                 ],

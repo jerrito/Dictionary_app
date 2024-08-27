@@ -96,7 +96,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `DictionaryResponse` (`id` INTEGER, `dictionary` TEXT NOT NULL, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `DictionaryResponse` (`id` INTEGER, `word` TEXT NOT NULL, `dictionary` TEXT NOT NULL, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -120,6 +120,7 @@ class _$WordDao extends WordDao {
             'DictionaryResponse',
             (DictionaryResponse item) => <String, Object?>{
                   'id': item.id,
+                  'word': item.word,
                   'dictionary':
                       _dictionaryResponseConveter.encode(item.dictionary)
                 },
@@ -130,6 +131,7 @@ class _$WordDao extends WordDao {
             ['id'],
             (DictionaryResponse item) => <String, Object?>{
                   'id': item.id,
+                  'word': item.word,
                   'dictionary':
                       _dictionaryResponseConveter.encode(item.dictionary)
                 },
@@ -151,6 +153,7 @@ class _$WordDao extends WordDao {
     return _queryAdapter.queryListStream('SELECT * FROM DictionaryResponse',
         mapper: (Map<String, Object?> row) => DictionaryResponse(
             id: row['id'] as int?,
+            word: row['word'] as String,
             dictionary: _dictionaryResponseConveter
                 .decode(row['dictionary'] as String)),
         queryableName: 'DictionaryResponse',
@@ -158,10 +161,21 @@ class _$WordDao extends WordDao {
   }
 
   @override
+  Future<List<DictionaryResponse>> getAll() async {
+    return _queryAdapter.queryList('SELECT * FROM DictionaryResponse',
+        mapper: (Map<String, Object?> row) => DictionaryResponse(
+            id: row['id'] as int?,
+            word: row['word'] as String,
+            dictionary: _dictionaryResponseConveter
+                .decode(row['dictionary'] as String)));
+  }
+
+  @override
   Future<DictionaryResponse?> getDictionaryResponse(int id) async {
     return _queryAdapter.query('SELECT * FROM DictionaryResponse WHERE id= ?1',
         mapper: (Map<String, Object?> row) => DictionaryResponse(
             id: row['id'] as int?,
+            word: row['word'] as String,
             dictionary: _dictionaryResponseConveter
                 .decode(row['dictionary'] as String)),
         arguments: [id]);
