@@ -17,7 +17,6 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
       (event, emit) async {
         emit(SearchDictionaryLoading());
         final response = await searchDictionary.call(event.params);
-        print(response);
         emit(
           response.fold(
             (e) => SearchDictionaryError(
@@ -32,23 +31,31 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
       // transformer: restartable(),
     );
   }
-  Future<List<DictionaryResponse>> readAllDictionary()async{
+  Future<List<DictionaryResponse>> readAllDictionary() async {
     return database!.wordDao.getAll();
   }
-  Future<void> insertData(Map<String,dynamic> json,String word) async {
-   final readDict= await readAllDictionary();
-   final isWordStored=readDict.any((e)=>
-    e.word ==word
-   );
 
-   
-   if(!isWordStored){
-    await database?.wordDao.insertData(
-      DictionaryResponse(
-        word:word,
-        dictionary: DictionaryModel.fromJson(json),
-      ),
-    );
-   }
+  Future<bool> deleteDictionaryData(DictionaryResponse response) async {
+    final data = await database?.wordDao.deleteDictionaryResponse(response);
+    return true;
+  }
+
+  Future<bool> deleteDictionaryList(List<DictionaryResponse> list) async {
+    final data = await database?.wordDao.deleteListDictionaryResponse(list);
+    return true;
+  }
+
+  Future<void> insertData(Map<String, dynamic> json, String word) async {
+    final readDict = await readAllDictionary();
+    final isWordStored = readDict.any((e) => e.word == word);
+
+    if (!isWordStored) {
+      await database?.wordDao.insertData(
+        DictionaryResponse(
+          word: word,
+          dictionary: DictionaryModel.fromJson(json),
+        ),
+      );
+    }
   }
 }
