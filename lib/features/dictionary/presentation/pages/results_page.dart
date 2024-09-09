@@ -2,15 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
-import 'package:riverpod_learn/features/database/entity/dicitionary.dart';
-import 'package:riverpod_learn/features/dictionary/data/models/dictionary_model.dart';
-import 'package:riverpod_learn/features/dictionary/domain/entities/dictionary.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_widget.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/drawer.dart';
 import 'package:riverpod_learn/locator.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:riverpod_learn/main.dart';
 
 class ResultsPage extends StatefulWidget {
   const ResultsPage({super.key, required this.word});
