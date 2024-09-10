@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:numerus/roman/roman.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
@@ -19,7 +20,7 @@ class ResultsPage extends StatefulWidget {
 class _ResultsPageState extends State<ResultsPage> {
   final dictionaryBloc = sl<DictionaryBloc>();
   final player = AudioPlayer();
-  final scaffold=GlobalKey<ScaffoldState>();
+  final scaffold = GlobalKey<ScaffoldState>();
   bool isLoaded = false, hasAudio = false;
   String? phonetic, audioUrl;
 
@@ -42,10 +43,10 @@ class _ResultsPageState extends State<ResultsPage> {
         slivers: [
           SliverAppBar(
             leading: GestureDetector(
-              onTap: (){
-                Navigator.pop(context);
-              },
-              child: const Icon(Icons.chevron_left_outlined)),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: const Icon(Icons.chevron_left_outlined)),
             actions: [
               IconButton(
                 onPressed: () async {
@@ -109,10 +110,12 @@ class _ResultsPageState extends State<ResultsPage> {
                 color: Theme.of(context).brightness != Brightness.dark
                     ? Colors.white
                     : Colors.black,
-                borderRadius: BorderRadius.circular(
-                  Sizes.height(
-                    context,
-                    0.05,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(
+                    Sizes.height(
+                      context,
+                      0.05,
+                    ),
                   ),
                 ),
               ),
@@ -159,7 +162,7 @@ class _ResultsPageState extends State<ResultsPage> {
                         if (state is SearchDictionaryLoaded) {
                           final itemCount =
                               state.dictionaryInfo[0].meanings?.length;
-                          print(itemCount);
+                          print(state.dictionaryInfo.toString());
                           return Column(
                             children: List.generate(itemCount ?? 0, (index) {
                               final data = state.dictionaryInfo[0];
@@ -174,18 +177,34 @@ class _ResultsPageState extends State<ResultsPage> {
                                           padding: EdgeInsets.symmetric(
                                               vertical:
                                                   Sizes.height(context, 0.005)),
-                                          child: Text(
-                                            meanings.definitions?[index]
-                                                    .definition ??
-                                                "",
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                          .brightness ==
-                                                      Brightness.dark
-                                                  ? Colors.white
-                                                  : Colors.black,
-                                              fontSize: 18,
-                                            ),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "${(index + 1).toRomanNumeralString()}.",
+                                                style: const TextStyle(
+                                                    fontSize: 18),
+                                              ),
+                                              Space.width(context, 0.01),
+                                              SizedBox(
+                                                width:
+                                                    Sizes.width(context, 0.8),
+                                                child: Text(
+                                                  meanings.definitions?[index]
+                                                          .definition ??
+                                                      "",
+                                                  style: TextStyle(
+                                                    color: Theme.of(context)
+                                                                .brightness ==
+                                                            Brightness.dark
+                                                        ? Colors.white
+                                                        : Colors.black,
+                                                    fontSize: 18,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         )),
                               );
@@ -204,7 +223,8 @@ class _ResultsPageState extends State<ResultsPage> {
                             audioUrl = data.phonetics?[0].audio;
                             setState(() {});
                           }
-                       await  dictionaryBloc.insertData(data.toMap(),widget.word);
+                          await dictionaryBloc.insertData(
+                              data.toMap(), widget.word);
                         }
                       }),
                 ],
