@@ -32,7 +32,7 @@ class DefinitionWidget extends StatelessWidget {
                 style: const TextStyle(fontSize: 20),
               ),
               Space.width(context, 0.01),
-              PartOfSpeech(
+              _PartOfSpeech(
                 partOfSpeech: partOfSpeech,
               ),
             ],
@@ -53,9 +53,9 @@ class DefinitionWidget extends StatelessWidget {
   }
 }
 
-class PartOfSpeech extends StatelessWidget {
+class _PartOfSpeech extends StatelessWidget {
   final String partOfSpeech;
-  const PartOfSpeech({super.key, required this.partOfSpeech});
+  const _PartOfSpeech({required this.partOfSpeech});
 
   @override
   Widget build(BuildContext context) {
@@ -83,3 +83,6 @@ class PartOfSpeech extends StatelessWidget {
     );
   }
 }
+
+
+
