@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:floor/floor.dart';
 import 'package:riverpod_learn/features/database/entity/dicitionary.dart';
 import 'package:riverpod_learn/features/database/entity/dictionary_type_conveter.dart';
-import 'package:riverpod_learn/features/dictionary/domain/entities/dictionary.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
 import 'dao/word_dao.dart';

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:riverpod_learn/core/url.dart';
 import 'package:riverpod_learn/features/dictionary/data/models/dictionary_model.dart';

@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:floor/floor.dart';
 import 'package:riverpod_learn/features/dictionary/data/models/dictionary_model.dart';
-import 'package:riverpod_learn/features/dictionary/domain/entities/dictionary.dart';
 
 @entity
 class DictionaryResponse extends Equatable {
