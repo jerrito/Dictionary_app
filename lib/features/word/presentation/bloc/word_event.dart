@@ -18,4 +18,10 @@ class DecodeWordsEvent extends WordEvent {
   const DecodeWordsEvent({required this.params});
 }
 
+class RetrieveWordEvent extends WordEvent{
+  final Map<String, dynamic> params;
+
+  const RetrieveWordEvent({required this.params});
+
+}
 class InitAppEvent extends WordEvent {}
