@@ -4,6 +4,7 @@ import 'package:numerus/roman/roman.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_row.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_widget.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/drawer.dart';
 import 'package:riverpod_learn/locator.dart';
@@ -88,6 +89,7 @@ class _ResultsPageState extends State<ResultsPage> {
                                 UrlSource(
                                   audioUrl ?? "",
                                 ),
+                                volume: 1.0,
                               );
                             }
                           : null,
@@ -160,9 +162,9 @@ class _ResultsPageState extends State<ResultsPage> {
                           );
                         }
                         if (state is SearchDictionaryLoaded) {
+                          print(state.dictionaryInfo.length);
                           final itemCount =
                               state.dictionaryInfo[0].meanings?.length;
-                          print(state.dictionaryInfo.toString());
                           return Column(
                             children: List.generate(itemCount ?? 0, (index) {
                               final data = state.dictionaryInfo[0];
@@ -176,34 +178,24 @@ class _ResultsPageState extends State<ResultsPage> {
                                     (int index) => Padding(
                                           padding: EdgeInsets.symmetric(
                                               vertical:
-                                                  Sizes.height(context, 0.005)),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                  Sizes.height(context, 0.01)),
+                                          child: Column(
                                             children: [
-                                              Text(
-                                                "${(index + 1).toRomanNumeralString()}.",
-                                                style: const TextStyle(
-                                                    fontSize: 18),
+                                              DefinitionRow(
+                                                index: index,
+                                                definition: meanings
+                                                    .definitions?[index]
+                                                    .definition,
                                               ),
-                                              Space.width(context, 0.01),
-                                              SizedBox(
-                                                width:
-                                                    Sizes.width(context, 0.8),
-                                                child: Text(
-                                                  meanings.definitions?[index]
-                                                          .definition ??
-                                                      "",
-                                                  style: TextStyle(
-                                                    color: Theme.of(context)
-                                                                .brightness ==
-                                                            Brightness.dark
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                    fontSize: 18,
-                                                  ),
-                                                ),
-                                              ),
+                                              ExampleRow(
+                                                isExample: meanings
+                                                        .definitions?[index]
+                                                        .example !=
+                                                    null,
+                                                example: meanings
+                                                    .definitions?[index]
+                                                    .example,
+                                              )
                                             ],
                                           ),
                                         )),
@@ -218,7 +210,7 @@ class _ResultsPageState extends State<ResultsPage> {
                         if (state is SearchDictionaryLoaded) {
                           final data = state.dictionaryInfo[0];
                           isLoaded = true;
-                          phonetic = data.phonetic;
+                          phonetic = data.phonetic ?? data.phonetics?[1].text;
                           if (data.phonetics?.isNotEmpty ?? false) {
                             audioUrl = data.phonetics?[0].audio;
                             setState(() {});
