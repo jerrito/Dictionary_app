@@ -26,7 +26,7 @@ class _MyDrawerState extends State<MyDrawer> {
   final wordBloc = sl<WordBloc>();
   @override
   Widget build(BuildContext context) {
-    return Drawer(
+    return Container(
       child: Column(
         children: [
           DrawerHeader(
