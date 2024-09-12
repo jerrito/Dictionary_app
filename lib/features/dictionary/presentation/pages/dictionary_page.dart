@@ -48,7 +48,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => ResultsPage(
-                    word: p0!,
+                    word: p0!.toLowerCase(),
                   ),
                 ),
               );
@@ -59,7 +59,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
           onChanged: (value) {
             // print(value.);
             final Map<String, dynamic> params = {
-              "text": value,
+              "text": value?.toLowerCase(),
               "decodedWords": words
             };
             wordSuggestBloc.add(
