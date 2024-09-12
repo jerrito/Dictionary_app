@@ -9,15 +9,22 @@ import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_
 import 'package:riverpod_learn/features/word/data/datasources/local_ds.dart';
 import 'package:riverpod_learn/features/word/data/repositories/word_repo_impl.dart';
 import 'package:riverpod_learn/features/word/domain/repositories/word_repository.dart';
+import 'package:riverpod_learn/features/word/domain/usecases/retrieve_save_words.dart';
+import 'package:riverpod_learn/features/word/domain/usecases/save_word.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/suggest_word.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
-initDependencies() async{
+initDependencies() async {
   // data connection
   sl.registerLazySingleton(
     () => DataConnectionChecker(),
   );
+
+  //shared preferences
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
 
 // network
   sl.registerLazySingleton<NetworkInfo>(
@@ -35,10 +42,25 @@ word() {
   sl.registerFactory(
     () => WordBloc(
       suggestWord: sl(),
+      retrieveSaveWords: sl(),
+      saveWord: sl(),
     ),
   );
 
   // usecases
+
+  sl.registerLazySingleton(
+    () => SaveWord(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => RetrieveSaveWords(
+      repository: sl(),
+    ),
+  );
+
   sl.registerLazySingleton(
     () => SuggestWord(
       repository: sl(),
@@ -53,7 +75,9 @@ word() {
 
 // data source
   sl.registerLazySingleton<WordLocalDatasource>(
-    () => WordLocalDatasourceImpl(),
+    () => WordLocalDatasourceImpl(
+      sharedPreferences: sl(),
+    ),
   );
 }
 

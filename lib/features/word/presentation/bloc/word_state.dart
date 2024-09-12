@@ -31,4 +31,30 @@ final class DecodedWordsLoaded extends WordState {
   const DecodedWordsLoaded({required this.data});
 }
 
-final class InitApppLoaded extends WordState{}
+final class InitApppLoaded extends WordState {}
+
+final class RetrieveWordLoaded extends WordState {
+  final List<String>? words;
+
+  const RetrieveWordLoaded({required this.words});
+}
+
+final class RetrieveWordError extends WordState {
+  final String message;
+
+  const RetrieveWordError({required this.message});
+}
+
+final class RetrieveWordLoading extends WordState {}
+
+final class SaveWordLoaded extends WordState {
+  final bool isSaved;
+
+  const SaveWordLoaded({required this.isSaved});
+}
+
+final class SaveWordError extends WordState {
+  final String errorMessage;
+
+  const SaveWordError({required this.errorMessage});
+}
