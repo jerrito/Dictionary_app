@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class WordLocalDatasource {
+  Stream<List<String>> suggestWord({required Map<String, dynamic> params});
   Future<List<dynamic>> suggestWords({
     required Map<String, dynamic> params,
   });
@@ -13,6 +16,7 @@ class WordLocalDatasourceImpl implements WordLocalDatasource {
 
   WordLocalDatasourceImpl({required this.sharedPreferences});
   final saveWordKey = "saveWordKey";
+  StreamController<List<String>> controller = StreamController<List<String>>();
   @override
   Future<List<dynamic>> suggestWords(
       {required Map<String, dynamic> params}) async {
@@ -49,5 +53,24 @@ class WordLocalDatasourceImpl implements WordLocalDatasource {
     get.add(params["word"]);
     sharedPreferences.setStringList(saveWordKey, get);
     return true;
+  }
+
+  @override
+  Stream<List<String>> suggestWord({required Map<String, dynamic> params}) async* {
+    List<dynamic> myList = [];
+    final Map<dynamic, dynamic> decodedWords = params["decodedWords"];
+    // myList.addAll(decodedWords.keys.where((e) => e.startsWith(params["text"])));
+
+    final lis = List<String>.from(
+      decodedWords.keys.where(
+        (e) => e.startsWith(
+          params["text"],
+        ),
+      ),
+    );
+    print(lis);
+    // controller.add(event);
+    controller.onListen!();
+    yield* controller.stream;
   }
 }
