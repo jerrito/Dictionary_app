@@ -21,8 +21,8 @@ class WordSuggestionRepositoryImpl implements WordSuggestionRepository {
 
   @override
   Future<Either<String, List<String>?>> retrieveSavedWords(
-      Map<String, dynamic> params) async {
-    final words = await wordLocalDatasource.retrieveSavedWords(params);
+      ) async {
+    final words = await wordLocalDatasource.retrieveSavedWords();
     return Right(words);
   }
 

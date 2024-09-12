@@ -5,7 +5,7 @@ abstract class WordLocalDatasource {
     required Map<String, dynamic> params,
   });
   Future<bool> saveWord(Map<String, dynamic> params);
-  Future<List<String>?> retrieveSavedWords(Map<String, dynamic> params);
+  Future<List<String>?> retrieveSavedWords();
 }
 
 class WordLocalDatasourceImpl implements WordLocalDatasource {
@@ -28,7 +28,7 @@ class WordLocalDatasourceImpl implements WordLocalDatasource {
   }
 
   @override
-  Future<List<String>?> retrieveSavedWords(Map<String, dynamic> params) async {
+  Future<List<String>?> retrieveSavedWords() async {
     try {
       final words = sharedPreferences.getStringList(saveWordKey);
 
@@ -40,8 +40,8 @@ class WordLocalDatasourceImpl implements WordLocalDatasource {
 
   @override
   Future<bool> saveWord(Map<String, dynamic> params) async {
-    final get = await retrieveSavedWords(params);
-    if (get!.contains(params["word"]) || get.isEmpty) {
+    final get = await retrieveSavedWords();
+    if (get!.contains(params["word"]) ) {
       return false;
     }
     get.add(params["word"]);

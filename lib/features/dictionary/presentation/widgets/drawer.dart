@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:riverpod_learn/features/database/entity/dicitionary.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
+import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 import 'package:riverpod_learn/locator.dart';
 
 class MyDrawer extends StatefulWidget {
@@ -15,31 +17,41 @@ class _MyDrawerState extends State<MyDrawer> {
   @override
   void initState() {
     super.initState();
-    dictionaryResponse();
+    wordBloc.add(
+      const RetrieveWordEvent(),
+    );
   }
 
   final dictionaryBloc = sl<DictionaryBloc>();
+  final wordBloc = sl<WordBloc>();
   @override
   Widget build(BuildContext context) {
-    return  Drawer(
+    return Drawer(
       child: Column(
         children: [
           DrawerHeader(
               child: Column(
-            children: 
-            [
+            children: [
               GestureDetector(
-              onTap: ()async{
-                await dictionaryResponse();
-              },
-              child: const Icon(Icons.chevron_left_outlined)),
+                  onTap: () async {
+                    await dictionaryResponse();
+                  },
+                  child: const Icon(Icons.chevron_left_outlined)),
             ],
           )),
-          Column(
-            children: List.generate(response.length, (index){
-              return Text(response[index].word);
-            }),
-          )
+          BlocBuilder(builder: (context, state) {
+            if (state is RetrieveWordError) {
+              return Text(state.message);
+            }
+            if (state is RetrieveWordLoaded) {
+              return Column(
+                children: List.generate(response.length, (index) {
+                  return Text(response[index].word);
+                }),
+              );
+            }
+            return const CircularProgressIndicator();
+          })
         ],
       ),
     );

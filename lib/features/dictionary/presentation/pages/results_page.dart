@@ -7,6 +7,7 @@ import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_row.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_widget.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/drawer.dart';
+import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 import 'package:riverpod_learn/locator.dart';
 import 'package:audioplayers/audioplayers.dart';
 
@@ -20,6 +21,7 @@ class ResultsPage extends StatefulWidget {
 
 class _ResultsPageState extends State<ResultsPage> {
   final dictionaryBloc = sl<DictionaryBloc>();
+  final wordBloc = sl<WordBloc>();
   final player = AudioPlayer();
   final scaffold = GlobalKey<ScaffoldState>();
   bool isLoaded = false, hasAudio = false;
@@ -215,8 +217,14 @@ class _ResultsPageState extends State<ResultsPage> {
                             audioUrl = data.phonetics?[0].audio;
                             setState(() {});
                           }
-                          await dictionaryBloc.insertData(
-                              data.toMap(), widget.word);
+                          final Map<String, dynamic> params = {
+                            "word": data.word ?? widget.word
+                          };
+                          wordBloc.add(
+                            SaveWordEvent(
+                              params: params,
+                            ),
+                          );
                         }
                       }),
                 ],

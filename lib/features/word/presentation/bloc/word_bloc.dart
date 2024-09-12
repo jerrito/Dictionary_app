@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_learn/core/json.dart';
+import 'package:riverpod_learn/core/use_case.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/retrieve_save_words.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/save_word.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/suggest_word.dart';
@@ -45,7 +46,7 @@ class WordBloc extends Bloc<WordEvent, WordState> {
     //! RETRIEVE WORDS
     on<RetrieveWordEvent>((event, emit) async {
       emit(RetrieveWordLoading());
-      final words = await retrieveSaveWords.call(event.params);
+      final words = await retrieveSaveWords.call(NoParams());
       emit(
         words.fold(
           (error) => RetrieveWordError(
