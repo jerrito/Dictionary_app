@@ -22,7 +22,17 @@ class WordSuggestionRepositoryImpl implements WordSuggestionRepository {
   @override
   Future<Either<String, List<String>?>> retrieveSavedWords(
       Map<String, dynamic> params) async {
-    final words =await wordLocalDatasource.retrieveSavedWords(params);
+    final words = await wordLocalDatasource.retrieveSavedWords(params);
     return Right(words);
+  }
+
+  @override
+  Future<Either<String, bool>> saveWord(Map<String, dynamic> params) async {
+    final word = await wordLocalDatasource.saveWord(params);
+    if (word == true) {
+      return Right(word);
+    } else {
+      return const Left("");
+    }
   }
 }

@@ -11,13 +11,18 @@ import 'package:riverpod_learn/features/word/data/repositories/word_repo_impl.da
 import 'package:riverpod_learn/features/word/domain/repositories/word_repository.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/suggest_word.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
-initDependencies() async{
+initDependencies() async {
   // data connection
   sl.registerLazySingleton(
     () => DataConnectionChecker(),
   );
+
+  //shared preferences
+  final sharedPreferences = SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
 
 // network
   sl.registerLazySingleton<NetworkInfo>(
@@ -35,6 +40,8 @@ word() {
   sl.registerFactory(
     () => WordBloc(
       suggestWord: sl(),
+      retrieveSaveWords: sl(),
+      saveWord: sl(),
     ),
   );
 
@@ -53,7 +60,9 @@ word() {
 
 // data source
   sl.registerLazySingleton<WordLocalDatasource>(
-    () => WordLocalDatasourceImpl(),
+    () => WordLocalDatasourceImpl(
+      sharedPreferences: sl(),
+    ),
   );
 }
 
