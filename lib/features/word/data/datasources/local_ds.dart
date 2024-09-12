@@ -40,10 +40,12 @@ class WordLocalDatasourceImpl implements WordLocalDatasource {
 
   @override
   Future<bool> saveWord(Map<String, dynamic> params) async {
-    final get = await retrieveSavedWords();
-    if (get!.contains(params["word"]) ) {
+    List<String>? get = await retrieveSavedWords();
+    print(get);
+    if (get?.contains(params["word"]) ?? false) {
       return false;
     }
+    get ??= [];
     get.add(params["word"]);
     sharedPreferences.setStringList(saveWordKey, get);
     return true;

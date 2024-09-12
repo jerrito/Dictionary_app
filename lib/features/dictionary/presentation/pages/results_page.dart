@@ -39,6 +39,7 @@ class _ResultsPageState extends State<ResultsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffold,
       drawer: const MyDrawer(),
       backgroundColor: const Color.fromARGB(185, 56, 56, 117),
       body: CustomScrollView(

@@ -39,19 +39,23 @@ class _MyDrawerState extends State<MyDrawer> {
                   child: const Icon(Icons.chevron_left_outlined)),
             ],
           )),
-          BlocBuilder(builder: (context, state) {
-            if (state is RetrieveWordError) {
-              return Text(state.message);
-            }
-            if (state is RetrieveWordLoaded) {
-              return Column(
-                children: List.generate(response.length, (index) {
-                  return Text(response[index].word);
-                }),
-              );
-            }
-            return const CircularProgressIndicator();
-          })
+          BlocBuilder(
+              bloc: wordBloc,
+              builder: (context, state) {
+                if (state is RetrieveWordError) {
+                  return Text(state.message);
+                }
+                if (state is RetrieveWordLoaded) {
+                  return Column(
+                    children: List.generate(state.words?.length ?? 0, (index) {
+                      return Text(
+                        state.words?[index] ?? "",
+                      );
+                    }),
+                  );
+                }
+                return const CircularProgressIndicator();
+              })
         ],
       ),
     );
