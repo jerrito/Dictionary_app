@@ -6,6 +6,7 @@
 // }
 class URL {
   static const baseUrl = "api.dictionaryapi.dev";
+  static const youtubeUrl= "youtube.com/@aljazeeraenglish";
 
   static Uri getUri(
       {String? path,

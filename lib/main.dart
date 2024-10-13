@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:riverpod_learn/features/database/database.dart';
 import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
@@ -8,10 +9,9 @@ import 'package:riverpod_learn/locator.dart';
 AppDatabase? database;
 // final GetIt.in sl;
 Future<void> main() async {
-
-
   WidgetsFlutterBinding.ensureInitialized();
-   initDependencies();
+  await MobileAds.instance.initialize();
+  initDependencies();
   database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   runApp(
     const MyApp(),

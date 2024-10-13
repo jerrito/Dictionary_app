@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/features/dictionary/domain/entities/phonetics.dart';
@@ -8,12 +9,9 @@ import 'package:riverpod_learn/features/dictionary/presentation/widgets/definiti
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_widget.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/drawer.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/phonetic_modal.dart';
-import 'package:riverpod_learn/features/dictionary/presentation/widgets/phonetic_modal.dart';
-import 'package:riverpod_learn/features/dictionary/presentation/widgets/phonetic_modal.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 import 'package:riverpod_learn/locator.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'dart:math' as math;
 
 class ResultsPage extends StatefulWidget {
   const ResultsPage({super.key, required this.word});
@@ -38,10 +36,8 @@ class _ResultsPageState extends State<ResultsPage>
   @override
   void initState() {
     super.initState();
-    final Map<String, dynamic> params = {
-      "text": widget.word,
-    };
-    dictionaryBloc.add(SearchDictionaryEvent(params: params));
+    dictionaryBloc.add(LoadAdEvent());
+
     animationController = AnimationController(
       vsync: this,
       duration: const Duration(
@@ -191,9 +187,9 @@ class _ResultsPageState extends State<ResultsPage>
                                                                     ),
                                                                   );
                                                                 },
-                                                                hasAudio:
-                                                                    data.audio!.isNotEmpty
-                                                                        );
+                                                                hasAudio: data
+                                                                    .audio!
+                                                                    .isNotEmpty);
                                                           }),
                                                     );
                                                   });
@@ -233,7 +229,8 @@ class _ResultsPageState extends State<ResultsPage>
                                 BlocConsumer(
                                     bloc: dictionaryBloc,
                                     builder: (context, state) {
-                                      if (state is SearchDictionaryLoading) {
+                                      if (state is SearchDictionaryLoading ||
+                                          state is AdLoading) {
                                         return const Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
@@ -244,6 +241,34 @@ class _ResultsPageState extends State<ResultsPage>
                                             ),
                                           ],
                                         );
+                                      }
+                                      if (state is AdLoaded) {
+                                        final ad = state.ad;
+                                        ad?.show();
+                                        // ad?.fullScreenContentCallback =
+                                        //     FullScreenContentCallback(
+                                        //         // Called when the ad showed the full screen content.
+                                        //         onAdShowedFullScreenContent:
+                                        //             (ad) {
+                                        //           ad.show();
+                                        //           print(ad.responseInfo);
+                                        //         },
+                                        //         // Called when an impression occurs on the ad.
+                                        //         onAdImpression: (ad) {},
+                                        //         // Called when the ad failed to show full screen content.
+                                        //         onAdFailedToShowFullScreenContent:
+                                        //             (ad, err) {
+                                        //           // Dispose the ad here to free resources.
+                                        //           ad.dispose();
+                                        //         },
+                                        //         // Called when the ad dismissed full screen content.
+                                        //         onAdDismissedFullScreenContent:
+                                        //             (ad) {
+                                        //           // Dispose the ad here to free resources.
+                                        //           ad.dispose();
+                                        //         },
+                                        //         // Called when a click is recorded for an ad.
+                                        //         onAdClicked: (ad) {});
                                       }
                                       if (state is SearchDictionaryError) {
                                         return Column(
@@ -326,6 +351,45 @@ class _ResultsPageState extends State<ResultsPage>
                                       return const SizedBox();
                                     },
                                     listener: (context, state) async {
+                                      print(state);
+                                      if (state is AdLoaded) {
+                                        state.ad?.fullScreenContentCallback =
+                                            FullScreenContentCallback(
+                                                // Called when the ad showed the full screen content.
+                                                onAdShowedFullScreenContent:
+                                                    (ad) {},
+                                                // Called when an impression occurs on the ad.
+                                                onAdImpression: (ad) {},
+                                                // Called when the ad failed to show full screen content.
+                                                onAdFailedToShowFullScreenContent:
+                                                    (ad, err) {
+                                                  // Dispose the ad here to free resources.
+                                                  ad.dispose();
+                                                },
+                                                // Called when the ad dismissed full screen content.
+                                                onAdDismissedFullScreenContent:
+                                                    (ad) {
+                                                  // Dispose the ad here to free resources.
+                                                  ad.dispose();
+                                                  final Map<String, dynamic>
+                                                      params = {
+                                                    "text": widget.word,
+                                                  };
+                                                  dictionaryBloc.add(
+                                                      SearchDictionaryEvent(
+                                                          params: params));
+                                                },
+                                                // Called when a click is recorded for an ad.
+                                                onAdClicked: (ad) {});
+                                      }
+                                      if (state is AdLoadError) {
+                                        final Map<String, dynamic> params = {
+                                          "text": widget.word,
+                                        };
+                                        dictionaryBloc.add(
+                                            SearchDictionaryEvent(
+                                                params: params));
+                                      }
                                       if (state is SearchDictionaryLoaded) {
                                         final data = state.dictionaryInfo[0];
                                         isLoaded = true;
