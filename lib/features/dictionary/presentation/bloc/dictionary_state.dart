@@ -18,16 +18,16 @@ class SearchDictionaryError extends DictionaryState {
 
 class SearchDictionaryLoading extends DictionaryState {}
 
-class AdLoaded extends DictionaryState {
+class InterstatialAdLoaded extends DictionaryState {
   final InterstitialAd? ad;
 
-  AdLoaded({required this.ad});
+  InterstatialAdLoaded({required this.ad});
 }
 
-class AdLoadError extends DictionaryState {
+class InterstatialAdLoadError extends DictionaryState {
   final String errorMessage;
 
-  AdLoadError({required this.errorMessage});
+  InterstatialAdLoadError({required this.errorMessage});
 }
 
-class AdLoading extends DictionaryState {}
+class InterstatialAdLoading extends DictionaryState {}

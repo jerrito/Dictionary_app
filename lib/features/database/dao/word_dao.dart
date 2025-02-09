@@ -9,9 +9,8 @@ abstract class WordDao {
   @Query("SELECT * FROM DictionaryResponse")
   Stream<List<DictionaryResponse>> getList();
 
-@Query("SELECT * FROM DictionaryResponse")
+  @Query("SELECT * FROM DictionaryResponse")
   Future<List<DictionaryResponse>> getAll();
-
 
   @delete
   Future<void> deleteDictionaryResponse(DictionaryResponse response) async {}
@@ -19,6 +18,6 @@ abstract class WordDao {
   @delete
   Future<void> deleteListDictionaryResponse(List<DictionaryResponse> list);
 
-  @Query("SELECT * FROM DictionaryResponse WHERE id= :id ")
-  Future<DictionaryResponse?> getDictionaryResponse(int id);
+  @Query("SELECT * FROM DictionaryResponse WHERE word= :word ")
+  Future<DictionaryResponse?> getDictionaryResponse(String word);
 }

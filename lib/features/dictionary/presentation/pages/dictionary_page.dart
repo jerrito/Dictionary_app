@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/widgets/text_form_field.dart';
@@ -109,6 +109,8 @@ class _DictionaryPageState extends State<DictionaryPage> {
                             return SuggestedWord(
                                 word: data,
                                 onTap: () async {
+                                  SystemChannels.textInput
+                                      .invokeMethod("TextInput.hide");
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(

@@ -16,16 +16,19 @@ class DictionaryModel extends Dictionary {
         word: json?["word"],
         phonetic: json?["phonetic"],
         origin: json?["origin"],
-        phonetics: List<PhoneticsModel>.from(
-          json?["phonetics"].map(
-            (e) => PhoneticsModel.fromJson(e),
-          ),
-        ),
-        meanings: List<MeaningModel>.from(
-          json?["meanings"].map(
-            (e) => MeaningModel.fromJson(e),
-          ),
-        ),
+        phonetics: json?["phonetics"] != null
+            ? List<PhoneticsModel>.from(
+                json?["phonetics"].map(
+                  (e) => PhoneticsModel.fromJson(e),
+                ),
+              )
+            : null,
+        meanings: json?["meanings"] != null
+            ? List<MeaningModel>.from(
+                json?["meanings"].map(
+                  (e) => MeaningModel.fromJson(e),
+                ),
+              )
+            : null,
       );
-
 }

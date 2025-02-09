@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -34,18 +36,18 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
       // transformer: restartable(),
     );
 
-    on<LoadAdEvent>((event, emit) async {
-      emit(AdLoading());
+    on<InterstatialAdEvent>((event, emit) async {
+      emit(InterstatialAdLoading());
 
       /// Loads an interstitial ad.
       try {
         await InterstitialAd.load(
-            adUnitId: adUnitId,
+            adUnitId: interstitialId,
             request: const AdRequest(),
             adLoadCallback: InterstitialAdLoadCallback(
               // Called when an ad is successfully received.
               onAdLoaded: (ad) {
-                add(AdSuccessEvent(ad: ad));
+                add(InterstatialAdSuccessEvent(ad: ad));
                 // ad.show();
                 // emit(AdLoaded(ad: ad));
 
@@ -55,30 +57,41 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
               // Called when an ad request failed.
               onAdFailedToLoad: (LoadAdError error) {
                 print("sa");
-                add(AdFailedEvent(errorMessage: error.message));
+                add(InterstatialAdFailedEvent(errorMessage: error.message));
                 // debugPrint('InterstitialAd failed to load: $error');
               },
             ));
       } catch (e) {
-        emit(AdLoadError(errorMessage: e.toString()));
+        emit(InterstatialAdLoadError(errorMessage: e.toString()));
       }
     });
 
-    on<AdFailedEvent>((event, emit) {
-      emit(AdLoadError(errorMessage: event.errorMessage ?? ""));
+    on<InterstatialAdFailedEvent>((event, emit) {
+      emit(InterstatialAdLoadError(errorMessage: event.errorMessage ?? ""));
     });
 
-    on<AdSuccessEvent>((event, emit) {
-      emit(AdLoaded(ad: event.ad));
+    on<InterstatialAdSuccessEvent>((event, emit) {
+      emit(InterstatialAdLoaded(ad: event.ad));
     });
   }
 
   InterstitialAd? _interstitialAd;
 
-  // TODO: replace this test ad unit with your own ad unit.
   final adUnitId = Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/1033173712'
-      : 'ca-app-pub-3940256099942544/4411468910';
+      ? kDebugMode
+          ? 'ca-app-pub-3940256099942544/6300978111'
+          : "ca-app-pub-6517705244211453/8328545291"
+      : kDebugMode
+          ? 'ca-app-pub-3940256099942544/2934735716'
+          : 'ca-app-pub-6517705244211453/7722040635';
+
+  final interstitialId = Platform.isAndroid
+      ? kDebugMode
+          ? 'ca-app-pub-3940256099942544/1033173712'
+          : "ca-app-pub-6517705244211453/6550608932"
+      : kDebugMode
+          ? 'ca-app-pub-3940256099942544/4411468910'
+          : 'ca-app-pub-6517705244211453/1733396526';
 
   Future<List<DictionaryResponse>> readAllDictionary() async {
     return database!.wordDao.getAll();
@@ -95,16 +108,30 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
   }
 
   Future<void> insertData(Map<String, dynamic> json, String word) async {
-    final readDict = await readAllDictionary();
-    final isWordStored = readDict.any((e) => e.word == word);
+    try {
+      final readDict = await readAllDictionary();
+      final isWordStored = readDict.any((e) => e.word == word);
 
-    if (!isWordStored) {
-      await database?.wordDao.insertData(
-        DictionaryResponse(
-          word: word,
-          dictionary: DictionaryModel.fromJson(json),
-        ),
-      );
+      if (!isWordStored) {
+        await database?.wordDao.insertData(
+          DictionaryResponse(
+            word: word,
+            dictionary: json.toString(),
+          ),
+        );
+      }
+    } catch (e) {
+      print(e.toString());
+      // emit(state)
+    }
+  }
+
+  Future<DictionaryResponse?> getResponse(String word) async {
+    try {
+      final response = await database?.wordDao.getDictionaryResponse(word);
+      return response;
+    } catch (e) {
+      throw Exception(e.toString());
     }
   }
 }

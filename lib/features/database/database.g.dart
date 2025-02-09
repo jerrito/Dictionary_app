@@ -121,8 +121,7 @@ class _$WordDao extends WordDao {
             (DictionaryResponse item) => <String, Object?>{
                   'id': item.id,
                   'word': item.word,
-                  'dictionary':
-                      _dictionaryResponseConveter.encode(item.dictionary)
+                  'dictionary': item.dictionary
                 },
             changeListener),
         _dictionaryResponseDeletionAdapter = DeletionAdapter(
@@ -132,8 +131,7 @@ class _$WordDao extends WordDao {
             (DictionaryResponse item) => <String, Object?>{
                   'id': item.id,
                   'word': item.word,
-                  'dictionary':
-                      _dictionaryResponseConveter.encode(item.dictionary)
+                  'dictionary': item.dictionary
                 },
             changeListener);
 
@@ -154,8 +152,7 @@ class _$WordDao extends WordDao {
         mapper: (Map<String, Object?> row) => DictionaryResponse(
             id: row['id'] as int?,
             word: row['word'] as String,
-            dictionary: _dictionaryResponseConveter
-                .decode(row['dictionary'] as String)),
+            dictionary: row['dictionary'] as String),
         queryableName: 'DictionaryResponse',
         isView: false);
   }
@@ -166,19 +163,18 @@ class _$WordDao extends WordDao {
         mapper: (Map<String, Object?> row) => DictionaryResponse(
             id: row['id'] as int?,
             word: row['word'] as String,
-            dictionary: _dictionaryResponseConveter
-                .decode(row['dictionary'] as String)));
+            dictionary: row['dictionary'] as String));
   }
 
   @override
-  Future<DictionaryResponse?> getDictionaryResponse(int id) async {
-    return _queryAdapter.query('SELECT * FROM DictionaryResponse WHERE id= ?1',
+  Future<DictionaryResponse?> getDictionaryResponse(String word) async {
+    return _queryAdapter.query(
+        'SELECT * FROM DictionaryResponse WHERE word= ?1',
         mapper: (Map<String, Object?> row) => DictionaryResponse(
             id: row['id'] as int?,
             word: row['word'] as String,
-            dictionary: _dictionaryResponseConveter
-                .decode(row['dictionary'] as String)),
-        arguments: [id]);
+            dictionary: row['dictionary'] as String),
+        arguments: [word]);
   }
 
   @override

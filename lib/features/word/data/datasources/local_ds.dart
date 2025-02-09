@@ -56,7 +56,8 @@ class WordLocalDatasourceImpl implements WordLocalDatasource {
   }
 
   @override
-  Stream<List<String>> suggestWord({required Map<String, dynamic> params}) async* {
+  Stream<List<String>> suggestWord(
+      {required Map<String, dynamic> params}) async* {
     List<dynamic> myList = [];
     final Map<dynamic, dynamic> decodedWords = params["decodedWords"];
     // myList.addAll(decodedWords.keys.where((e) => e.startsWith(params["text"])));
@@ -68,7 +69,7 @@ class WordLocalDatasourceImpl implements WordLocalDatasource {
         ),
       ),
     );
-    print(lis);
+    print("ss$lis");
     // controller.add(event);
     controller.onListen!();
     yield* controller.stream;

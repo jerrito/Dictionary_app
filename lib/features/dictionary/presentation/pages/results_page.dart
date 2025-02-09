@@ -36,7 +36,7 @@ class _ResultsPageState extends State<ResultsPage>
   @override
   void initState() {
     super.initState();
-    dictionaryBloc.add(LoadAdEvent());
+    dictionaryBloc.add(InterstatialAdEvent());
 
     animationController = AnimationController(
       vsync: this,
@@ -128,14 +128,19 @@ class _ResultsPageState extends State<ResultsPage>
                                 Offstage(
                                   offstage: !isLoaded,
                                   child: GestureDetector(
-                                    onTap: (audioUrl != null)
+                                    onTap: (audioUrl != null &&
+                                            (audioUrl?.isNotEmpty ?? false))
                                         ? () async {
-                                            await player.play(
-                                              UrlSource(
-                                                audioUrl ?? "",
-                                              ),
-                                              volume: 1.0,
-                                            );
+                                            try {
+                                              await player.play(
+                                                UrlSource(
+                                                  audioUrl ?? "",
+                                                ),
+                                                volume: 1.0,
+                                              );
+                                            } catch (e) {
+                                              print(e.toString());
+                                            }
                                           }
                                         : null,
                                     child: const Icon(
@@ -160,7 +165,7 @@ class _ResultsPageState extends State<ResultsPage>
                                                           context,
                                                           (phonetics.length
                                                                       .toDouble() *
-                                                                  0.6) *
+                                                                  0.7) *
                                                               0.1),
                                                       child: ListView.builder(
                                                           itemCount:
@@ -226,194 +231,208 @@ class _ResultsPageState extends State<ResultsPage>
                             child: Stack(
                               alignment: Alignment.topRight,
                               children: [
-                                BlocConsumer(
-                                    bloc: dictionaryBloc,
-                                    builder: (context, state) {
-                                      if (state is SearchDictionaryLoading ||
-                                          state is AdLoading) {
-                                        return const Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Center(
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            ),
-                                          ],
-                                        );
-                                      }
-                                      if (state is AdLoaded) {
-                                        final ad = state.ad;
-                                        ad?.show();
-                                        // ad?.fullScreenContentCallback =
-                                        //     FullScreenContentCallback(
-                                        //         // Called when the ad showed the full screen content.
-                                        //         onAdShowedFullScreenContent:
-                                        //             (ad) {
-                                        //           ad.show();
-                                        //           print(ad.responseInfo);
-                                        //         },
-                                        //         // Called when an impression occurs on the ad.
-                                        //         onAdImpression: (ad) {},
-                                        //         // Called when the ad failed to show full screen content.
-                                        //         onAdFailedToShowFullScreenContent:
-                                        //             (ad, err) {
-                                        //           // Dispose the ad here to free resources.
-                                        //           ad.dispose();
-                                        //         },
-                                        //         // Called when the ad dismissed full screen content.
-                                        //         onAdDismissedFullScreenContent:
-                                        //             (ad) {
-                                        //           // Dispose the ad here to free resources.
-                                        //           ad.dispose();
-                                        //         },
-                                        //         // Called when a click is recorded for an ad.
-                                        //         onAdClicked: (ad) {});
-                                      }
-                                      if (state is SearchDictionaryError) {
-                                        return Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Center(
-                                                child: Text(
-                                              state.errorMessage,
-                                            )),
-                                            Space.height(context, 0.02),
-                                            GestureDetector(
-                                                onTap: () {
-                                                  final Map<String, dynamic>
-                                                      params = {
-                                                    "text": widget.word
-                                                  };
-                                                  dictionaryBloc.add(
-                                                    SearchDictionaryEvent(
-                                                      params: params,
-                                                    ),
-                                                  );
-                                                },
-                                                child: const Text("Retry"))
-                                          ],
-                                        );
-                                      }
-                                      if (state is SearchDictionaryLoaded) {
-                                        final itemCount = state
-                                            .dictionaryInfo[0].meanings?.length;
-                                        return Column(
-                                          children: List.generate(
-                                              itemCount ?? 0, (index) {
-                                            final data =
-                                                state.dictionaryInfo[0];
-                                            // final meaningsLength = data.meanings?.length;
-                                            final meanings =
-                                                data.meanings?[index];
-                                            return DefinitionWidget(
-                                              index: "${index + 1}",
-                                              partOfSpeech:
-                                                  meanings?.partOfSpeech ?? "",
-                                              definition: List.generate(
-                                                  meanings!.definitions!.length,
-                                                  (int index) => Padding(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                vertical: Sizes
-                                                                    .height(
-                                                                        context,
-                                                                        0.01)),
-                                                        child: Column(
-                                                          children: [
-                                                            DefinitionRow(
-                                                              index: index,
-                                                              definition: meanings
-                                                                  .definitions?[
-                                                                      index]
-                                                                  .definition,
-                                                            ),
-                                                            ExampleRow(
-                                                              isExample: meanings
-                                                                      .definitions?[
-                                                                          index]
-                                                                      .example !=
-                                                                  null,
-                                                              example: meanings
-                                                                  .definitions?[
-                                                                      index]
-                                                                  .example,
-                                                            )
-                                                          ],
-                                                        ),
-                                                      )),
-                                            );
-                                          }),
-                                        );
-                                      }
-
-                                      return const SizedBox();
-                                    },
-                                    listener: (context, state) async {
-                                      print(state);
-                                      if (state is AdLoaded) {
-                                        state.ad?.fullScreenContentCallback =
-                                            FullScreenContentCallback(
-                                                // Called when the ad showed the full screen content.
-                                                onAdShowedFullScreenContent:
-                                                    (ad) {},
-                                                // Called when an impression occurs on the ad.
-                                                onAdImpression: (ad) {},
-                                                // Called when the ad failed to show full screen content.
-                                                onAdFailedToShowFullScreenContent:
-                                                    (ad, err) {
-                                                  // Dispose the ad here to free resources.
-                                                  ad.dispose();
-                                                },
-                                                // Called when the ad dismissed full screen content.
-                                                onAdDismissedFullScreenContent:
-                                                    (ad) {
-                                                  // Dispose the ad here to free resources.
-                                                  ad.dispose();
-                                                  final Map<String, dynamic>
-                                                      params = {
-                                                    "text": widget.word,
-                                                  };
-                                                  dictionaryBloc.add(
-                                                      SearchDictionaryEvent(
-                                                          params: params));
-                                                },
-                                                // Called when a click is recorded for an ad.
-                                                onAdClicked: (ad) {});
-                                      }
-                                      if (state is AdLoadError) {
-                                        final Map<String, dynamic> params = {
-                                          "text": widget.word,
-                                        };
-                                        dictionaryBloc.add(
-                                            SearchDictionaryEvent(
-                                                params: params));
-                                      }
-                                      if (state is SearchDictionaryLoaded) {
-                                        final data = state.dictionaryInfo[0];
-                                        isLoaded = true;
-                                        phonetic = data.phonetic ??
-                                            data.phonetics?[1].text;
-                                        if (data.phonetics?.isNotEmpty ??
-                                            false) {
-                                          hasPhonetics = true;
-                                          audioUrl = data.phonetics?[0].audio;
-                                          if (data.phonetics!.length > 1) {
-                                            phonetics = data.phonetics!;
-                                          }
-                                          setState(() {});
+                                BlocListener(
+                                  bloc: wordBloc,
+                                  listener: (context, state) {
+                                    if (state is SaveWordLoaded) {
+                                      dictionaryBloc.insertData(
+                                          response, widget.word);
+                                    }
+                                  },
+                                  child: BlocConsumer(
+                                      bloc: dictionaryBloc,
+                                      builder: (context, state) {
+                                        if (state is SearchDictionaryLoading ||
+                                            state is InterstatialAdLoading) {
+                                          return const Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
+                                            ],
+                                          );
                                         }
-                                        final Map<String, dynamic> params = {
-                                          "word": data.word ?? widget.word
-                                        };
-                                        wordBloc.add(
-                                          SaveWordEvent(
-                                            params: params,
-                                          ),
-                                        );
-                                      }
-                                    }),
+                                        if (state is InterstatialAdLoaded) {
+                                          final ad = state.ad;
+                                          ad?.show();
+                                          // ad?.fullScreenContentCallback =
+                                          //     FullScreenContentCallback(
+                                          //         // Called when the ad showed the full screen content.
+                                          //         onAdShowedFullScreenContent:
+                                          //             (ad) {
+                                          //           ad.show();
+                                          //           print(ad.responseInfo);
+                                          //         },
+                                          //         // Called when an impression occurs on the ad.
+                                          //         onAdImpression: (ad) {},
+                                          //         // Called when the ad failed to show full screen content.
+                                          //         onAdFailedToShowFullScreenContent:
+                                          //             (ad, err) {
+                                          //           // Dispose the ad here to free resources.
+                                          //           ad.dispose();
+                                          //         },
+                                          //         // Called when the ad dismissed full screen content.
+                                          //         onAdDismissedFullScreenContent:
+                                          //             (ad) {
+                                          //           // Dispose the ad here to free resources.
+                                          //           ad.dispose();
+                                          //         },
+                                          //         // Called when a click is recorded for an ad.
+                                          //         onAdClicked: (ad) {});
+                                        }
+                                        if (state is SearchDictionaryError) {
+                                          return Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Center(
+                                                  child: Text(
+                                                state.errorMessage,
+                                              )),
+                                              Space.height(context, 0.02),
+                                              GestureDetector(
+                                                  onTap: () {
+                                                    final Map<String, dynamic>
+                                                        params = {
+                                                      "text": widget.word
+                                                    };
+                                                    dictionaryBloc.add(
+                                                      SearchDictionaryEvent(
+                                                        params: params,
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const Text("Retry"))
+                                            ],
+                                          );
+                                        }
+                                        if (state is SearchDictionaryLoaded) {
+                                          final itemCount = state
+                                              .dictionaryInfo[0]
+                                              .meanings
+                                              ?.length;
+                                          return Column(
+                                            children: List.generate(
+                                                itemCount ?? 0, (index) {
+                                              final data =
+                                                  state.dictionaryInfo[0];
+                                              // final meaningsLength = data.meanings?.length;
+                                              final meanings =
+                                                  data.meanings?[index];
+                                              return DefinitionWidget(
+                                                index: "${index + 1}",
+                                                partOfSpeech:
+                                                    meanings?.partOfSpeech ??
+                                                        "",
+                                                definition: List.generate(
+                                                    meanings!
+                                                        .definitions!.length,
+                                                    (int index) => Padding(
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                                  vertical: Sizes
+                                                                      .height(
+                                                                          context,
+                                                                          0.01)),
+                                                          child: Column(
+                                                            children: [
+                                                              DefinitionRow(
+                                                                index: index,
+                                                                definition: meanings
+                                                                    .definitions?[
+                                                                        index]
+                                                                    .definition,
+                                                              ),
+                                                              ExampleRow(
+                                                                isExample: meanings
+                                                                        .definitions?[
+                                                                            index]
+                                                                        .example !=
+                                                                    null,
+                                                                example: meanings
+                                                                    .definitions?[
+                                                                        index]
+                                                                    .example,
+                                                              )
+                                                            ],
+                                                          ),
+                                                        )),
+                                              );
+                                            }),
+                                          );
+                                        }
+
+                                        return const SizedBox();
+                                      },
+                                      listener: (context, state) async {
+                                        print(state);
+                                        if (state is InterstatialAdLoaded) {
+                                          state.ad?.fullScreenContentCallback =
+                                              FullScreenContentCallback(
+                                                  // Called when the ad showed the full screen content.
+                                                  onAdShowedFullScreenContent:
+                                                      (ad) {},
+                                                  // Called when an impression occurs on the ad.
+                                                  onAdImpression: (ad) {},
+                                                  // Called when the ad failed to show full screen content.
+                                                  onAdFailedToShowFullScreenContent:
+                                                      (ad, err) async {
+                                                    // Dispose the ad here to free resources.
+                                                    await ad.dispose();
+                                                  },
+                                                  // Called when the ad dismissed full screen content.
+                                                  onAdDismissedFullScreenContent:
+                                                      (ad) async {
+                                                    // Dispose the ad here to free resources.
+                                                    await ad.dispose();
+                                                    final Map<String, dynamic>
+                                                        params = {
+                                                      "text": widget.word,
+                                                    };
+                                                    dictionaryBloc.add(
+                                                        SearchDictionaryEvent(
+                                                            params: params));
+                                                  },
+                                                  // Called when a click is recorded for an ad.
+                                                  onAdClicked: (ad) {});
+                                        }
+                                        if (state is InterstatialAdLoadError) {
+                                          final Map<String, dynamic> params = {
+                                            "text": widget.word,
+                                          };
+                                          dictionaryBloc.add(
+                                              SearchDictionaryEvent(
+                                                  params: params));
+                                        }
+                                        if (state is SearchDictionaryLoaded) {
+                                          final data = state.dictionaryInfo[0];
+                                          response = data.toMap();
+                                          isLoaded = true;
+                                          phonetic = data.phonetic ??
+                                              data.phonetics?[1].text;
+                                          if (data.phonetics?.isNotEmpty ??
+                                              false) {
+                                            hasPhonetics = true;
+                                            audioUrl = data.phonetics?[0].audio;
+                                            if (data.phonetics!.length > 1) {
+                                              phonetics = data.phonetics!;
+                                            }
+                                            setState(() {});
+                                          }
+                                          final Map<String, dynamic> params = {
+                                            "word": data.word ?? widget.word
+                                          };
+                                          wordBloc.add(
+                                            SaveWordEvent(
+                                              params: params,
+                                            ),
+                                          );
+                                        }
+                                      }),
+                                ),
                               ],
                             ),
                           ),
@@ -427,4 +446,6 @@ class _ResultsPageState extends State<ResultsPage>
       ),
     );
   }
+
+  Map<String, dynamic> response = {};
 }

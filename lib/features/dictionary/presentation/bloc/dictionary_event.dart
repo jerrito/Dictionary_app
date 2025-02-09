@@ -8,17 +8,16 @@ class SearchDictionaryEvent extends DictionaryEvent {
   SearchDictionaryEvent({required this.params});
 }
 
-class LoadAdEvent extends DictionaryEvent {
-  LoadAdEvent();
+class InterstatialAdEvent extends DictionaryEvent {
+  InterstatialAdEvent();
 }
 
-class AdSuccessEvent extends DictionaryEvent {
+class InterstatialAdSuccessEvent extends DictionaryEvent {
   final InterstitialAd? ad;
-  AdSuccessEvent({required this.ad});
+  InterstatialAdSuccessEvent({required this.ad});
 }
 
-
-class AdFailedEvent extends DictionaryEvent {
+class InterstatialAdFailedEvent extends DictionaryEvent {
   final String? errorMessage;
-  AdFailedEvent({required this.errorMessage});
+  InterstatialAdFailedEvent({required this.errorMessage});
 }

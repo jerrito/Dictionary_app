@@ -22,15 +22,29 @@ class PhoneticModal extends StatelessWidget {
       padding: EdgeInsets.symmetric(
         vertical: Sizes.height(
           context,
-          0.01,
+          0.015,
+        ),
+        horizontal: Sizes.width(
+          context,
+          0.04,
         ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          Text(
+            "$index. ",
+            style: TextStyle(
+              fontSize: 22,
+              color: context.themeData.brightness == Brightness.light
+                  ? Colors.black
+                  : Colors.white,
+            ),
+          ),
           RichText(
             text: TextSpan(
-                text: "$index. ",
+                text: "",
                 style: TextStyle(
                   fontSize: 22,
                   color: context.themeData.brightness == Brightness.light

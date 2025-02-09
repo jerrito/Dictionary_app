@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/features/database/entity/dicitionary.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
@@ -46,12 +47,39 @@ class _MyDrawerState extends State<MyDrawer> {
                   return Text(state.message);
                 }
                 if (state is RetrieveWordLoaded) {
-                  return Column(
-                    children: List.generate(state.words?.length ?? 0, (index) {
-                      return Text(
-                        state.words?[index] ?? "",
-                      );
-                    }),
+                  return Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: Sizes.width(
+                      context,
+                      0.04,
+                    )),
+                    child: Column(
+                      children:
+                          List.generate(state.words?.length ?? 0, (index) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: Sizes.height(
+                              context,
+                              0.01,
+                            ),
+                          ),
+                          child: GestureDetector(
+                            onTap: () async {
+                              final response = await dictionaryBloc
+                                  .getResponse(state.words?[index] ?? "");
+                              print(response);
+                            },
+                            child: Text(
+                              state.words?[index] ?? "",
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
                   );
                 }
                 return const CircularProgressIndicator();
