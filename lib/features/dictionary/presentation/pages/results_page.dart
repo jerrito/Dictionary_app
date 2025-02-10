@@ -294,17 +294,24 @@ class _ResultsPageState extends State<ResultsPage>
                                               )),
                                               Space.height(context, 0.02),
                                               GestureDetector(
-                                                  onTap: () {
-                                                    final Map<String, dynamic>
-                                                        params = {
-                                                      "text": widget.word
-                                                    };
-                                                    dictionaryBloc.add(
-                                                      SearchDictionaryEvent(
-                                                        params: params,
-                                                      ),
-                                                    );
-                                                  },
+                                                  onTap: !state.errorMessage
+                                                          .startsWith(
+                                                              "Sorry pal")
+                                                      ? () {
+                                                          final Map<String,
+                                                                  dynamic>
+                                                              params = {
+                                                            "text": widget.word
+                                                          };
+
+                                                          dictionaryBloc.add(
+                                                            SearchDictionaryEvent(
+                                                              params: params,
+                                                            ),
+                                                          );
+                                                        }
+                                                      : () => Navigator.pop(
+                                                          context),
                                                   child: const Text("Retry"))
                                             ],
                                           );
@@ -411,10 +418,10 @@ class _ResultsPageState extends State<ResultsPage>
                                           final data = state.dictionaryInfo[0];
                                           response = data.toMap();
                                           isLoaded = true;
-                                          phonetic = data.phonetic ??
-                                              data.phonetics?[1].text;
                                           if (data.phonetics?.isNotEmpty ??
                                               false) {
+                                            phonetic = data.phonetic ??
+                                                data.phonetics?[1].text;
                                             hasPhonetics = true;
                                             audioUrl = data.phonetics?[0].audio;
                                             if (data.phonetics!.length > 1) {

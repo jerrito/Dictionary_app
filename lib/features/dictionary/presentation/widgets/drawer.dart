@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/features/database/entity/dicitionary.dart';
+import 'package:riverpod_learn/features/dictionary/data/models/dictionary_model.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/widgets/show_meaning_modal.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 import 'package:riverpod_learn/locator.dart';
 
@@ -67,6 +71,16 @@ class _MyDrawerState extends State<MyDrawer> {
                             onTap: () async {
                               final response = await dictionaryBloc
                                   .getResponse(state.words?[index] ?? "");
+                              print(DictionaryModel.fromJson(jsonDecode(
+                                response!.dictionary.toString(),
+                              ),));
+                              // await showModalBottomSheet(
+                              //     context: context,
+                              //     builder: (context) {
+                              //       return ShowMeaningModal(
+                              //           dictionary: DictionaryModel.fromJson(
+                              //               response.dictionary));
+                              // });
                               print(response);
                             },
                             child: Text(
