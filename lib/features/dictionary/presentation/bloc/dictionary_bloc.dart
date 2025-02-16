@@ -107,7 +107,7 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
     return true;
   }
 
-  Future<void> insertData(Map<String, dynamic> json, String word) async {
+  Future<void> insertData(Map<dynamic, dynamic>? json, String word) async {
     try {
       final readDict = await readAllDictionary();
       final isWordStored = readDict.any((e) => e.word == word);
@@ -116,7 +116,7 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
         await database?.wordDao.insertData(
           DictionaryResponse(
             word: word,
-            dictionary: json.toString(),
+            dictionary: json,
           ),
         );
       }

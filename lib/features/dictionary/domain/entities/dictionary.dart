@@ -49,14 +49,13 @@ class Dictionary extends Equatable {
         meanings,
       ];
 
-
   //to map
 
   Map<String, dynamic> toMap() => {
         "word": word,
         "phonetic": phonetic,
         "origin": origin,
-        "phonetics": phonetics,
-        "meanings": meanings,
+        'phonetics': phonetics?.map((e) => e.toJson()).toList(),
+        'meanings': meanings?.map((e) => e.toJson()).toList(),
       };
 }

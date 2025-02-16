@@ -19,6 +19,11 @@ class Meanings extends Equatable {
         synonyms,
         antonyms,
       ];
+
+  Map<String, dynamic> toJson() => {
+        'partOfSpeech': partOfSpeech,
+        'definitions': definitions?.map((e) => e.toJson()).toList(),
+      };
 }
 
 class Definitions extends Equatable {
@@ -34,4 +39,9 @@ class Definitions extends Equatable {
         definition,
         example,
       ];
+
+  Map<String, dynamic> toJson() => {
+        'definition': definition,
+        'example': example,
+      };
 }

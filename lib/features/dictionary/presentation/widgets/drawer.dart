@@ -71,17 +71,22 @@ class _MyDrawerState extends State<MyDrawer> {
                             onTap: () async {
                               final response = await dictionaryBloc
                                   .getResponse(state.words?[index] ?? "");
-                              print(DictionaryModel.fromJson(jsonDecode(
-                                response!.dictionary.toString(),
-                              ),));
-                              // await showModalBottomSheet(
-                              //     context: context,
-                              //     builder: (context) {
-                              //       return ShowMeaningModal(
-                              //           dictionary: DictionaryModel.fromJson(
-                              //               response.dictionary));
-                              // });
-                              print(response);
+
+                              // final result = DictionaryModel.fromJson(
+                              //     response!.dictionary);
+                              if (!context.mounted) return;
+                              await showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  scrollControlDisabledMaxHeightRatio:
+                                      ScrollDragController
+                                          .momentumRetainVelocityThresholdFactor,
+                                  builder: (context) {
+                                    return ShowMeaningModal(
+                                        dictionary: DictionaryModel.fromJson(
+                                            response?.dictionary));
+                                  });
+                              // print(result.meanings);
                             },
                             child: Text(
                               state.words?[index] ?? "",

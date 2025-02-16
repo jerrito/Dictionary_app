@@ -96,7 +96,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `DictionaryResponse` (`id` INTEGER, `word` TEXT NOT NULL, `dictionary` TEXT NOT NULL, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `DictionaryResponse` (`id` INTEGER, `word` TEXT NOT NULL, `dictionary` TEXT, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -121,7 +121,8 @@ class _$WordDao extends WordDao {
             (DictionaryResponse item) => <String, Object?>{
                   'id': item.id,
                   'word': item.word,
-                  'dictionary': item.dictionary
+                  'dictionary':
+                      _dictionaryResponseConveter.encode(item.dictionary)
                 },
             changeListener),
         _dictionaryResponseDeletionAdapter = DeletionAdapter(
@@ -131,7 +132,8 @@ class _$WordDao extends WordDao {
             (DictionaryResponse item) => <String, Object?>{
                   'id': item.id,
                   'word': item.word,
-                  'dictionary': item.dictionary
+                  'dictionary':
+                      _dictionaryResponseConveter.encode(item.dictionary)
                 },
             changeListener);
 
@@ -152,7 +154,8 @@ class _$WordDao extends WordDao {
         mapper: (Map<String, Object?> row) => DictionaryResponse(
             id: row['id'] as int?,
             word: row['word'] as String,
-            dictionary: row['dictionary'] as String),
+            dictionary: _dictionaryResponseConveter
+                .decode(row['dictionary'] as String)),
         queryableName: 'DictionaryResponse',
         isView: false);
   }
@@ -163,7 +166,8 @@ class _$WordDao extends WordDao {
         mapper: (Map<String, Object?> row) => DictionaryResponse(
             id: row['id'] as int?,
             word: row['word'] as String,
-            dictionary: row['dictionary'] as String));
+            dictionary: _dictionaryResponseConveter
+                .decode(row['dictionary'] as String)));
   }
 
   @override
@@ -173,7 +177,8 @@ class _$WordDao extends WordDao {
         mapper: (Map<String, Object?> row) => DictionaryResponse(
             id: row['id'] as int?,
             word: row['word'] as String,
-            dictionary: row['dictionary'] as String),
+            dictionary: _dictionaryResponseConveter
+                .decode(row['dictionary'] as String)),
         arguments: [word]);
   }
 

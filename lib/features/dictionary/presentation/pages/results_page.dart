@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
+import 'package:riverpod_learn/features/dictionary/data/models/dictionary_model.dart';
+import 'package:riverpod_learn/features/dictionary/domain/entities/dictionary.dart';
 import 'package:riverpod_learn/features/dictionary/domain/entities/phonetics.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_row.dart';
@@ -36,8 +38,9 @@ class _ResultsPageState extends State<ResultsPage>
   @override
   void initState() {
     super.initState();
-    dictionaryBloc.add(InterstatialAdEvent());
-
+    // dictionaryBloc.add(InterstatialAdEvent());
+    final Map<String, dynamic> params = {"text": widget.word};
+    dictionaryBloc.add(SearchDictionaryEvent(params: params));
     animationController = AnimationController(
       vsync: this,
       duration: const Duration(
@@ -175,7 +178,6 @@ class _ResultsPageState extends State<ResultsPage>
                                                             final data =
                                                                 phonetics[
                                                                     index];
-                                                            print(data.audio);
                                                             return PhoneticModal(
                                                                 index:
                                                                     index + 1,
@@ -236,7 +238,7 @@ class _ResultsPageState extends State<ResultsPage>
                                   listener: (context, state) {
                                     if (state is SaveWordLoaded) {
                                       dictionaryBloc.insertData(
-                                          response, widget.word);
+                                          response!, widget.word);
                                     }
                                   },
                                   child: BlocConsumer(
@@ -375,7 +377,7 @@ class _ResultsPageState extends State<ResultsPage>
                                         return const SizedBox();
                                       },
                                       listener: (context, state) async {
-                                        print(state);
+                                        // print(state);
                                         if (state is InterstatialAdLoaded) {
                                           state.ad?.fullScreenContentCallback =
                                               FullScreenContentCallback(
@@ -416,6 +418,7 @@ class _ResultsPageState extends State<ResultsPage>
                                         }
                                         if (state is SearchDictionaryLoaded) {
                                           final data = state.dictionaryInfo[0];
+                                          print(data.toMap());
                                           response = data.toMap();
                                           isLoaded = true;
                                           if (data.phonetics?.isNotEmpty ??
@@ -454,5 +457,5 @@ class _ResultsPageState extends State<ResultsPage>
     );
   }
 
-  Map<String, dynamic> response = {};
+  Map<dynamic, dynamic>? response;
 }

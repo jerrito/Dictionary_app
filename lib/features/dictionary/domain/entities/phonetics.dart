@@ -10,4 +10,9 @@ class Phonetics extends Equatable {
 
   @override
   List<Object?> get props => [text, audio];
+
+  Map<String, dynamic> toJson() => {
+        'text': text,
+        'audio': audio,
+      };
 }

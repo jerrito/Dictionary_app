@@ -11,41 +11,51 @@ class ShowMeaningModal extends StatelessWidget {
     required this.dictionary,
   });
 
-  
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-
-      child: ListView.builder(
-          itemCount: dictionary.meanings?.length,
-          itemBuilder: (context, index) {
-            final meanings = dictionary.meanings?[index];
-            return DefinitionWidget(
-              index: "${index + 1}",
-              partOfSpeech: meanings?.partOfSpeech ?? "",
-              definition: List.generate(
-                  meanings!.definitions!.length,
-                  (int index) => Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: Sizes.height(context, 0.01)),
-                        child: Column(
-                          children: [
-                            DefinitionRow(
-                              index: index,
-                              definition:
-                                  meanings.definitions?[index].definition,
-                            ),
-                            ExampleRow(
-                              isExample:
-                                  meanings.definitions?[index].example != null,
-                              example: meanings.definitions?[index].example,
-                            )
-                          ],
-                        ),
-                      )),
-            );
-          }),
+    return SingleChildScrollView(
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 15,
+            vertical: 20,
+          ),
+          child: Column(
+              // mainAxisSize: MainAxisSize.min,
+              children: dictionary.meanings?.isNotEmpty ?? false
+                  ? List.generate(dictionary.meanings!.length, (ins) {
+                      // final index=ins?.length ?? 0;
+                      final meanings = dictionary.meanings?[ins];
+                      return DefinitionWidget(
+                        index: "${ins + 1}",
+                        partOfSpeech: meanings?.partOfSpeech ?? "",
+                        definition: List.generate(
+                            meanings!.definitions!.length,
+                            (int index) => Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: Sizes.height(context, 0.01)),
+                                  child: Column(
+                                    children: [
+                                      DefinitionRow(
+                                        index: index,
+                                        definition: meanings
+                                            .definitions?[index].definition,
+                                      ),
+                                      ExampleRow(
+                                        isExample: meanings
+                                                .definitions?[index].example !=
+                                            null,
+                                        example: meanings
+                                            .definitions?[index].example,
+                                      )
+                                    ],
+                                  ),
+                                )),
+                      );
+                    }).toList()
+                  : []),
+        ),
+      ),
     );
   }
 }

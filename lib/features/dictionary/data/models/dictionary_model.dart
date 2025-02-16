@@ -11,7 +11,7 @@ class DictionaryModel extends Dictionary {
     required super.meanings,
   });
 
-  factory DictionaryModel.fromJson(Map<String, dynamic>? json) =>
+  factory DictionaryModel.fromJson(Map<dynamic, dynamic>? json) =>
       DictionaryModel(
         word: json?["word"],
         phonetic: json?["phonetic"],
@@ -31,4 +31,15 @@ class DictionaryModel extends Dictionary {
               )
             : null,
       );
+
+  //to map
+
+  @override
+  Map<String, dynamic> toMap() => {
+        "word": word,
+        "phonetic": phonetic,
+        "origin": origin,
+        'phonetics': phonetics?.map((e) => e.toJson()).toList(),
+        'meanings': meanings?.map((e) => e.toJson()).toList(),
+      };
 }
