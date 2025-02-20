@@ -9,7 +9,7 @@ class PageSnap extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width:
-          isActive ? Sizes.width(context, 0.033) : Sizes.width(context, 0.016),
+          isActive ? Sizes.width(context, 0.066) : Sizes.width(context, 0.016),
       height: isActive
           ? Sizes.height(context, 0.008)
           : Sizes.height(context, 0.008),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:riverpod_learn/core/extensions.dart';
 import 'package:riverpod_learn/core/onboarding/first_page.dart';
 import 'package:riverpod_learn/core/onboarding/page_view.dart';
 import 'package:riverpod_learn/core/themes/theme.dart';
@@ -40,8 +41,7 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
-        theme: DefaultThemeData.lightTheme,
-        darkTheme: DefaultThemeData.darkTheme,
+        theme: DefaultThemeData(context: context).defaultTheme,
         home: const OnboardingPageViews(),
       ),
     );
