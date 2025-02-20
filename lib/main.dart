@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:riverpod_learn/core/onboarding/first_page.dart';
+import 'package:riverpod_learn/core/onboarding/page_view.dart';
+import 'package:riverpod_learn/core/themes/theme.dart';
 import 'package:riverpod_learn/features/database/database.dart';
 import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
 import 'package:riverpod_learn/initial_page.dart';
@@ -37,19 +40,9 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
-        darkTheme: ThemeData(
-          fontFamily: "BarlowCondensed",
-          primaryColor: Colors.white,
-          brightness: Brightness.dark,
-          // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        theme: ThemeData(
-          fontFamily: "BarlowCondensed",
-          // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const InitialPage(),
+        theme: DefaultThemeData.lightTheme,
+        darkTheme: DefaultThemeData.darkTheme,
+        home: const OnboardingPageViews(),
       ),
     );
   }
