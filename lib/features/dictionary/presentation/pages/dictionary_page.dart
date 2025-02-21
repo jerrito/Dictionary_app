@@ -103,7 +103,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
               },
             ),
             Space.height(context, 0.032),
-            Text("Result"),
+            // Text("Result"),
             BlocConsumer(
                 bloc: wordSuggestBloc,
                 listener: (context, state) {

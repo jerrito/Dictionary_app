@@ -101,4 +101,38 @@ class DefaultThemeData {
       ),
     );
   }
+
+  //BOTTOM NAVIGATION BAR THEME
+  static bottomNavigationBarThemeLight(Brightness brightness) {
+    bool isDark = brightness != Brightness.dark;
+
+    return BottomNavigationBarThemeData(
+      backgroundColor: DictionaryColors.whiteBackground,
+      unselectedItemColor: DictionaryColors.blackBackground,
+      selectedItemColor: isDark
+          ? DictionaryColors.whiteBackground
+          : DictionaryColors.blackBackground,
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
+
+      unselectedIconTheme: IconThemeData(
+          color: isDark
+              ? DictionaryColors.whiteBackground
+              : DictionaryColors.blackBackground),
+      type: BottomNavigationBarType.fixed,
+      selectedIconTheme: IconThemeData(color: DictionaryColors.whiteBackground),
+      // selectedItemColor: Colors.shaqBlack500,
+      // unselectedItemColor: Colors.shaqGrey700,
+      // backgroundColor: Colors.shaqBackgroundLight,
+      selectedLabelStyle: TextStyle(
+        fontSize: 10,
+        // color: .shaqBlack500,
+        fontWeight: FontWeight.bold,
+      ),
+      unselectedLabelStyle: TextStyle(
+        fontSize: 10,
+        // color: Colors.shaqGrey700,
+      ),
+    );
+  }
 }
