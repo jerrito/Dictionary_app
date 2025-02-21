@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:riverpod_learn/core/extensions.dart';
 import 'package:riverpod_learn/core/size.dart';
+import 'package:riverpod_learn/core/themes/colors.dart';
 
 class SuggestedWord extends StatelessWidget {
   const SuggestedWord({super.key, required this.word, required this.onTap});
@@ -13,21 +15,22 @@ class SuggestedWord extends StatelessWidget {
         padding: EdgeInsets.symmetric(
           vertical: Sizes.height(
             context,
-            0.02,
+            0.01,
           ),
         ),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: Colors.black,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? DictionaryColors.primary400
+                  : DictionaryColors.primary100,
             ),
           ),
         ),
         child: Text(
           word,
-          style: const TextStyle(
-            fontSize: 16,
-            fontStyle: FontStyle.italic,
+          style: context.themeData.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

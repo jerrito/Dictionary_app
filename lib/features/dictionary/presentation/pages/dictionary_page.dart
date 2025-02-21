@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:riverpod_learn/core/size.dart';
+import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/core/widgets/text_form_field.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/pages/results_page.dart';
@@ -37,51 +38,16 @@ class _DictionaryPageState extends State<DictionaryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: const SizedBox(),
-        foregroundColor: Colors.white,
-        backgroundColor: const Color.fromARGB(184, 30, 30, 128),
-        title: DefaultTextFormField(
-          onSubmitted: (p0) async {
-            print(p0);
-            if (p0?.isNotEmpty ?? false) {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ResultsPage(
-                    word: p0!.toLowerCase(),
-                  ),
+          automaticallyImplyLeading: false,
+          foregroundColor: Colors.white,
+          // backgroundColor: const Color.fromARGB(184, 30, 30, 128),
+          title: Text(
+            "Search",
+            textAlign: TextAlign.start,
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                  fontWeight: FontWeight.w800,
                 ),
-              );
-            }
-          },
-          focusNode: FocusNode(),
-          hint: "Search any word",
-          onChanged: (value) {
-            // print(value.);
-            final Map<String, dynamic> params = {
-              "text": value?.toLowerCase(),
-              "decodedWords": words
-            };
-            wordSuggestBloc.add(
-              WordSuggestEvent(
-                params: params,
-              ),
-            );
-            if (value?.isNotEmpty ?? false) {
-              isSearchEmpty = true;
-              setState(() {});
-            } else {
-              isSearchEmpty = false;
-              setState(() {});
-            }
-          },
-          showSuffixIcon: isSearchEmpty,
-          controller: searchController,
-          suffixOnTap: () {
-            searchController.clear();
-          },
-        ),
-      ),
+          )),
       body: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: Sizes.width(
@@ -91,6 +57,53 @@ class _DictionaryPageState extends State<DictionaryPage> {
         ),
         child: Column(
           children: [
+            DefaultTextFormField(
+              onSubmitted: (p0) async {
+                print(p0);
+                if (p0?.isNotEmpty ?? false) {
+                  await SystemChannels.textInput.invokeMethod("TextInput.hide");
+                  if (!context.mounted) return;
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ResultsPage(
+                        word: p0!.toLowerCase(),
+                      ),
+                    ),
+                  );
+                }
+              },
+              focusNode: FocusNode(),
+              hint: "Search any word",
+              onChanged: (value) {
+                final Map<String, dynamic> params = {
+                  "text": value?.toLowerCase(),
+                  "decodedWords": words
+                };
+                print(params);
+                wordSuggestBloc.add(
+                  WordSuggestEvent(
+                    params: params,
+                  ),
+                );
+                if (value?.isNotEmpty ?? false) {
+                  isSearchEmpty = true;
+                  setState(() {});
+                } else {
+                  isSearchEmpty = false;
+                  setState(() {});
+                }
+              },
+              showSuffixIcon: isSearchEmpty,
+              controller: searchController,
+              suffixOnTap: () {
+                searchController.clear();
+                isSearchEmpty = false;
+                setState(() {});
+              },
+            ),
+            Space.height(context, 0.032),
+            Text("Result"),
             BlocConsumer(
                 bloc: wordSuggestBloc,
                 listener: (context, state) {
@@ -109,8 +122,9 @@ class _DictionaryPageState extends State<DictionaryPage> {
                             return SuggestedWord(
                                 word: data,
                                 onTap: () async {
-                                  SystemChannels.textInput
+                                  await SystemChannels.textInput
                                       .invokeMethod("TextInput.hide");
+                                  if (!context.mounted) return;
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(

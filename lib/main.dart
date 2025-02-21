@@ -41,7 +41,10 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
-        theme: DefaultThemeData(context: context).defaultTheme,
+        theme:
+            DefaultThemeData(context: context).defaultTheme(Brightness.light),
+        darkTheme:
+            DefaultThemeData(context: context).defaultTheme(Brightness.dark),
         home: const OnboardingPageViews(),
       ),
     );

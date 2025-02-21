@@ -17,12 +17,11 @@ class OnboardingText extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       spacing: Sizes.height(context, 0.008),
       children: [
-        Text(firstLabel,
-            style: context.themeData.textTheme.titleLarge?.copyWith(
-              // color: Colors.black12,
-              fontWeight: FontWeight.bold,
-              fontSize: 28,
-            )),
+        Text(
+          firstLabel,
+          style: context.themeData.textTheme.displaySmall
+              ?.copyWith(fontWeight: FontWeight.w800),
+        ),
         Text(
           secondLabel,
           textAlign: TextAlign.center,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:riverpod_learn/core/extensions.dart';
 import 'package:riverpod_learn/core/themes/colors.dart';
 
 class DefaultThemeData {
@@ -7,64 +6,98 @@ class DefaultThemeData {
 
   DefaultThemeData({required this.context});
 
-  ThemeData get defaultTheme {
-    final theme = context.themeData.brightness;
-    final bool isDark = theme == Brightness.dark;
+  ThemeData defaultTheme(Brightness brightness) {
+    // final theme = context.themeData.brightness;
+    bool isDark = brightness == Brightness.dark;
     return ThemeData(
-      fontFamily: "Inter",
-      primaryColor: isDark
-          ? DictionaryColors.whiteBackground
-          : DictionaryColors.blackBackground,
-      brightness: isDark ? Brightness.light : Brightness.dark,
-      // textTheme: TextTheme(),
-      // colorScheme: ColorScheme.fromSeed(
-      //   seedColor: Colors.deepPurple,
-      // ),
-      useMaterial3: true,
-    );
+        fontFamily: "Inter",
+        primaryColor: isDark
+            ? DictionaryColors.whiteBackground
+            : DictionaryColors.blackBackground,
+        brightness: isDark ? Brightness.light : Brightness.dark,
+        // textTheme: TextTheme(),
+        // colorScheme: ColorScheme.fromSeed(
+        //   seedColor: Colors.deepPurple,
+        // ),
+        useMaterial3: true,
+        textTheme: genericTextTheme(brightness));
   }
 
-  static TextTheme get genericTextTheme {
-    return const TextTheme(
+  static TextTheme genericTextTheme(Brightness brightness) {
+    bool isDark = brightness != Brightness.dark;
+
+    return TextTheme(
       bodySmall: TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 14,
-      ),
+          fontWeight: FontWeight.w500,
+          fontSize: 14,
+          color: isDark
+              ? DictionaryColors.whiteBackground
+              : DictionaryColors.blackBackground),
       bodyMedium: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w500,
-        color: DictionaryColors.blackBackground,
+        color: isDark
+            ? DictionaryColors.whiteBackground
+            : DictionaryColors.blackBackground,
       ),
-      bodyLarge: TextStyle(fontSize: 18),
+      bodyLarge: TextStyle(
+          fontSize: 18,
+          color: isDark
+              ? DictionaryColors.whiteBackground
+              : DictionaryColors.blackBackground),
+      labelSmall: TextStyle(
+          color: isDark
+              ? DictionaryColors.whiteBackground
+              : DictionaryColors.blackBackground),
+      labelMedium: TextStyle(
+          color: isDark
+              ? DictionaryColors.whiteBackground
+              : DictionaryColors.blackBackground),
+      labelLarge: TextStyle(
+          color: isDark
+              ? DictionaryColors.whiteBackground
+              : DictionaryColors.blackBackground),
       displaySmall: TextStyle(
-        fontSize: 32,
+        fontSize: 28,
         fontWeight: FontWeight.w400,
-        color: DictionaryColors.blackBackground,
+        color: isDark
+            ? DictionaryColors.whiteBackground
+            : DictionaryColors.blackBackground,
       ),
       displayMedium: TextStyle(
-        fontSize: 40,
+        fontSize: 36,
         fontWeight: FontWeight.bold,
-        color: DictionaryColors.blackBackground,
+        color: isDark
+            ? DictionaryColors.whiteBackground
+            : DictionaryColors.blackBackground,
       ),
       displayLarge: TextStyle(
-        fontSize: 44,
+        fontSize: 48,
         fontWeight: FontWeight.bold,
-        color: DictionaryColors.blackBackground,
+        color: isDark
+            ? DictionaryColors.whiteBackground
+            : DictionaryColors.blackBackground,
       ),
       headlineSmall: TextStyle(
-        fontSize: 20,
-        color: DictionaryColors.blackBackground,
+        fontSize: 18,
+        color: isDark
+            ? DictionaryColors.whiteBackground
+            : DictionaryColors.blackBackground,
         fontWeight: FontWeight.w500,
       ),
       headlineMedium: TextStyle(
-        fontSize: 24,
-        color: DictionaryColors.blackBackground,
+        fontSize: 20,
+        color: isDark
+            ? DictionaryColors.whiteBackground
+            : DictionaryColors.blackBackground,
         fontWeight: FontWeight.w500,
       ),
       headlineLarge: TextStyle(
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: FontWeight.w500,
-        color: DictionaryColors.blackBackground,
+        color: isDark
+            ? DictionaryColors.whiteBackground
+            : DictionaryColors.blackBackground,
       ),
     );
   }

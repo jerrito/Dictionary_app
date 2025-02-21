@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:riverpod_learn/core/assets/svgs.dart';
+import 'package:riverpod_learn/core/size.dart';
+import 'package:riverpod_learn/core/themes/colors.dart';
 
 class DefaultTextField extends StatelessWidget {
   final String? errorText, hint;
@@ -21,9 +25,18 @@ class DefaultTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final border = OutlineInputBorder(
+        borderRadius: BorderRadius.circular(100),
+        borderSide: BorderSide(
+            color: Theme.of(context).brightness == Brightness.light
+                ? DictionaryColors.primary50
+                : DictionaryColors.primary300));
     return TextField(
-      cursorColor: Colors.white,
-      style: const TextStyle(color: Colors.white),
+      cursorColor: DictionaryColors.success300,
+      style: TextStyle(
+          color: Theme.of(context).brightness == Brightness.light
+              ? DictionaryColors.primaryBase
+              : DictionaryColors.whiteBackground),
       maxLines: 1,
       controller: controller,
       onChanged: onChange,
@@ -32,13 +45,56 @@ class DefaultTextField extends StatelessWidget {
       onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        suffixIconColor: Colors.white,
-        hintStyle: const TextStyle(color: Colors.white),
+        hintStyle: TextStyle(
+            color: Theme.of(context).brightness != Brightness.light
+                ? DictionaryColors.primary50
+                : DictionaryColors.primary300),
+        filled: true,
+        fillColor: Theme.of(context).brightness == Brightness.light
+            ? DictionaryColors.primary50
+            : DictionaryColors.primary300,
+        enabledBorder: border,
+        border: border,
+        focusedBorder: border,
+        // suffixIconColor: Colors.white,
+
         hintText: hint,
         suffixIcon: showSuffixIcon
             ? GestureDetector(
-                onTap: suffixOnTap, child: const Icon(Icons.clear))
-            : const SizedBox(),
+                onTap: suffixOnTap,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                  child: CircleAvatar(
+                      radius: Sizes.height(
+                        context,
+                        0.015,
+                      ),
+                      backgroundColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? DictionaryColors.whiteBackground
+                              : DictionaryColors.blackBackground,
+                      child: Icon(
+                        // size: Sizes.height(context, 0.01),
+                        Icons.clear,
+                        color: Theme.of(context).brightness != Brightness.dark
+                            ? DictionaryColors.whiteBackground
+                            : DictionaryColors.blackBackground,
+                      )),
+                ))
+            : const SizedBox.shrink(),
+        prefixIcon: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 11),
+          child: SvgPicture.asset(
+            DictionarySvgs.searchSVG,
+            colorFilter: ColorFilter.mode(
+              Theme.of(context).brightness == Brightness.dark
+                  ? DictionaryColors.primary50
+                  : DictionaryColors.primary400,
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
         errorText: errorText,
       ),
     );
