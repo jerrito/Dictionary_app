@@ -1,16 +1,12 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:provider/provider.dart';
 import 'package:riverpod_learn/core/assets/svgs.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/themes/colors.dart';
 import 'package:riverpod_learn/features/bookmark/presentation/pages/bookmark.dart';
-import 'package:riverpod_learn/features/dictionary/domain/entities/dictionary.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/pages/dictionary_page.dart';
 import 'package:riverpod_learn/features/discover/presentation/pages/discover.dart';
-import 'package:riverpod_learn/features/home/presentation/pages/home.dart';
 import 'package:riverpod_learn/features/home/presentation/widgets/bottom_nav.dart';
 import 'package:riverpod_learn/features/settings/presentation/settings.dart';
 
@@ -50,7 +46,9 @@ class _HomeBaseState extends State<HomeBase> {
     currentIndex = widget.currentIndex;
     // pages
     pages = [
-      const DictionaryPage(),
+      DictionaryPage(
+        controller: homeController,
+      ),
       const Bookmark(),
       const Discover(),
       const Settings(),
@@ -163,15 +161,14 @@ class _HomeBaseState extends State<HomeBase> {
                 pages: pages,
                 onTap: (index) {
                   currentIndex = index!;
+                  // print(currentIndex);
 
                   setState(() {});
                 },
                 items: NavItems.values
                     .map(
                       (e) => barItem(
-                        (e.selectedImage != null && e.indexGet == currentIndex)
-                            ? e.selectedImage!
-                            : e.image,
+                        e.image,
                         e.label,
                         e.indexGet == currentIndex,
                       ),
@@ -183,77 +180,104 @@ class _HomeBaseState extends State<HomeBase> {
     );
   }
 
-  navigateToSearchJobs() {
-    // print("object");
-    setState(() {
-      currentIndex = 1;
-    });
-  }
+  // navigateToSearchJobs() {
+  //   // print("object");
+  //   setState(() {
+  //     currentIndex = 1;
+  //   });
+  // }
 
 // nav bar item
   BottomNavigationBarItem barItem(String icon, String label, bool isSelected) =>
       BottomNavigationBarItem(
           icon: MediaQuery.of(context).orientation == Orientation.portrait
-              ? SvgPicture.asset(
-                  icon,
-                  width: Sizes.height(context, 0.028),
-                  height: Sizes.height(context, 0.028),
-                )
+              ? Visibility(
+                  visible: !isSelected,
+                  replacement: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Sizes.width(context, 0.01),
+                      vertical: Sizes.height(context, 0.005),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).brightness != Brightness.dark
+                          ? DictionaryColors.blackBackground
+                          : DictionaryColors.whiteBackground,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: _NavBarSvg(icon, isSelected),
+                  ),
+                  child: _NavBarSvg(icon, isSelected))
               : SvgPicture.asset(
                   icon,
                   width: Sizes.height(context, 0.068),
                   height: Sizes.height(context, 0.068),
-                  colorFilter: ColorFilter.mode(
-                    isSelected &&
-                            Theme.of(context).brightness == Brightness.dark
-                        ? DictionaryColors.whiteBackground
-                        : DictionaryColors.blackBackground,
-                    BlendMode.srcIn,
-                  ),
                 ),
           label: label);
 }
 
-String navBar(String name) {
-  List<String> names = [
-    "Search",
-    "Bookmark",
-    "Discover",
-    "Settings",
-  ];
+// String navBar(String name) {
+//   List<String> names = [
+//     "Search",
+//     "Bookmark",
+//     "Discover",
+//     "Settings",
+//   ];
 
-  return names[0];
-}
+//   return names[0];
+// }
 
 enum NavItems {
   search(
     image: DictionarySvgs.searchSVG,
     label: "Search",
-    indexGet: 1,
+    indexGet: 0,
   ),
   dashboard(
     image: DictionarySvgs.bookmarkSVG,
     label: "Bookmark",
-    indexGet: 2,
+    indexGet: 1,
   ),
   saved(
     image: DictionarySvgs.discoverSVG,
     label: "Discover",
-    indexGet: 3,
+    indexGet: 2,
   ),
   profile(
     image: DictionarySvgs.settingsSVG,
     label: "Settings",
-    indexGet: 4,
+    indexGet: 3,
   );
 
   final String image, label;
   final int indexGet;
-  final String? selectedImage;
 
-  const NavItems(
-      {required this.image,
-      required this.label,
-      required this.indexGet,
-      this.selectedImage});
+  const NavItems({
+    required this.image,
+    required this.label,
+    required this.indexGet,
+  });
+}
+
+class _NavBarSvg extends StatelessWidget {
+  const _NavBarSvg(this.icon, this.isSelected);
+  final String icon;
+  final bool isSelected;
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset(
+      icon,
+      width: Sizes.height(context, 0.028),
+      height: Sizes.height(context, 0.028),
+      colorFilter: ColorFilter.mode(
+        isSelected && Theme.of(context).brightness != Brightness.dark
+            ? DictionaryColors.whiteBackground
+            : isSelected && Theme.of(context).brightness == Brightness.dark
+                ? DictionaryColors.blackBackground
+                : Theme.of(context).brightness == Brightness.dark
+                    ? DictionaryColors.whiteBackground
+                    : DictionaryColors.blackBackground,
+        BlendMode.srcIn,
+      ),
+    );
+  }
 }

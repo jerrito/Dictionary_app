@@ -12,8 +12,10 @@ import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
 import 'package:riverpod_learn/locator.dart';
 
 class DictionaryPage extends StatefulWidget {
+  final ScrollController controller;
   const DictionaryPage({
     super.key,
+    required this.controller,
   });
 
   @override
@@ -116,6 +118,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                     final items = state.words.length;
                     return Expanded(
                       child: ListView.builder(
+                          controller: widget.controller,
                           itemCount: items,
                           itemBuilder: (context, index) {
                             final data = state.words[index];

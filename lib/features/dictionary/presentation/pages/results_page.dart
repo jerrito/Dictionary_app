@@ -75,379 +75,391 @@ class _ResultsPageState extends State<ResultsPage>
                 // alignment: Alignment.centerRight,
                 children: [
                   const MyDrawer(),
-                  Transform(
-                    transform: Matrix4.identity()
-                      ..translate(slide)
-                      ..scale(scale),
-                    alignment: Alignment.centerRight,
-                    child: CustomScrollView(
-                      // shrinkWrap: true,
-                      slivers: [
-                        SliverAppBar(
-                          leading: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Icon(
-                              Icons.chevron_left_outlined,
-                            ),
-                          ),
-                          actions: [
-                            IconButton(
-                              onPressed: () async {
-                                animationController.isDismissed
-                                    ? animationController.forward()
-                                    : animationController.reverse();
-                                // scaffold.currentState?.openDrawer();
+                  GestureDetector(
+                    onTap: () => animationController.isDismissed
+                        ? null
+                        : animationController.reverse(),
+                    child: Transform(
+                      transform: Matrix4.identity()
+                        ..translate(slide)
+                        ..scale(scale),
+                      alignment: Alignment.centerRight,
+                      child: CustomScrollView(
+                        // shrinkWrap: true,
+                        slivers: [
+                          SliverAppBar(
+                            leading: GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
                               },
-                              icon: const Icon(
-                                Icons.more_vert,
+                              child: const Icon(
+                                Icons.chevron_left_outlined,
                               ),
                             ),
-                          ],
-                          iconTheme: const IconThemeData(color: Colors.white),
-                          pinned: true,
-                          backgroundColor:
-                              const Color.fromARGB(185, 56, 56, 117),
-                          expandedHeight: Sizes.height(context, 0.3),
-                          flexibleSpace: FlexibleSpaceBar(
-                            title: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                RichText(
-                                  text: TextSpan(
-                                      text: "${widget.word}\n",
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 22,
-                                      ),
-                                      children: [
-                                        TextSpan(text: phonetic ?? ""),
-                                        // GestureDetector(
-                                        //   child:Icon(Icons.add)
-                                        // )
-                                      ]),
+                            actions: [
+                              IconButton(
+                                onPressed: () async {
+                                  animationController.isDismissed
+                                      ? animationController.forward()
+                                      : animationController.reverse();
+                                  // scaffold.currentState?.openDrawer();
+                                },
+                                icon: const Icon(
+                                  Icons.more_vert,
                                 ),
-                                Offstage(
-                                  offstage: !isLoaded,
-                                  child: GestureDetector(
-                                    onTap: (audioUrl != null &&
-                                            (audioUrl?.isNotEmpty ?? false))
-                                        ? () async {
-                                            try {
-                                              await player.play(
-                                                UrlSource(
-                                                  audioUrl ?? "",
-                                                ),
-                                                volume: 1.0,
-                                              );
-                                            } catch (e) {
-                                              print(e.toString());
-                                            }
-                                          }
-                                        : null,
-                                    child: const Icon(
-                                      Icons.audiotrack_outlined,
-                                      color: Colors.white,
-                                    ),
+                              ),
+                            ],
+                            iconTheme: const IconThemeData(color: Colors.white),
+                            pinned: true,
+                            backgroundColor:
+                                const Color.fromARGB(185, 56, 56, 117),
+                            expandedHeight: Sizes.height(context, 0.3),
+                            flexibleSpace: FlexibleSpaceBar(
+                              title: Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                        text: "${widget.word}\n",
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 22,
+                                        ),
+                                        children: [
+                                          TextSpan(text: phonetic ?? ""),
+                                          // GestureDetector(
+                                          //   child:Icon(Icons.add)
+                                          // )
+                                        ]),
                                   ),
-                                ),
-                                Offstage(
-                                    offstage: !phonetics.isNotEmpty,
+                                  Offstage(
+                                    offstage: !isLoaded,
                                     child: GestureDetector(
-                                      onTap: phonetics.isNotEmpty
+                                      onTap: (audioUrl != null &&
+                                              (audioUrl?.isNotEmpty ?? false))
                                           ? () async {
-                                              await showModalBottomSheet(
-                                                  context: context,
-                                                  builder: (
-                                                    context,
-                                                  ) {
-                                                    // phonetics[0].
-                                                    return SizedBox(
-                                                      height: Sizes.height(
-                                                          context,
-                                                          (phonetics.length
-                                                                      .toDouble() *
-                                                                  0.7) *
-                                                              0.1),
-                                                      child: ListView.builder(
-                                                          itemCount:
-                                                              phonetics.length,
-                                                          itemBuilder:
-                                                              (context, index) {
-                                                            final data =
-                                                                phonetics[
-                                                                    index];
-                                                            return PhoneticModal(
-                                                                index:
-                                                                    index + 1,
-                                                                phonetic:
-                                                                    data.text ??
-                                                                        "",
-                                                                onTap:
-                                                                    () async {
-                                                                  await player
-                                                                      .play(
-                                                                    UrlSource(
-                                                                      data.audio ??
-                                                                          "",
-                                                                    ),
-                                                                  );
-                                                                },
-                                                                hasAudio: data
-                                                                    .audio!
-                                                                    .isNotEmpty);
-                                                          }),
-                                                    );
-                                                  });
+                                              try {
+                                                await player.play(
+                                                  UrlSource(
+                                                    audioUrl ?? "",
+                                                  ),
+                                                  volume: 1.0,
+                                                );
+                                              } catch (e) {
+                                                print(e.toString());
+                                              }
                                             }
                                           : null,
                                       child: const Icon(
-                                        Icons.arrow_downward_outlined,
+                                        Icons.audiotrack_outlined,
                                         color: Colors.white,
                                       ),
-                                    ))
-                              ],
+                                    ),
+                                  ),
+                                  Offstage(
+                                      offstage: !phonetics.isNotEmpty,
+                                      child: GestureDetector(
+                                        onTap: phonetics.isNotEmpty
+                                            ? () async {
+                                                await showModalBottomSheet(
+                                                    context: context,
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      // phonetics[0].
+                                                      return SizedBox(
+                                                        height: Sizes.height(
+                                                            context,
+                                                            (phonetics.length
+                                                                        .toDouble() *
+                                                                    0.7) *
+                                                                0.1),
+                                                        child: ListView.builder(
+                                                            itemCount: phonetics
+                                                                .length,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              final data =
+                                                                  phonetics[
+                                                                      index];
+                                                              return PhoneticModal(
+                                                                  index:
+                                                                      index + 1,
+                                                                  phonetic:
+                                                                      data.text ??
+                                                                          "",
+                                                                  onTap:
+                                                                      () async {
+                                                                    await player
+                                                                        .play(
+                                                                      UrlSource(
+                                                                        data.audio ??
+                                                                            "",
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                  hasAudio: data
+                                                                      .audio!
+                                                                      .isNotEmpty);
+                                                            }),
+                                                      );
+                                                    });
+                                              }
+                                            : null,
+                                        child: const Icon(
+                                          Icons.arrow_downward_outlined,
+                                          color: Colors.white,
+                                        ),
+                                      ))
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        SliverFillRemaining(
-                          hasScrollBody: false,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: Sizes.width(context, 0.04)),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).brightness !=
-                                      Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black,
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(
-                                  Sizes.height(
-                                    context,
-                                    0.05,
+                          SliverFillRemaining(
+                            hasScrollBody: false,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: Sizes.width(context, 0.04)),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).brightness !=
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(
+                                    Sizes.height(
+                                      context,
+                                      0.05,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            child: Stack(
-                              alignment: Alignment.topRight,
-                              children: [
-                                BlocListener(
-                                  bloc: wordBloc,
-                                  listener: (context, state) {
-                                    if (state is SaveWordLoaded) {
-                                      dictionaryBloc.insertData(
-                                          response!, widget.word);
-                                    }
-                                  },
-                                  child: BlocConsumer(
-                                      bloc: dictionaryBloc,
-                                      builder: (context, state) {
-                                        if (state is SearchDictionaryLoading ||
-                                            state is InterstatialAdLoading) {
-                                          return const Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              ),
-                                            ],
-                                          );
-                                        }
-                                        if (state is InterstatialAdLoaded) {
-                                          final ad = state.ad;
-                                          ad?.show();
-                                          // ad?.fullScreenContentCallback =
-                                          //     FullScreenContentCallback(
-                                          //         // Called when the ad showed the full screen content.
-                                          //         onAdShowedFullScreenContent:
-                                          //             (ad) {
-                                          //           ad.show();
-                                          //           print(ad.responseInfo);
-                                          //         },
-                                          //         // Called when an impression occurs on the ad.
-                                          //         onAdImpression: (ad) {},
-                                          //         // Called when the ad failed to show full screen content.
-                                          //         onAdFailedToShowFullScreenContent:
-                                          //             (ad, err) {
-                                          //           // Dispose the ad here to free resources.
-                                          //           ad.dispose();
-                                          //         },
-                                          //         // Called when the ad dismissed full screen content.
-                                          //         onAdDismissedFullScreenContent:
-                                          //             (ad) {
-                                          //           // Dispose the ad here to free resources.
-                                          //           ad.dispose();
-                                          //         },
-                                          //         // Called when a click is recorded for an ad.
-                                          //         onAdClicked: (ad) {});
-                                        }
-                                        if (state is SearchDictionaryError) {
-                                          return Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Center(
-                                                  child: Text(
-                                                state.errorMessage,
-                                              )),
-                                              Space.height(context, 0.02),
-                                              GestureDetector(
-                                                  onTap: !state.errorMessage
-                                                          .startsWith(
-                                                              "Sorry pal")
-                                                      ? () {
-                                                          final Map<String,
-                                                                  dynamic>
-                                                              params = {
-                                                            "text": widget.word
-                                                          };
-
-                                                          dictionaryBloc.add(
-                                                            SearchDictionaryEvent(
-                                                              params: params,
-                                                            ),
-                                                          );
-                                                        }
-                                                      : () => Navigator.pop(
-                                                          context),
-                                                  child: const Text("Retry"))
-                                            ],
-                                          );
-                                        }
-                                        if (state is SearchDictionaryLoaded) {
-                                          final itemCount = state
-                                              .dictionaryInfo[0]
-                                              .meanings
-                                              ?.length;
-                                          return Column(
-                                            children: List.generate(
-                                                itemCount ?? 0, (index) {
-                                              final data =
-                                                  state.dictionaryInfo[0];
-                                              // final meaningsLength = data.meanings?.length;
-                                              final meanings =
-                                                  data.meanings?[index];
-                                              return DefinitionWidget(
-                                                index: "${index + 1}",
-                                                partOfSpeech:
-                                                    meanings?.partOfSpeech ??
-                                                        "",
-                                                definition: List.generate(
-                                                    meanings!
-                                                        .definitions!.length,
-                                                    (int index) => Padding(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  vertical: Sizes
-                                                                      .height(
-                                                                          context,
-                                                                          0.01)),
-                                                          child: Column(
-                                                            children: [
-                                                              DefinitionRow(
-                                                                index: index,
-                                                                definition: meanings
-                                                                    .definitions?[
-                                                                        index]
-                                                                    .definition,
-                                                              ),
-                                                              ExampleRow(
-                                                                isExample: meanings
-                                                                        .definitions?[
-                                                                            index]
-                                                                        .example !=
-                                                                    null,
-                                                                example: meanings
-                                                                    .definitions?[
-                                                                        index]
-                                                                    .example,
-                                                              )
-                                                            ],
-                                                          ),
-                                                        )),
-                                              );
-                                            }),
-                                          );
-                                        }
-
-                                        return const SizedBox();
-                                      },
-                                      listener: (context, state) async {
-                                        // print(state);
-                                        if (state is InterstatialAdLoaded) {
-                                          state.ad?.fullScreenContentCallback =
-                                              FullScreenContentCallback(
-                                                  // Called when the ad showed the full screen content.
-                                                  onAdShowedFullScreenContent:
-                                                      (ad) {},
-                                                  // Called when an impression occurs on the ad.
-                                                  onAdImpression: (ad) {},
-                                                  // Called when the ad failed to show full screen content.
-                                                  onAdFailedToShowFullScreenContent:
-                                                      (ad, err) async {
-                                                    // Dispose the ad here to free resources.
-                                                    await ad.dispose();
-                                                  },
-                                                  // Called when the ad dismissed full screen content.
-                                                  onAdDismissedFullScreenContent:
-                                                      (ad) async {
-                                                    // Dispose the ad here to free resources.
-                                                    await ad.dispose();
-                                                    final Map<String, dynamic>
-                                                        params = {
-                                                      "text": widget.word,
-                                                    };
-                                                    dictionaryBloc.add(
-                                                        SearchDictionaryEvent(
-                                                            params: params));
-                                                  },
-                                                  // Called when a click is recorded for an ad.
-                                                  onAdClicked: (ad) {});
-                                        }
-                                        if (state is InterstatialAdLoadError) {
-                                          final Map<String, dynamic> params = {
-                                            "text": widget.word,
-                                          };
-                                          dictionaryBloc.add(
-                                              SearchDictionaryEvent(
-                                                  params: params));
-                                        }
-                                        if (state is SearchDictionaryLoaded) {
-                                          final data = state.dictionaryInfo[0];
-                                          print(data.toMap());
-                                          response = data.toMap();
-                                          isLoaded = true;
-                                          if (data.phonetics?.isNotEmpty ??
-                                              false) {
-                                            phonetic = data.phonetic ??
-                                                data.phonetics?[1].text;
-                                            hasPhonetics = true;
-                                            audioUrl = data.phonetics?[0].audio;
-                                            if (data.phonetics!.length > 1) {
-                                              phonetics = data.phonetics!;
-                                            }
-                                            setState(() {});
+                              child: Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  BlocListener(
+                                    bloc: wordBloc,
+                                    listener: (context, state) {
+                                      if (state is SaveWordLoaded) {
+                                        dictionaryBloc.insertData(
+                                            response!, widget.word);
+                                      }
+                                    },
+                                    child: BlocConsumer(
+                                        bloc: dictionaryBloc,
+                                        builder: (context, state) {
+                                          if (state
+                                                  is SearchDictionaryLoading ||
+                                              state is InterstatialAdLoading) {
+                                            return const Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                ),
+                                              ],
+                                            );
                                           }
-                                          final Map<String, dynamic> params = {
-                                            "word": data.word ?? widget.word
-                                          };
-                                          wordBloc.add(
-                                            SaveWordEvent(
-                                              params: params,
-                                            ),
-                                          );
-                                        }
-                                      }),
-                                ),
-                              ],
+                                          if (state is InterstatialAdLoaded) {
+                                            final ad = state.ad;
+                                            ad?.show();
+                                            // ad?.fullScreenContentCallback =
+                                            //     FullScreenContentCallback(
+                                            //         // Called when the ad showed the full screen content.
+                                            //         onAdShowedFullScreenContent:
+                                            //             (ad) {
+                                            //           ad.show();
+                                            //           print(ad.responseInfo);
+                                            //         },
+                                            //         // Called when an impression occurs on the ad.
+                                            //         onAdImpression: (ad) {},
+                                            //         // Called when the ad failed to show full screen content.
+                                            //         onAdFailedToShowFullScreenContent:
+                                            //             (ad, err) {
+                                            //           // Dispose the ad here to free resources.
+                                            //           ad.dispose();
+                                            //         },
+                                            //         // Called when the ad dismissed full screen content.
+                                            //         onAdDismissedFullScreenContent:
+                                            //             (ad) {
+                                            //           // Dispose the ad here to free resources.
+                                            //           ad.dispose();
+                                            //         },
+                                            //         // Called when a click is recorded for an ad.
+                                            //         onAdClicked: (ad) {});
+                                          }
+                                          if (state is SearchDictionaryError) {
+                                            return Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Center(
+                                                    child: Text(
+                                                  state.errorMessage,
+                                                )),
+                                                Space.height(context, 0.02),
+                                                GestureDetector(
+                                                    onTap: !state.errorMessage
+                                                            .startsWith(
+                                                                "Sorry pal")
+                                                        ? () {
+                                                            final Map<String,
+                                                                    dynamic>
+                                                                params = {
+                                                              "text":
+                                                                  widget.word
+                                                            };
+
+                                                            dictionaryBloc.add(
+                                                              SearchDictionaryEvent(
+                                                                params: params,
+                                                              ),
+                                                            );
+                                                          }
+                                                        : () => Navigator.pop(
+                                                            context),
+                                                    child: const Text("Retry"))
+                                              ],
+                                            );
+                                          }
+                                          if (state is SearchDictionaryLoaded) {
+                                            final itemCount = state
+                                                .dictionaryInfo[0]
+                                                .meanings
+                                                ?.length;
+                                            return Column(
+                                              children: List.generate(
+                                                  itemCount ?? 0, (index) {
+                                                final data =
+                                                    state.dictionaryInfo[0];
+                                                // final meaningsLength = data.meanings?.length;
+                                                final meanings =
+                                                    data.meanings?[index];
+                                                return DefinitionWidget(
+                                                  index: "${index + 1}",
+                                                  partOfSpeech:
+                                                      meanings?.partOfSpeech ??
+                                                          "",
+                                                  definition: List.generate(
+                                                      meanings!
+                                                          .definitions!.length,
+                                                      (int index) => Padding(
+                                                            padding: EdgeInsets.symmetric(
+                                                                vertical: Sizes
+                                                                    .height(
+                                                                        context,
+                                                                        0.01)),
+                                                            child: Column(
+                                                              children: [
+                                                                DefinitionRow(
+                                                                  index: index,
+                                                                  definition: meanings
+                                                                      .definitions?[
+                                                                          index]
+                                                                      .definition,
+                                                                ),
+                                                                ExampleRow(
+                                                                  isExample: meanings
+                                                                          .definitions?[
+                                                                              index]
+                                                                          .example !=
+                                                                      null,
+                                                                  example: meanings
+                                                                      .definitions?[
+                                                                          index]
+                                                                      .example,
+                                                                )
+                                                              ],
+                                                            ),
+                                                          )),
+                                                );
+                                              }),
+                                            );
+                                          }
+
+                                          return const SizedBox();
+                                        },
+                                        listener: (context, state) async {
+                                          // print(state);
+                                          if (state is InterstatialAdLoaded) {
+                                            state.ad?.fullScreenContentCallback =
+                                                FullScreenContentCallback(
+                                                    // Called when the ad showed the full screen content.
+                                                    onAdShowedFullScreenContent:
+                                                        (ad) {},
+                                                    // Called when an impression occurs on the ad.
+                                                    onAdImpression: (ad) {},
+                                                    // Called when the ad failed to show full screen content.
+                                                    onAdFailedToShowFullScreenContent:
+                                                        (ad, err) async {
+                                                      // Dispose the ad here to free resources.
+                                                      await ad.dispose();
+                                                    },
+                                                    // Called when the ad dismissed full screen content.
+                                                    onAdDismissedFullScreenContent:
+                                                        (ad) async {
+                                                      // Dispose the ad here to free resources.
+                                                      await ad.dispose();
+                                                      final Map<String, dynamic>
+                                                          params = {
+                                                        "text": widget.word,
+                                                      };
+                                                      dictionaryBloc.add(
+                                                          SearchDictionaryEvent(
+                                                              params: params));
+                                                    },
+                                                    // Called when a click is recorded for an ad.
+                                                    onAdClicked: (ad) {});
+                                          }
+                                          if (state
+                                              is InterstatialAdLoadError) {
+                                            final Map<String, dynamic> params =
+                                                {
+                                              "text": widget.word,
+                                            };
+                                            dictionaryBloc.add(
+                                                SearchDictionaryEvent(
+                                                    params: params));
+                                          }
+                                          if (state is SearchDictionaryLoaded) {
+                                            final data =
+                                                state.dictionaryInfo[0];
+                                            print(data.toMap());
+                                            response = data.toMap();
+                                            isLoaded = true;
+                                            if (data.phonetics?.isNotEmpty ??
+                                                false) {
+                                              phonetic = data.phonetic ??
+                                                  data.phonetics?[1].text;
+                                              hasPhonetics = true;
+                                              audioUrl =
+                                                  data.phonetics?[0].audio;
+                                              if (data.phonetics!.length > 1) {
+                                                phonetics = data.phonetics!;
+                                              }
+                                              setState(() {});
+                                            }
+                                            final Map<String, dynamic> params =
+                                                {
+                                              "word": data.word ?? widget.word
+                                            };
+                                            wordBloc.add(
+                                              SaveWordEvent(
+                                                params: params,
+                                              ),
+                                            );
+                                          }
+                                        }),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],

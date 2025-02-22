@@ -11,20 +11,23 @@ class DefaultThemeData {
     bool isDark = brightness == Brightness.dark;
     return ThemeData(
         fontFamily: "Inter",
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
         primaryColor: isDark
             ? DictionaryColors.whiteBackground
             : DictionaryColors.blackBackground,
-        brightness: isDark ? Brightness.light : Brightness.dark,
+        brightness: isDark ? Brightness.dark : Brightness.light,
         // textTheme: TextTheme(),
         // colorScheme: ColorScheme.fromSeed(
         //   seedColor: Colors.deepPurple,
         // ),
         useMaterial3: true,
-        textTheme: genericTextTheme(brightness));
+        textTheme: genericTextTheme(brightness),
+        bottomNavigationBarTheme: bottomNavigationBarThemeLight(brightness));
   }
 
   static TextTheme genericTextTheme(Brightness brightness) {
-    bool isDark = brightness != Brightness.dark;
+    bool isDark = brightness == Brightness.dark;
 
     return TextTheme(
       bodySmall: TextStyle(
@@ -104,11 +107,15 @@ class DefaultThemeData {
 
   //BOTTOM NAVIGATION BAR THEME
   static bottomNavigationBarThemeLight(Brightness brightness) {
-    bool isDark = brightness != Brightness.dark;
+    bool isDark = brightness == Brightness.dark;
 
     return BottomNavigationBarThemeData(
-      backgroundColor: DictionaryColors.whiteBackground,
-      unselectedItemColor: DictionaryColors.blackBackground,
+      backgroundColor: isDark
+          ? DictionaryColors.blackBackground
+          : DictionaryColors.whiteBackground,
+      unselectedItemColor: isDark
+          ? DictionaryColors.whiteBackground
+          : DictionaryColors.blackBackground,
       selectedItemColor: isDark
           ? DictionaryColors.whiteBackground
           : DictionaryColors.blackBackground,
@@ -116,22 +123,29 @@ class DefaultThemeData {
       showUnselectedLabels: true,
 
       unselectedIconTheme: IconThemeData(
-          color: isDark
+          color: !isDark
               ? DictionaryColors.whiteBackground
               : DictionaryColors.blackBackground),
       type: BottomNavigationBarType.fixed,
-      selectedIconTheme: IconThemeData(color: DictionaryColors.whiteBackground),
+      selectedIconTheme: IconThemeData(
+          color: !isDark
+              ? DictionaryColors.whiteBackground
+              : DictionaryColors.blackBackground),
       // selectedItemColor: Colors.shaqBlack500,
       // unselectedItemColor: Colors.shaqGrey700,
       // backgroundColor: Colors.shaqBackgroundLight,
       selectedLabelStyle: TextStyle(
         fontSize: 10,
-        // color: .shaqBlack500,
+        color: isDark
+            ? DictionaryColors.whiteBackground
+            : DictionaryColors.blackBackground,
         fontWeight: FontWeight.bold,
       ),
       unselectedLabelStyle: TextStyle(
         fontSize: 10,
-        // color: Colors.shaqGrey700,
+        color: isDark
+            ? DictionaryColors.whiteBackground
+            : DictionaryColors.blackBackground,
       ),
     );
   }
