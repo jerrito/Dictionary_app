@@ -6,6 +6,7 @@ import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/core/widgets/text_form_field.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/pages/results_page.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/widgets/default_page.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/suggested_word.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
@@ -90,6 +91,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                 );
                 if (value?.isNotEmpty ?? false) {
                   isSearchEmpty = true;
+
                   setState(() {});
                 } else {
                   isSearchEmpty = false;
@@ -100,6 +102,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
               controller: searchController,
               suffixOnTap: () {
                 searchController.clear();
+                wordSuggestBloc.add(WordSuggestEndEvent());
                 isSearchEmpty = false;
                 setState(() {});
               },
@@ -109,9 +112,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
             BlocConsumer(
                 bloc: wordSuggestBloc,
                 listener: (context, state) {
-                  if (state is WordSuggestError) {
-                    print(state.message);
-                  }
+                  if (state is WordSuggestError) {}
                 },
                 builder: (context, state) {
                   if (state is WordSuggestLoaded) {
@@ -140,8 +141,13 @@ class _DictionaryPageState extends State<DictionaryPage> {
                           }),
                     );
                   }
+                  if (state is WordInitial) {
+                    return DefaultPage(controller: widget.controller);
+                  }
 
-                  return const SizedBox();
+                  return DefaultPage(
+                    controller: widget.controller,
+                  );
                 })
           ],
         ),

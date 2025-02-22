@@ -12,21 +12,22 @@ class WordSuggestEvent extends WordEvent {
   const WordSuggestEvent({required this.params});
 }
 
+class WordSuggestEndEvent extends WordEvent {}
+
 class DecodeWordsEvent extends WordEvent {
   final Map<String, dynamic> params;
 
   const DecodeWordsEvent({required this.params});
 }
 
-class RetrieveWordEvent extends WordEvent{
-
+class RetrieveWordEvent extends WordEvent {
   const RetrieveWordEvent();
-
 }
-class SaveWordEvent extends WordEvent{
+
+class SaveWordEvent extends WordEvent {
   final Map<String, dynamic> params;
 
   const SaveWordEvent({required this.params});
-
 }
+
 class InitAppEvent extends WordEvent {}

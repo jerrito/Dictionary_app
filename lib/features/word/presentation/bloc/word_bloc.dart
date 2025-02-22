@@ -43,6 +43,10 @@ class WordBloc extends Bloc<WordEvent, WordState> {
       // transformer: restartable(),
     );
 
+    on<WordSuggestEndEvent>(
+      (event, emit) => emit(WordInitial()),
+    );
+
     //! RETRIEVE WORDS
     on<RetrieveWordEvent>((event, emit) async {
       emit(RetrieveWordLoading());
