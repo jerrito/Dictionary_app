@@ -47,6 +47,7 @@ class _HomeBaseState extends State<HomeBase> {
     // pages
     pages = [
       DictionaryPage(
+        // key: scaffoldKey,
         controller: homeController,
       ),
       const Bookmark(),

@@ -27,6 +27,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
   @override
   void initState() {
     super.initState();
+    wordSuggestBloc.add(const RetrieveWordEvent());
   }
 
   final dictionaryBloc = sl<DictionaryBloc>();
@@ -34,6 +35,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
   final searchController = TextEditingController();
   WordsProvider? wordsProvider;
   bool isSearchEmpty = false;
+  final FocusNode focusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
     // String.fromEnvironment(name)
@@ -76,7 +78,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                   );
                 }
               },
-              focusNode: FocusNode(),
+              focusNode: focusNode,
               hint: "Search any word",
               onChanged: (value) {
                 final Map<String, dynamic> params = {
@@ -102,7 +104,8 @@ class _DictionaryPageState extends State<DictionaryPage> {
               controller: searchController,
               suffixOnTap: () {
                 searchController.clear();
-                wordSuggestBloc.add(WordSuggestEndEvent());
+                wordSuggestBloc.add(const RetrieveWordEvent());
+                focusNode.unfocus();
                 isSearchEmpty = false;
                 setState(() {});
               },
@@ -115,6 +118,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                   if (state is WordSuggestError) {}
                 },
                 builder: (context, state) {
+                  print(state);
                   if (state is WordSuggestLoaded) {
                     final items = state.words.length;
                     return Expanded(
@@ -141,12 +145,50 @@ class _DictionaryPageState extends State<DictionaryPage> {
                           }),
                     );
                   }
-                  if (state is WordInitial) {
-                    return DefaultPage(controller: widget.controller);
+                  if (state is RetrieveWordError) {
+                    return Text(state.message);
+                  }
+
+                  if (state is RetrieveWordLoaded) {
+                    return Expanded(
+                      child: SingleChildScrollView(
+                        child: DefaultPage(
+                          dictionaryOnTap: () {
+                            focusNode.requestFocus();
+                            final Map<String, dynamic> params = {
+                              "text": "a",
+                              "decodedWords": words
+                            };
+                            wordSuggestBloc.add(
+                              WordSuggestEvent(
+                                params: params,
+                              ),
+                            );
+                          },
+                          controller: widget.controller,
+                          dictionaryBloc: dictionaryBloc,
+                          words: state.words ?? [],
+                        ),
+                      ),
+                    );
                   }
 
                   return DefaultPage(
+                    dictionaryOnTap: () {
+                      focusNode.requestFocus();
+                      final Map<String, dynamic> params = {
+                        "text": "a",
+                        "decodedWords": words
+                      };
+                      wordSuggestBloc.add(
+                        WordSuggestEvent(
+                          params: params,
+                        ),
+                      );
+                    },
                     controller: widget.controller,
+                    dictionaryBloc: dictionaryBloc,
+                    words: const [],
                   );
                 })
           ],
