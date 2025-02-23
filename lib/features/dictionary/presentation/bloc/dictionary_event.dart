@@ -8,6 +8,12 @@ class SearchDictionaryEvent extends DictionaryEvent {
   SearchDictionaryEvent({required this.params});
 }
 
+class SearchWordMeaningEvent extends DictionaryEvent {
+  final String params;
+
+  SearchWordMeaningEvent({required this.params});
+}
+
 class InterstatialAdEvent extends DictionaryEvent {
   InterstatialAdEvent();
 }

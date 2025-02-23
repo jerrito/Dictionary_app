@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_learn/core/onboarding/first_page.dart';
 import 'package:riverpod_learn/core/onboarding/second_page.dart';
-import 'package:riverpod_learn/features/dictionary/presentation/pages/dictionary_page.dart';
 import 'package:riverpod_learn/initial_page.dart';
 
 class OnboardingPageViews extends StatefulWidget {

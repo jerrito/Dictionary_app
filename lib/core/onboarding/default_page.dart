@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:riverpod_learn/core/assets/images.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/core/widgets/buttons/default_button.dart';

@@ -69,7 +69,6 @@ class WordLocalDatasourceImpl implements WordLocalDatasource {
         ),
       ),
     );
-    print("ss$lis");
     // controller.add(event);
     controller.onListen!();
     yield* controller.stream;

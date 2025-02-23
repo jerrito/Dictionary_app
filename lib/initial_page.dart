@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:riverpod_learn/features/dictionary/presentation/pages/dictionary_page.dart';
+import 'package:riverpod_learn/core/themes/colors.dart';
 import 'package:riverpod_learn/features/home/presentation/pages/home_base.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
@@ -48,7 +48,12 @@ class _InitialPageState extends State<InitialPage> {
           }
         },
         builder: (context, state) {
-          return Container();
+          return const Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 8,
+              color: DictionaryColors.success300,
+            ),
+          );
         },
       ),
     );

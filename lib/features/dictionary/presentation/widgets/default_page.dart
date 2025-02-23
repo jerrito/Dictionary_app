@@ -46,10 +46,26 @@ class DefaultPage extends StatelessWidget {
           ],
         ),
         Space.height(context, 0.02),
+        if (words?.isNotEmpty ?? false)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Search History",
+              ),
+              GestureDetector(
+                  onTap: clearAllHistory,
+                  child: Text(
+                    "Clear all",
+                  )),
+            ],
+          ),
         Column(
           spacing: Sizes.height(context, 0.012),
           children: List.generate(
               (words?.length ?? 0) > 8 ? 8 : words?.length ?? 0, (index) {
+            print(words?[index]);
+
             return SearchedWordsWidget(
               wordTitle: words?[index] ?? "",
               onTap: () async {
@@ -76,5 +92,9 @@ class DefaultPage extends StatelessWidget {
         )
       ],
     );
+  }
+
+  Future clearAllHistory() async {
+    // dictionaryBloc.deleteDictionaryList(list);
   }
 }

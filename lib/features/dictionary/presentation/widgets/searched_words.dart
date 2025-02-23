@@ -1,12 +1,18 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:riverpod_learn/core/assets/images.dart';
 import 'package:riverpod_learn/core/assets/svgs.dart';
 import 'package:riverpod_learn/core/size.dart';
+import 'package:riverpod_learn/core/themes/colors.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
+import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
+import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
+import 'package:riverpod_learn/locator.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class SearchedWordsWidget extends StatelessWidget {
+class SearchedWordsWidget extends StatefulWidget {
   const SearchedWordsWidget({
     super.key,
     required this.wordTitle,
@@ -16,26 +22,113 @@ class SearchedWordsWidget extends StatelessWidget {
   final VoidCallback? onTap;
 
   @override
+  State<SearchedWordsWidget> createState() => _SearchedWordsWidgetState();
+}
+
+class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
+  final DictionaryBloc dictionaryBloc = sl<DictionaryBloc>();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getMeaning();
+  }
+
+  getMeaning() async {
+    dictionaryBloc.add(SearchWordMeaningEvent(params: widget.wordTitle));
+  }
+
+  final player = AudioPlayer();
+  String? audioUrl;
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
         padding: EdgeInsets.symmetric(
             horizontal: Sizes.height(context, 0.016),
             vertical: Sizes.height(context, 0.01)),
         decoration: ShapeDecoration(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.black
+                : DictionaryColors.whiteBackground,
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(Sizes.height(
-              context,
-              0.01,
-            ))),
+              borderRadius: BorderRadius.circular(
+                Sizes.height(
+                  context,
+                  0.01,
+                ),
+              ),
+            ),
             shadows: const [BoxShadow()]),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           spacing: Sizes.height(context, 0.012),
           children: [
-            _FirstRow(true, wordTitle),
-            // Consumer(builder: builder)
-            _LastRow("duration"),
+            _FirstRow(
+                hasAudio: audioUrl == null,
+                wordTitle: widget.wordTitle,
+                onAudioOnTap:
+                    (audioUrl != null && (audioUrl?.isNotEmpty ?? false))
+                        ? () async {
+                            try {
+                              print(audioUrl);
+                              await player.play(
+                                UrlSource(
+                                  audioUrl ?? "",
+                                ),
+                                volume: 1.0,
+                              );
+                            } catch (e) {
+                              print(e.toString());
+                            }
+                          }
+                        : null),
+            BlocConsumer(
+              bloc: dictionaryBloc,
+              listener: (context, state) async {
+                if (state is SearchWordMeaningLoaded) {
+                  if (state.dictionaryInfo.phonetic != null) {
+                    audioUrl = state.dictionaryInfo.phonetic;
+                  } else if (state.dictionaryInfo.phonetics?.isNotEmpty ??
+                      false) {
+                    audioUrl = state.dictionaryInfo.phonetics?[0].audio ??
+                        state.dictionaryInfo.phonetics?[1].audio ??
+                        "";
+                  }
+
+                  setState(() {});
+                }
+              },
+              builder: (context, state) {
+                if (state is SearchWordMeaningLoading) {
+                  return const Skeletonizer(
+                    enabled: true,
+                    effect: ShimmerEffect(
+                        baseColor: DictionaryColors.primary100,
+                        highlightColor: DictionaryColors.primary200),
+                    child: Text("datassjafhahasjjss"),
+                  );
+                }
+                if (state is SearchWordMeaningLoaded) {
+                  final String definition = state.dictionaryInfo.meanings?[0]
+                          .definitions?[0].definition ??
+                      "";
+                  return SizedBox(
+                    width: Sizes.width(context, 0.5),
+                    child: Text(
+                      (definition.length > 45)
+                          ? definition.substring(0, 44)
+                          : definition,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }
+                return const Text("");
+              },
+            ),
+            const _LastRow("duration"),
           ],
         ),
       ),
@@ -44,12 +137,14 @@ class SearchedWordsWidget extends StatelessWidget {
 }
 
 class _FirstRow extends StatelessWidget {
-  const _FirstRow(
+  const _FirstRow({
     this.hasAudio,
-    this.wordTitle,
-  );
+    required this.wordTitle,
+    this.onAudioOnTap,
+  });
   final bool? hasAudio;
   final String wordTitle;
+  final VoidCallback? onAudioOnTap;
 
   @override
   Widget build(BuildContext context) {
@@ -57,15 +152,34 @@ class _FirstRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
-          spacing: Sizes.width(context, 0.01),
+          spacing: Sizes.width(context, 0.015),
           children: [
             Text(
               wordTitle,
             ),
-            SvgPicture.asset(DictionarySvgs.volumeSVG)
+            GestureDetector(
+              onTap: onAudioOnTap,
+              child: SvgPicture.asset(
+                DictionarySvgs.volumeSVG,
+                colorFilter: ColorFilter.mode(
+                  Theme.of(context).brightness != Brightness.dark
+                      ? DictionaryColors.blackBackground
+                      : DictionaryColors.whiteBackground,
+                  BlendMode.srcIn,
+                ),
+              ),
+            )
           ],
         ),
-        SvgPicture.asset(DictionarySvgs.moreHorizontalSVG)
+        SvgPicture.asset(
+          DictionarySvgs.moreHorizontalSVG,
+          colorFilter: ColorFilter.mode(
+            Theme.of(context).brightness != Brightness.dark
+                ? DictionaryColors.blackBackground
+                : DictionaryColors.whiteBackground,
+            BlendMode.srcIn,
+          ),
+        )
       ],
     );
   }

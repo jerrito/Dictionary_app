@@ -18,6 +18,20 @@ class SearchDictionaryError extends DictionaryState {
 
 class SearchDictionaryLoading extends DictionaryState {}
 
+class SearchWordMeaningLoaded extends DictionaryState {
+  final Dictionary dictionaryInfo;
+
+  SearchWordMeaningLoaded({required this.dictionaryInfo});
+}
+
+class SearchWordMeaningError extends DictionaryState {
+  final String errorMessage;
+
+  SearchWordMeaningError({required this.errorMessage});
+}
+
+class SearchWordMeaningLoading extends DictionaryState {}
+
 class InterstatialAdLoaded extends DictionaryState {
   final InterstitialAd? ad;
 

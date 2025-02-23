@@ -16,6 +16,8 @@ class DefaultThemeData {
         primaryColor: isDark
             ? DictionaryColors.whiteBackground
             : DictionaryColors.blackBackground,
+        scaffoldBackgroundColor:
+            isDark ? DictionaryColors.blackBackground : Colors.white,
         brightness: isDark ? Brightness.dark : Brightness.light,
         // textTheme: TextTheme(),
         // colorScheme: ColorScheme.fromSeed(
@@ -110,9 +112,7 @@ class DefaultThemeData {
     bool isDark = brightness == Brightness.dark;
 
     return BottomNavigationBarThemeData(
-      backgroundColor: isDark
-          ? DictionaryColors.blackBackground
-          : DictionaryColors.whiteBackground,
+      backgroundColor: isDark ? Colors.black : Colors.white,
       unselectedItemColor: isDark
           ? DictionaryColors.whiteBackground
           : DictionaryColors.blackBackground,

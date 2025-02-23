@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:riverpod_learn/features/database/entity/dicitionary.dart';
@@ -34,6 +32,23 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
         );
       },
       // transformer: restartable(),
+    );
+    on<SearchWordMeaningEvent>(
+      (event, emit) async {
+        emit(SearchWordMeaningLoading());
+        final response = await getResponse(event.params);
+        if (response != null) {
+          emit(
+            SearchWordMeaningLoaded(
+              dictionaryInfo: DictionaryModel.fromJson(
+                response.dictionary,
+              ),
+            ),
+          );
+        } else {
+          emit(SearchWordMeaningError(errorMessage: "Error"));
+        }
+      },
     );
 
     on<InterstatialAdEvent>((event, emit) async {
