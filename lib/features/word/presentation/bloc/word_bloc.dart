@@ -103,7 +103,6 @@ class WordBloc extends Bloc<WordEvent, WordState> {
     final words = await DefaultAssetBundle.of(params["context"])
         .loadString(DictionaryJson.json);
     final Map<dynamic, dynamic> decodedWords = jsonDecode(words);
-    print(decodedWords);
     myList.addAll(decodedWords.keys.where((e) => e.startsWith(params["text"])));
 
     // final lis=List<String>.from(decodedWords.keys.where((e)=>e.contains(params["texts"])));

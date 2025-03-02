@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
-import 'package:riverpod_learn/core/themes/colors.dart';
 import 'package:riverpod_learn/core/widgets/text_form_field.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/pages/results_page.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/default_page.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/widgets/floating_button.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/suggested_word.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
@@ -37,12 +37,31 @@ class _DictionaryPageState extends State<DictionaryPage> {
   WordsProvider? wordsProvider;
   bool isSearchEmpty = false;
   final FocusNode focusNode = FocusNode();
+  navigate(String data) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResultsPage(
+          word: data,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // String.fromEnvironment(name)
+    wordsProvider = context.watch<WordsProvider>();
     final words = context.read<WordsProvider>().words;
 
     return Scaffold(
+      floatingActionButton: FloatingSearchButton(
+          hasJobs: wordsProvider?.hasWords ?? false,
+          onTap: () => widget.controller.animateTo(
+                Sizes.height(context, 0.03),
+                duration: const Duration(seconds: 1),
+                curve: Curves.linear,
+              )),
       appBar: AppBar(
           automaticallyImplyLeading: false,
           // backgroundColor: const Color.fromARGB(184, 30, 30, 128),
@@ -63,19 +82,13 @@ class _DictionaryPageState extends State<DictionaryPage> {
         child: Column(
           children: [
             DefaultTextFormField(
+              prefixOnTap: () =>
+                  isSearchEmpty ? navigate(searchController.text) : null,
               onSubmitted: (p0) async {
-                print(p0);
                 if (p0?.isNotEmpty ?? false) {
                   await SystemChannels.textInput.invokeMethod("TextInput.hide");
                   if (!context.mounted) return;
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ResultsPage(
-                        word: p0!.toLowerCase(),
-                      ),
-                    ),
-                  );
+                  navigate(p0!);
                 }
               },
               focusNode: focusNode,
@@ -85,7 +98,6 @@ class _DictionaryPageState extends State<DictionaryPage> {
                   "text": value?.toLowerCase(),
                   "decodedWords": words
                 };
-                print(params);
                 wordSuggestBloc.add(
                   WordSuggestEvent(
                     params: params,
@@ -118,7 +130,6 @@ class _DictionaryPageState extends State<DictionaryPage> {
                   if (state is WordSuggestError) {}
                 },
                 builder: (context, state) {
-                  print(state);
                   if (state is WordSuggestLoaded) {
                     final items = state.words.length;
                     return Expanded(
@@ -133,14 +144,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                                   await SystemChannels.textInput
                                       .invokeMethod("TextInput.hide");
                                   if (!context.mounted) return;
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ResultsPage(
-                                        word: data,
-                                      ),
-                                    ),
-                                  );
+                                  navigate(data);
                                 });
                           }),
                     );

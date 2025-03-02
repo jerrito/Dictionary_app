@@ -9,6 +9,8 @@ abstract class WordLocalDatasource {
   });
   Future<bool> saveWord(Map<String, dynamic> params);
   Future<List<String>?> retrieveSavedWords();
+
+  Future<bool> deleteWords(List<String> words);
 }
 
 class WordLocalDatasourceImpl implements WordLocalDatasource {
@@ -20,13 +22,13 @@ class WordLocalDatasourceImpl implements WordLocalDatasource {
   @override
   Future<List<dynamic>> suggestWords(
       {required Map<String, dynamic> params}) async {
-    List<dynamic> myList = [];
+    // List<dynamic> myList = [];
     final Map<dynamic, dynamic> decodedWords = params["decodedWords"];
     // myList.addAll(decodedWords.keys.where((e) => e.startsWith(params["text"])));
 
     final lis = List<String>.from(
         decodedWords.keys.where((e) => e.startsWith(params["text"])));
-    print(lis);
+    // print(lis);
 
     return lis;
   }
@@ -45,12 +47,11 @@ class WordLocalDatasourceImpl implements WordLocalDatasource {
   @override
   Future<bool> saveWord(Map<String, dynamic> params) async {
     List<String>? get = await retrieveSavedWords();
-    print(get);
     if (get?.contains(params["word"]) ?? false) {
       return false;
     }
     get ??= [];
-    get.add(params["word"]);
+    get.insert(0, params["word"]);
     sharedPreferences.setStringList(saveWordKey, get);
     return true;
   }
@@ -72,5 +73,16 @@ class WordLocalDatasourceImpl implements WordLocalDatasource {
     // controller.add(event);
     controller.onListen!();
     yield* controller.stream;
+  }
+
+  @override
+  Future<bool> deleteWords(List<String> words) async {
+    List<String>? get = await retrieveSavedWords();
+    if (get?.isNotEmpty ?? false) {
+      get?.clear();
+      return true;
+    } else {
+      return false;
+    }
   }
 }

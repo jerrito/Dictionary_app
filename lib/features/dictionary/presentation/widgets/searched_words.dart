@@ -2,13 +2,10 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:provider/provider.dart';
 import 'package:riverpod_learn/core/assets/svgs.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/themes/colors.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
-import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
-import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
 import 'package:riverpod_learn/locator.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -73,7 +70,6 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
                     (audioUrl != null && (audioUrl?.isNotEmpty ?? false))
                         ? () async {
                             try {
-                              print(audioUrl);
                               await player.play(
                                 UrlSource(
                                   audioUrl ?? "",
@@ -81,7 +77,7 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
                                 volume: 1.0,
                               );
                             } catch (e) {
-                              print(e.toString());
+                              debugPrint(e.toString());
                             }
                           }
                         : null),

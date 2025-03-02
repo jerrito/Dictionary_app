@@ -6,9 +6,11 @@ abstract class WordSuggestionRepository {
       {required Map<String, dynamic> params});
 
   // retrieve saved words
-  Future<Either<String, List<String>?>> retrieveSavedWords(
-        );
+  Future<Either<String, List<String>?>> retrieveSavedWords();
 
 //save word
-  Future<Either<String,bool>> saveWord(Map<String, dynamic> params);
+  Future<Either<String, bool>> saveWord(Map<String, dynamic> params);
+
+// delete words
+  Future<Either<String, bool>> deleteWords(List<String> words);
 }

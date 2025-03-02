@@ -6,6 +6,7 @@ import 'package:riverpod_learn/features/dictionary/data/repositories/dictionary_
 import 'package:riverpod_learn/features/dictionary/domain/repositories/dictionary_repository.dart';
 import 'package:riverpod_learn/features/dictionary/domain/usecases/search_dictionary.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
+import 'package:riverpod_learn/features/home/presentation/bloc/home_bloc.dart';
 import 'package:riverpod_learn/features/word/data/datasources/local_ds.dart';
 import 'package:riverpod_learn/features/word/data/repositories/word_repo_impl.dart';
 import 'package:riverpod_learn/features/word/domain/repositories/word_repository.dart';
@@ -13,6 +14,7 @@ import 'package:riverpod_learn/features/word/domain/usecases/retrieve_save_words
 import 'package:riverpod_learn/features/word/domain/usecases/save_word.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/suggest_word.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
+import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
@@ -32,8 +34,19 @@ initDependencies() async {
       dataConnectionChecker: sl(),
     ),
   );
+
+  sl.registerFactory(
+    () => WordsProvider(),
+  );
+
+  //dictionary call
   dictionaryIm();
+
+  // word call
   word();
+
+  // home call
+  homeImplementer();
 }
 
 // word locator
@@ -110,4 +123,20 @@ void dictionaryIm() {
   sl.registerLazySingleton<DictionaryRemoteDatasource>(
     () => DictionaryRemoteDatasourceImpl(),
   );
+}
+
+//! HOME LOCATOR
+void homeImplementer() {
+// bloc
+  sl.registerFactory(
+    () => HomeBloc(
+      sharedPreferences: sl(),
+    ),
+  );
+
+//usecases
+
+//repository
+
+// datasource
 }
