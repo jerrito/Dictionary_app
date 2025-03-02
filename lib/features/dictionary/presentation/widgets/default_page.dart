@@ -13,17 +13,20 @@ import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/dictionary_scanner_widget.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/searched_words.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/show_meaning_modal.dart';
+import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 
 class DefaultPage extends StatefulWidget {
   const DefaultPage({
     super.key,
     required this.controller,
     required this.dictionaryBloc,
+    required this.wordBloc,
     required this.words,
     this.dictionaryOnTap,
   });
   final ScrollController controller;
   final DictionaryBloc dictionaryBloc;
+  final WordBloc wordBloc;
   final List<String>? words;
   final VoidCallback? dictionaryOnTap;
 
@@ -95,7 +98,17 @@ class _DefaultPageState extends State<DefaultPage> {
                 "Search History",
               ),
               GestureDetector(
-                  onTap: clearAllHistory,
+                  onTap: () async {
+                    final clear = await clearAllHistory();
+                    if (clear) {
+                      widget.wordBloc.add(
+                        DeleteWordEvent(
+                          words: widget.words ?? [],
+                        ),
+                      );
+                      print("ss");
+                    }
+                  },
                   child: const Text(
                     "Clear all",
                   )),
@@ -138,7 +151,9 @@ class _DefaultPageState extends State<DefaultPage> {
     List<DictionaryResponse>? responses = [];
     for (var word in widget.words ?? []) {
       final response = await widget.dictionaryBloc.getResponse(word ?? "");
-      responses.add(response!);
+      if (response != null) {
+        responses.add(response);
+      }
     }
     print(responses);
     final response =

@@ -6,6 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_learn/core/json.dart';
 import 'package:riverpod_learn/core/use_case.dart';
+import 'package:riverpod_learn/features/word/domain/usecases/delete_words.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/retrieve_save_words.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/save_word.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/suggest_word.dart';
@@ -17,12 +18,14 @@ class WordBloc extends Bloc<WordEvent, WordState> {
   final SuggestWord suggestWord;
   final RetrieveSaveWords retrieveSaveWords;
   final SaveWord saveWord;
+  final DeleteWords deleteWords;
   StreamController<List<String>> streamController =
       StreamController<List<String>>();
   WordBloc({
     required this.retrieveSaveWords,
     required this.suggestWord,
     required this.saveWord,
+    required this.deleteWords,
   }) : super(WordInitial()) {
     on<WordEvent>((event, emit) {
       // TODO: implement event handler
@@ -82,6 +85,15 @@ class WordBloc extends Bloc<WordEvent, WordState> {
       emit(DecodedWordsLoading());
       final response = await decodeWords(event.params);
       emit(DecodedWordsLoaded(data: response));
+    });
+
+    on<DeleteWordEvent>((event, emit) async {
+      final response = await deleteWords(event.words);
+      print(response);
+      emit(response.fold((error) => (DeleteWordError(errorMessage: error)),
+          (response) {
+        return DeleteWordLoaded(isSaved: response);
+      }));
     });
 
     on<InitAppEvent>((event, emit) {

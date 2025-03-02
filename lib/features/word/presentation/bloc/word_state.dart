@@ -58,3 +58,15 @@ final class SaveWordError extends WordState {
 
   const SaveWordError({required this.errorMessage});
 }
+
+final class DeleteWordLoaded extends WordState {
+  final bool isSaved;
+
+  const DeleteWordLoaded({required this.isSaved});
+}
+
+final class DeleteWordError extends WordState {
+  final String errorMessage;
+
+  const DeleteWordError({required this.errorMessage});
+}

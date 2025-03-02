@@ -10,6 +10,7 @@ import 'package:riverpod_learn/features/home/presentation/bloc/home_bloc.dart';
 import 'package:riverpod_learn/features/word/data/datasources/local_ds.dart';
 import 'package:riverpod_learn/features/word/data/repositories/word_repo_impl.dart';
 import 'package:riverpod_learn/features/word/domain/repositories/word_repository.dart';
+import 'package:riverpod_learn/features/word/domain/usecases/delete_words.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/retrieve_save_words.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/save_word.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/suggest_word.dart';
@@ -57,6 +58,7 @@ word() {
       suggestWord: sl(),
       retrieveSaveWords: sl(),
       saveWord: sl(),
+      deleteWords: sl(),
     ),
   );
 
@@ -64,6 +66,11 @@ word() {
 
   sl.registerLazySingleton(
     () => SaveWord(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => DeleteWords(
       repository: sl(),
     ),
   );

@@ -128,6 +128,12 @@ class _DictionaryPageState extends State<DictionaryPage> {
                 bloc: wordSuggestBloc,
                 listener: (context, state) {
                   if (state is WordSuggestError) {}
+                  if (state is DeleteWordLoaded) {
+                    wordSuggestBloc.add(const RetrieveWordEvent());
+                  }
+                  if (state is DeleteWordError) {
+                    print(state.errorMessage);
+                  }
                 },
                 builder: (context, state) {
                   if (state is WordSuggestLoaded) {
@@ -157,6 +163,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                     return Expanded(
                       child: SingleChildScrollView(
                         child: DefaultPage(
+                          wordBloc: wordSuggestBloc,
                           dictionaryOnTap: () {
                             focusNode.requestFocus();
                             final Map<String, dynamic> params = {
@@ -178,6 +185,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                   }
 
                   return DefaultPage(
+                    wordBloc: wordSuggestBloc,
                     dictionaryOnTap: () {
                       focusNode.requestFocus();
                       final Map<String, dynamic> params = {

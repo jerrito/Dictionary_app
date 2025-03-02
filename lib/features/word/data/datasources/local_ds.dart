@@ -79,7 +79,7 @@ class WordLocalDatasourceImpl implements WordLocalDatasource {
   Future<bool> deleteWords(List<String> words) async {
     List<String>? get = await retrieveSavedWords();
     if (get?.isNotEmpty ?? false) {
-      get?.clear();
+      sharedPreferences.setStringList(saveWordKey, []);
       return true;
     } else {
       return false;
