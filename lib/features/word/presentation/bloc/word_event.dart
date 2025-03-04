@@ -36,4 +36,8 @@ class DeleteWordEvent extends WordEvent {
   const DeleteWordEvent({required this.words});
 }
 
+class TakePictureEvent extends WordEvent {
+  const TakePictureEvent();
+}
+
 class InitAppEvent extends WordEvent {}

@@ -70,3 +70,19 @@ final class DeleteWordError extends WordState {
 
   const DeleteWordError({required this.errorMessage});
 }
+
+final class TakePictureLoaded extends WordState {
+  final File? file;
+
+  const TakePictureLoaded({
+    required this.file,
+  });
+}
+
+final class TakePictureLoading extends WordState {}
+
+final class TakePictureError extends WordState {
+  final String errorMessage;
+
+  const TakePictureError({required this.errorMessage});
+}

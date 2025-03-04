@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:riverpod_learn/core/assets/images.dart';
 import 'package:riverpod_learn/core/size.dart';
@@ -14,6 +15,7 @@ import 'package:riverpod_learn/features/dictionary/presentation/widgets/dictiona
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/searched_words.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/show_meaning_modal.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
+import 'package:riverpod_learn/locator.dart';
 
 class DefaultPage extends StatefulWidget {
   const DefaultPage({
@@ -23,36 +25,42 @@ class DefaultPage extends StatefulWidget {
     required this.wordBloc,
     required this.words,
     this.dictionaryOnTap,
+    required this.scanWordTap,
   });
   final ScrollController controller;
   final DictionaryBloc dictionaryBloc;
   final WordBloc wordBloc;
   final List<String>? words;
   final VoidCallback? dictionaryOnTap;
+  final void Function(String word) scanWordTap;
 
   @override
   State<DefaultPage> createState() => _DefaultPageState();
 }
 
 class _DefaultPageState extends State<DefaultPage> {
+  final wordBloc = sl<WordBloc>();
+  File? file;
   final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
   Future<void> scanWord() async {
-    InputImage? inputImage;
-    final RecognizedText recognizedText =
-        await textRecognizer.processImage(InputImage.fromFile(File("path")));
+    if (file != null) {
+      final RecognizedText recognizedText =
+          await textRecognizer.processImage(InputImage.fromFile(file!));
 
-    String text = recognizedText.text;
-    for (TextBlock block in recognizedText.blocks) {
-      final Rect rect = block.boundingBox;
-      final List<Point<int>> cornerPoints = block.cornerPoints;
-      final String text = block.text;
-      final List<String> languages = block.recognizedLanguages;
+      String text = recognizedText.text;
+      for (TextBlock block in recognizedText.blocks) {
+        final Rect rect = block.boundingBox;
+        final List<Point<int>> cornerPoints = block.cornerPoints;
+        final String text = block.text;
+        final List<String> languages = block.recognizedLanguages;
 
-      for (TextLine line in block.lines) {
-        // Same getters as TextBlock
-        for (TextElement element in line.elements) {
+        for (TextLine line in block.lines) {
           // Same getters as TextBlock
-          print(element.text);
+          for (TextElement element in line.elements) {
+            // Same getters as TextBlock
+            print(element.text);
+            widget.scanWordTap(element.text);
+          }
         }
       }
     }
@@ -81,12 +89,25 @@ class _DefaultPageState extends State<DefaultPage> {
               color: DictionaryColors.warning300,
               onTap: widget.dictionaryOnTap,
             ),
-            DictionaryScannerWidget(
-              label: "Scan words",
-              image: DictionaryImages.scannerImage,
-              color: DictionaryColors.success300,
-              onTap: scanWord,
-            )
+            BlocListener(
+              bloc: wordBloc,
+              listener: (context, state) {
+                if (state is TakePictureLoaded) {
+                  file = state.file;
+                  setState(() {});
+                  scanWord();
+                }
+                if (state is TakePictureError) {
+                  print(state.errorMessage);
+                }
+              },
+              child: DictionaryScannerWidget(
+                label: "Scan words",
+                image: DictionaryImages.scannerImage,
+                color: DictionaryColors.success300,
+                onTap: () => wordBloc.add(const TakePictureEvent()),
+              ),
+            ),
           ],
         ),
         Space.height(context, 0.02),

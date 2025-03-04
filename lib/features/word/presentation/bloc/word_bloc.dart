@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -10,7 +11,7 @@ import 'package:riverpod_learn/features/word/domain/usecases/delete_words.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/retrieve_save_words.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/save_word.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/suggest_word.dart';
-
+import 'package:image_picker/image_picker.dart';
 part 'word_event.dart';
 part 'word_state.dart';
 
@@ -19,6 +20,7 @@ class WordBloc extends Bloc<WordEvent, WordState> {
   final RetrieveSaveWords retrieveSaveWords;
   final SaveWord saveWord;
   final DeleteWords deleteWords;
+  final ImagePicker imagePicker;
   StreamController<List<String>> streamController =
       StreamController<List<String>>();
   WordBloc({
@@ -26,6 +28,7 @@ class WordBloc extends Bloc<WordEvent, WordState> {
     required this.suggestWord,
     required this.saveWord,
     required this.deleteWords,
+    required this.imagePicker,
   }) : super(WordInitial()) {
     on<WordEvent>((event, emit) {
       // TODO: implement event handler
@@ -98,6 +101,25 @@ class WordBloc extends Bloc<WordEvent, WordState> {
 
     on<InitAppEvent>((event, emit) {
       emit(InitApppLoaded());
+    });
+
+    on<TakePictureEvent>((event, emit) async {
+      File? file;
+      emit(TakePictureLoading());
+      try {
+        final XFile? photo =
+            await imagePicker.pickImage(source: ImageSource.camera);
+        if (photo != null) {
+          file = File(photo.path);
+          emit(TakePictureLoaded(
+            file: file,
+          ));
+        } else {
+          emit(const TakePictureError(errorMessage: "File is null"));
+        }
+      } catch (e) {
+        emit(const TakePictureError(errorMessage: "File is null"));
+      }
     });
   }
 

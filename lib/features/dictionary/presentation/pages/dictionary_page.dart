@@ -163,6 +163,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                     return Expanded(
                       child: SingleChildScrollView(
                         child: DefaultPage(
+                          scanWordTap: (word) => navigate(word),
                           wordBloc: wordSuggestBloc,
                           dictionaryOnTap: () {
                             focusNode.requestFocus();
@@ -185,6 +186,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                   }
 
                   return DefaultPage(
+                    scanWordTap: (word) => navigate(word),
                     wordBloc: wordSuggestBloc,
                     dictionaryOnTap: () {
                       focusNode.requestFocus();

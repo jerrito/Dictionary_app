@@ -1,5 +1,6 @@
 import 'package:data_connection_checker_nulls/data_connection_checker_nulls.dart';
 import 'package:get_it/get_it.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_learn/core/network_info.dart';
 import 'package:riverpod_learn/features/dictionary/data/datasources/remote_ds.dart';
 import 'package:riverpod_learn/features/dictionary/data/repositories/dictionary_repository_impl.dart';
@@ -59,11 +60,15 @@ word() {
       retrieveSaveWords: sl(),
       saveWord: sl(),
       deleteWords: sl(),
+      imagePicker: sl(),
     ),
   );
 
   // usecases
 
+  sl.registerLazySingleton(
+    () => ImagePicker(),
+  );
   sl.registerLazySingleton(
     () => SaveWord(
       repository: sl(),
