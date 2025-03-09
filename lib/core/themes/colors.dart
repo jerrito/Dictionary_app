@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class DictionaryColors {
   static const whiteBackground = Color(0xffF2F2F2);
+  static const white = Color(0xffFFFFFF);
   static const blackBackground = Color(0xff070707);
 
   // Primary colors
@@ -34,4 +35,8 @@ class DictionaryColors {
   static const warning300 = Color(0xffF2CD66);
   static const warning150 = Color(0xffF8E6B2);
   static const warning75 = Color(0xffFCF2D9);
+
+  // shadow colors
+  static const darkShadow = Color(0xffCECECE);
+  static const lightShadow = Color(0xff00001A);
 }

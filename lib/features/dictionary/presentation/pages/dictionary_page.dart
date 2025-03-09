@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
+import 'package:riverpod_learn/core/themes/colors.dart';
 import 'package:riverpod_learn/core/widgets/text_form_field.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/pages/results_page.dart';
@@ -55,6 +56,9 @@ class _DictionaryPageState extends State<DictionaryPage> {
     final words = context.read<WordsProvider>().words;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? DictionaryColors.blackBackground
+          : DictionaryColors.whiteBackground,
       floatingActionButton: FloatingSearchButton(
           hasJobs: wordsProvider?.hasWords ?? false,
           onTap: () => widget.controller.animateTo(

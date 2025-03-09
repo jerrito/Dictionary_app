@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:riverpod_learn/core/assets/images.dart';
+import 'package:riverpod_learn/core/assets/svgs.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/core/themes/colors.dart';
@@ -48,6 +49,7 @@ class _DefaultPageState extends State<DefaultPage> {
           await textRecognizer.processImage(InputImage.fromFile(file!));
 
       String text = recognizedText.text;
+      print(text);
       for (TextBlock block in recognizedText.blocks) {
         final Rect rect = block.boundingBox;
         final List<Point<int>> cornerPoints = block.cornerPoints;
@@ -59,7 +61,21 @@ class _DefaultPageState extends State<DefaultPage> {
           for (TextElement element in line.elements) {
             // Same getters as TextBlock
             print(element.text);
-            widget.scanWordTap(element.text);
+            RegExp regExp = RegExp(r'\b[a-zA-Z]+\b');
+
+            // Find all matches of alphabetic words
+            Iterable<Match> matches = regExp.allMatches(element.text);
+
+            // Extract words
+            List<String> words =
+                matches.map((match) => match.group(0)!).toList();
+
+            for (String word in words) {
+              print(word);
+              widget.scanWordTap(word);
+            }
+            // if (RegExp(r'\b[a-zA-Z]+\b').hasMatch(element.text)) {
+            // }
           }
         }
       }
@@ -85,8 +101,9 @@ class _DefaultPageState extends State<DefaultPage> {
           children: [
             DictionaryScannerWidget(
               label: "Dictionary (A-Z)",
-              image: DictionaryImages.dictionary,
+              image: DictionarySvgs.bookSVG,
               color: DictionaryColors.warning300,
+              borderColor: DictionaryColors.warningBase,
               onTap: widget.dictionaryOnTap,
             ),
             BlocListener(
@@ -103,8 +120,9 @@ class _DefaultPageState extends State<DefaultPage> {
               },
               child: DictionaryScannerWidget(
                 label: "Scan words",
-                image: DictionaryImages.scannerImage,
+                image: DictionarySvgs.searchScanSVG,
                 color: DictionaryColors.success300,
+                borderColor: DictionaryColors.successBase,
                 onTap: () => wordBloc.add(const TakePictureEvent()),
               ),
             ),

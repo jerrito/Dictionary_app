@@ -48,17 +48,32 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
             vertical: Sizes.height(context, 0.01)),
         decoration: ShapeDecoration(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.black
-                : DictionaryColors.whiteBackground,
+                ? DictionaryColors.primaryBase
+                : DictionaryColors.white,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                Sizes.height(
-                  context,
-                  0.01,
+                borderRadius: BorderRadius.circular(
+                  Sizes.height(
+                    context,
+                    0.012,
+                  ),
                 ),
-              ),
-            ),
-            shadows: const [BoxShadow()]),
+                side: BorderSide(
+                  width: 0.5,
+                  color: Theme.of(context).brightness != Brightness.dark
+                      ? DictionaryColors.primary100
+                      : DictionaryColors.primary400,
+                )),
+            shadows: [
+              BoxShadow(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? const Color.fromRGBO(206, 206, 206, 0.1)
+                    : const Color.fromRGBO(0, 0, 0, 0.1),
+                offset: const Offset(0, 4),
+                spreadRadius: 0,
+                blurRadius: 0.6,
+                // blurStyle: BlurStyle.inner,
+              )
+            ]),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: Sizes.height(context, 0.012),
