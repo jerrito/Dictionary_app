@@ -152,7 +152,8 @@ class _DictionaryPageState extends State<DictionaryPage> {
                   if (state is RetrieveWordLoaded) {
                     return Expanded(
                       child: SingleChildScrollView(
-                        child: DefaultPage(
+                        controller: widget.controller,
+                        child: DefaultSearchPage(
                           dictionaryOnTap: () {
                             focusNode.requestFocus();
                             final Map<String, dynamic> params = {
@@ -165,7 +166,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                               ),
                             );
                           },
-                          controller: widget.controller,
+                          // controller: widget.controller,
                           dictionaryBloc: dictionaryBloc,
                           words: state.words ?? [],
                         ),
@@ -173,7 +174,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                     );
                   }
 
-                  return DefaultPage(
+                  return DefaultSearchPage(
                     dictionaryOnTap: () {
                       focusNode.requestFocus();
                       final Map<String, dynamic> params = {
@@ -186,7 +187,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                         ),
                       );
                     },
-                    controller: widget.controller,
+                    // controller: widget.controller,
                     dictionaryBloc: dictionaryBloc,
                     words: const [],
                   );

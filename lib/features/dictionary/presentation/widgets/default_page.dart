@@ -9,15 +9,15 @@ import 'package:riverpod_learn/features/dictionary/presentation/widgets/dictiona
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/searched_words.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/show_meaning_modal.dart';
 
-class DefaultPage extends StatelessWidget {
-  const DefaultPage({
+class DefaultSearchPage extends StatelessWidget {
+  const DefaultSearchPage({
     super.key,
-    required this.controller,
+    // required this.controller,
     required this.dictionaryBloc,
     required this.words,
     this.dictionaryOnTap,
   });
-  final ScrollController controller;
+  // final ScrollController controller;
   final DictionaryBloc dictionaryBloc;
   final List<String>? words;
   final VoidCallback? dictionaryOnTap;
@@ -55,7 +55,7 @@ class DefaultPage extends StatelessWidget {
               ),
               GestureDetector(
                   onTap: clearAllHistory,
-                  child: Text(
+                  child: const Text(
                     "Clear all",
                   )),
             ],
