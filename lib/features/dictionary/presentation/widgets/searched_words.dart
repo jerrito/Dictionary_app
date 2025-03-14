@@ -2,13 +2,10 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:provider/provider.dart';
 import 'package:riverpod_learn/core/assets/svgs.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/themes/colors.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
-import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
-import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
 import 'package:riverpod_learn/locator.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -51,17 +48,32 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
             vertical: Sizes.height(context, 0.01)),
         decoration: ShapeDecoration(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.black
-                : DictionaryColors.whiteBackground,
+                ? DictionaryColors.primaryBase
+                : DictionaryColors.white,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                Sizes.height(
-                  context,
-                  0.01,
+                borderRadius: BorderRadius.circular(
+                  Sizes.height(
+                    context,
+                    0.012,
+                  ),
                 ),
-              ),
-            ),
-            shadows: const [BoxShadow()]),
+                side: BorderSide(
+                  width: 0.5,
+                  color: Theme.of(context).brightness != Brightness.dark
+                      ? DictionaryColors.primary100
+                      : DictionaryColors.primary400,
+                )),
+            shadows: [
+              BoxShadow(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? const Color.fromRGBO(206, 206, 206, 0.1)
+                    : const Color.fromRGBO(0, 0, 0, 0.1),
+                offset: const Offset(0, 4),
+                spreadRadius: 0,
+                blurRadius: 0.6,
+                // blurStyle: BlurStyle.inner,
+              )
+            ]),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: Sizes.height(context, 0.012),
@@ -73,7 +85,6 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
                     (audioUrl != null && (audioUrl?.isNotEmpty ?? false))
                         ? () async {
                             try {
-                              print(audioUrl);
                               await player.play(
                                 UrlSource(
                                   audioUrl ?? "",
@@ -81,7 +92,7 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
                                 volume: 1.0,
                               );
                             } catch (e) {
-                              print(e.toString());
+                              debugPrint(e.toString());
                             }
                           }
                         : null),

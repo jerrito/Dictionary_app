@@ -9,7 +9,7 @@ class DefaultTextField extends StatelessWidget {
   final bool showSuffixIcon;
   final FocusNode focusNode;
   final void Function(String value)? onChange, onSubmitted;
-  final void Function()? suffixOnTap;
+  final void Function()? suffixOnTap, prefixOnTap;
   final TextEditingController controller;
   const DefaultTextField({
     super.key,
@@ -21,6 +21,7 @@ class DefaultTextField extends StatelessWidget {
     required this.onChange,
     required this.onSubmitted,
     required this.suffixOnTap,
+    this.prefixOnTap,
   });
 
   @override
@@ -83,15 +84,19 @@ class DefaultTextField extends StatelessWidget {
                       )),
                 ))
             : const SizedBox.shrink(),
+
         prefixIcon: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 11),
-          child: SvgPicture.asset(
-            DictionarySvgs.searchSVG,
-            colorFilter: ColorFilter.mode(
-              Theme.of(context).brightness == Brightness.dark
-                  ? DictionaryColors.primary50
-                  : DictionaryColors.primary400,
-              BlendMode.srcIn,
+          child: GestureDetector(
+            onTap: prefixOnTap,
+            child: SvgPicture.asset(
+              DictionarySvgs.searchSVG,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).brightness == Brightness.dark
+                    ? DictionaryColors.primary50
+                    : DictionaryColors.primary400,
+                BlendMode.srcIn,
+              ),
             ),
           ),
         ),

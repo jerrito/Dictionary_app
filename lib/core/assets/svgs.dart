@@ -10,4 +10,6 @@ class DictionarySvgs {
   static const volumeSVG = "${base}volume-high.svg";
   static const discoverSVG = "${base}discover-square.svg";
   static const moreHorizontalSVG = "${base}more-horizontal-circle.svg";
+  static const bookSVG = "${base}book.svg";
+  static const searchScanSVG = "${base}search.svg";
 }

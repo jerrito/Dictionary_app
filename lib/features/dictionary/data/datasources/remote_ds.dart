@@ -20,7 +20,6 @@ class DictionaryRemoteDatasourceImpl implements DictionaryRemoteDatasource {
       ),
     );
     final decodedResponse = jsonDecode(response.body);
-    print(decodedResponse);
     if (response.statusCode == 200) {
       return List<DictionaryModel>.from(
         decodedResponse.map(

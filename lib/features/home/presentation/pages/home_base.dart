@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:riverpod_learn/core/assets/svgs.dart';
 import 'package:riverpod_learn/core/size.dart';
@@ -9,6 +10,8 @@ import 'package:riverpod_learn/features/dictionary/presentation/pages/dictionary
 import 'package:riverpod_learn/features/discover/presentation/pages/discover.dart';
 import 'package:riverpod_learn/features/home/presentation/widgets/bottom_nav.dart';
 import 'package:riverpod_learn/features/settings/presentation/settings.dart';
+import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
+import 'package:riverpod_learn/locator.dart';
 
 class HomeBase extends StatefulWidget {
   final int currentIndex;
@@ -28,6 +31,7 @@ class _HomeBaseState extends State<HomeBase> {
   ScrollController profileController = ScrollController();
   ScrollController controller = ScrollController();
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  WordsProvider wordProvider = sl<WordsProvider>();
 
   // Scr
   int currentIndex = 0;
@@ -96,6 +100,16 @@ class _HomeBaseState extends State<HomeBase> {
         isScrolling = false;
         setState(() {});
       }
+      if (homeController.position.pixels < Sizes.height(context, 0.14)) {
+        if (wordProvider.hasWords != false) {
+          wordProvider.hasWords = false;
+        }
+      }
+      if (homeController.position.pixels > Sizes.height(context, 0.27)) {
+        if (wordProvider.hasWords != true) {
+          wordProvider.hasWords = true;
+        }
+      }
     });
     dashboardController.addListener(() {
       if (dashboardController.position.userScrollDirection ==
@@ -132,6 +146,7 @@ class _HomeBaseState extends State<HomeBase> {
 
   @override
   Widget build(BuildContext context) {
+    wordProvider = context.read<WordsProvider>();
     return Scaffold(
       // backgroundColor: Colors.white,
       key: scaffoldKey,

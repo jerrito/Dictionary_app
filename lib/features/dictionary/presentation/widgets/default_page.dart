@@ -1,26 +1,94 @@
+import 'dart:io';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:riverpod_learn/core/assets/images.dart';
+import 'package:riverpod_learn/core/assets/svgs.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/core/themes/colors.dart';
+import 'package:riverpod_learn/features/database/entity/dicitionary.dart';
 import 'package:riverpod_learn/features/dictionary/data/models/dictionary_model.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/dictionary_scanner_widget.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/searched_words.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/show_meaning_modal.dart';
+import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
+import 'package:riverpod_learn/locator.dart';
 
-class DefaultSearchPage extends StatelessWidget {
-  const DefaultSearchPage({
+class DefaultPage extends StatefulWidget {
+  const DefaultPage({
     super.key,
     // required this.controller,
     required this.dictionaryBloc,
+    required this.wordBloc,
     required this.words,
     this.dictionaryOnTap,
+    required this.scanWordTap,
   });
   // final ScrollController controller;
   final DictionaryBloc dictionaryBloc;
+  final WordBloc wordBloc;
   final List<String>? words;
   final VoidCallback? dictionaryOnTap;
+  final void Function(String word) scanWordTap;
+
+  @override
+  State<DefaultPage> createState() => _DefaultPageState();
+}
+
+class _DefaultPageState extends State<DefaultPage> {
+  final wordBloc = sl<WordBloc>();
+  File? file;
+  final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+  Future<void> scanWord() async {
+    if (file != null) {
+      final RecognizedText recognizedText =
+          await textRecognizer.processImage(InputImage.fromFile(file!));
+
+      String text = recognizedText.text;
+      print(text);
+      for (TextBlock block in recognizedText.blocks) {
+        final Rect rect = block.boundingBox;
+        final List<Point<int>> cornerPoints = block.cornerPoints;
+        final String text = block.text;
+        final List<String> languages = block.recognizedLanguages;
+
+        for (TextLine line in block.lines) {
+          // Same getters as TextBlock
+          for (TextElement element in line.elements) {
+            // Same getters as TextBlock
+            print(element.text);
+            RegExp regExp = RegExp(r'\b[a-zA-Z]+\b');
+
+            // Find all matches of alphabetic words
+            Iterable<Match> matches = regExp.allMatches(element.text);
+
+            // Extract words
+            List<String> words =
+                matches.map((match) => match.group(0)!).toList();
+
+            for (String word in words) {
+              print(word);
+              widget.scanWordTap(word);
+            }
+            // if (RegExp(r'\b[a-zA-Z]+\b').hasMatch(element.text)) {
+            // }
+          }
+        }
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    // inputImage = InputImage();
+    // TODO: implement initState
+    super.initState();
+  }
+  // textRecognizer.close();
 
   @override
   Widget build(BuildContext context) {
@@ -33,20 +101,35 @@ class DefaultSearchPage extends StatelessWidget {
           children: [
             DictionaryScannerWidget(
               label: "Dictionary (A-Z)",
-              image: DictionaryImages.dictionary,
+              image: DictionarySvgs.bookSVG,
               color: DictionaryColors.warning300,
-              onTap: dictionaryOnTap,
+              borderColor: DictionaryColors.warningBase,
+              onTap: widget.dictionaryOnTap,
             ),
-            const DictionaryScannerWidget(
-              label: "Scan words",
-              image: DictionaryImages.scannerImage,
-              color: DictionaryColors.success300,
-              onTap: null,
-            )
+            BlocListener(
+              bloc: wordBloc,
+              listener: (context, state) {
+                if (state is TakePictureLoaded) {
+                  file = state.file;
+                  setState(() {});
+                  scanWord();
+                }
+                if (state is TakePictureError) {
+                  print(state.errorMessage);
+                }
+              },
+              child: DictionaryScannerWidget(
+                label: "Scan words",
+                image: DictionarySvgs.searchScanSVG,
+                color: DictionaryColors.success300,
+                borderColor: DictionaryColors.successBase,
+                onTap: () => wordBloc.add(const TakePictureEvent()),
+              ),
+            ),
           ],
         ),
         Space.height(context, 0.02),
-        if (words?.isNotEmpty ?? false)
+        if (widget.words?.isNotEmpty ?? false)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -54,7 +137,17 @@ class DefaultSearchPage extends StatelessWidget {
                 "Search History",
               ),
               GestureDetector(
-                  onTap: clearAllHistory,
+                  onTap: () async {
+                    final clear = await clearAllHistory();
+                    if (clear) {
+                      widget.wordBloc.add(
+                        DeleteWordEvent(
+                          words: widget.words ?? [],
+                        ),
+                      );
+                      print("ss");
+                    }
+                  },
                   child: const Text(
                     "Clear all",
                   )),
@@ -63,14 +156,13 @@ class DefaultSearchPage extends StatelessWidget {
         Column(
           spacing: Sizes.height(context, 0.012),
           children: List.generate(
-              (words?.length ?? 0) > 8 ? 8 : words?.length ?? 0, (index) {
-            print(words?[index]);
-
+              (widget.words?.length ?? 0) > 8 ? 8 : widget.words?.length ?? 0,
+              (index) {
             return SearchedWordsWidget(
-              wordTitle: words?[index] ?? "",
+              wordTitle: widget.words?[index] ?? "",
               onTap: () async {
-                final response =
-                    await dictionaryBloc.getResponse(words?[index] ?? "");
+                final response = await widget.dictionaryBloc
+                    .getResponse(widget.words?[index] ?? "");
 
                 // final result = DictionaryModel.fromJson(
                 //     response!.dictionary);
@@ -94,7 +186,18 @@ class DefaultSearchPage extends StatelessWidget {
     );
   }
 
-  Future clearAllHistory() async {
-    // dictionaryBloc.deleteDictionaryList(list);
+  Future<bool> clearAllHistory() async {
+    List<DictionaryResponse>? responses = [];
+    for (var word in widget.words ?? []) {
+      final response = await widget.dictionaryBloc.getResponse(word ?? "");
+      if (response != null) {
+        responses.add(response);
+      }
+    }
+    print(responses);
+    final response =
+        await widget.dictionaryBloc.deleteDictionaryList(responses);
+    print(response);
+    return response;
   }
 }

@@ -71,7 +71,6 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
               },
               // Called when an ad request failed.
               onAdFailedToLoad: (LoadAdError error) {
-                print("sa");
                 add(InterstatialAdFailedEvent(errorMessage: error.message));
                 // debugPrint('InterstitialAd failed to load: $error');
               },
@@ -118,8 +117,12 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
   }
 
   Future<bool> deleteDictionaryList(List<DictionaryResponse> list) async {
-    final data = await database?.wordDao.deleteListDictionaryResponse(list);
-    return true;
+    try {
+      final data = await database?.wordDao.deleteListDictionaryResponse(list);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<void> insertData(Map<dynamic, dynamic>? json, String word) async {
@@ -136,7 +139,7 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
         );
       }
     } catch (e) {
-      print(e.toString());
+      // print(e.toString());
       // emit(state)
     }
   }
@@ -149,4 +152,6 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
       throw Exception(e.toString());
     }
   }
+
+  deleteWords() {}
 }

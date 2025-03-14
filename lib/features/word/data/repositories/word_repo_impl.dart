@@ -20,8 +20,7 @@ class WordSuggestionRepositoryImpl implements WordSuggestionRepository {
   }
 
   @override
-  Future<Either<String, List<String>?>> retrieveSavedWords(
-      ) async {
+  Future<Either<String, List<String>?>> retrieveSavedWords() async {
     final words = await wordLocalDatasource.retrieveSavedWords();
     return Right(words);
   }
@@ -29,6 +28,16 @@ class WordSuggestionRepositoryImpl implements WordSuggestionRepository {
   @override
   Future<Either<String, bool>> saveWord(Map<String, dynamic> params) async {
     final word = await wordLocalDatasource.saveWord(params);
+    if (word == true) {
+      return Right(word);
+    } else {
+      return const Left("");
+    }
+  }
+
+  @override
+  Future<Either<String, bool>> deleteWords(List<String> words) async {
+    final word = await wordLocalDatasource.deleteWords(words);
     if (word == true) {
       return Right(word);
     } else {

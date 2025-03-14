@@ -8,6 +8,7 @@ import 'package:riverpod_learn/core/widgets/text_form_field.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/pages/results_page.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/default_page.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/widgets/floating_button.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/suggested_word.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
@@ -37,12 +38,34 @@ class _DictionaryPageState extends State<DictionaryPage> {
   WordsProvider? wordsProvider;
   bool isSearchEmpty = false;
   final FocusNode focusNode = FocusNode();
+  navigate(String data) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResultsPage(
+          word: data,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // String.fromEnvironment(name)
+    wordsProvider = context.watch<WordsProvider>();
     final words = context.read<WordsProvider>().words;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? DictionaryColors.blackBackground
+          : DictionaryColors.whiteBackground,
+      floatingActionButton: FloatingSearchButton(
+          hasJobs: wordsProvider?.hasWords ?? false,
+          onTap: () => widget.controller.animateTo(
+                Sizes.height(context, 0.03),
+                duration: const Duration(seconds: 1),
+                curve: Curves.linear,
+              )),
       appBar: AppBar(
           automaticallyImplyLeading: false,
           // backgroundColor: const Color.fromARGB(184, 30, 30, 128),
@@ -63,19 +86,13 @@ class _DictionaryPageState extends State<DictionaryPage> {
         child: Column(
           children: [
             DefaultTextFormField(
+              prefixOnTap: () =>
+                  isSearchEmpty ? navigate(searchController.text) : null,
               onSubmitted: (p0) async {
-                print(p0);
                 if (p0?.isNotEmpty ?? false) {
                   await SystemChannels.textInput.invokeMethod("TextInput.hide");
                   if (!context.mounted) return;
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ResultsPage(
-                        word: p0!.toLowerCase(),
-                      ),
-                    ),
-                  );
+                  navigate(p0!);
                 }
               },
               focusNode: focusNode,
@@ -85,7 +102,6 @@ class _DictionaryPageState extends State<DictionaryPage> {
                   "text": value?.toLowerCase(),
                   "decodedWords": words
                 };
-                print(params);
                 wordSuggestBloc.add(
                   WordSuggestEvent(
                     params: params,
@@ -116,9 +132,14 @@ class _DictionaryPageState extends State<DictionaryPage> {
                 bloc: wordSuggestBloc,
                 listener: (context, state) {
                   if (state is WordSuggestError) {}
+                  if (state is DeleteWordLoaded) {
+                    wordSuggestBloc.add(const RetrieveWordEvent());
+                  }
+                  if (state is DeleteWordError) {
+                    print(state.errorMessage);
+                  }
                 },
                 builder: (context, state) {
-                  print(state);
                   if (state is WordSuggestLoaded) {
                     final items = state.words.length;
                     return Expanded(
@@ -133,14 +154,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                                   await SystemChannels.textInput
                                       .invokeMethod("TextInput.hide");
                                   if (!context.mounted) return;
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ResultsPage(
-                                        word: data,
-                                      ),
-                                    ),
-                                  );
+                                  navigate(data);
                                 });
                           }),
                     );
@@ -152,8 +166,9 @@ class _DictionaryPageState extends State<DictionaryPage> {
                   if (state is RetrieveWordLoaded) {
                     return Expanded(
                       child: SingleChildScrollView(
-                        controller: widget.controller,
-                        child: DefaultSearchPage(
+                        child: DefaultPage(
+                          scanWordTap: (word) => navigate(word),
+                          wordBloc: wordSuggestBloc,
                           dictionaryOnTap: () {
                             focusNode.requestFocus();
                             final Map<String, dynamic> params = {
@@ -174,7 +189,9 @@ class _DictionaryPageState extends State<DictionaryPage> {
                     );
                   }
 
-                  return DefaultSearchPage(
+                  return DefaultPage(
+                    scanWordTap: (word) => navigate(word),
+                    wordBloc: wordSuggestBloc,
                     dictionaryOnTap: () {
                       focusNode.requestFocus();
                       final Map<String, dynamic> params = {

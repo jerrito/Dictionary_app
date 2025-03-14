@@ -425,7 +425,6 @@ class _ResultsPageState extends State<ResultsPage>
                                           if (state is SearchDictionaryLoaded) {
                                             final data =
                                                 state.dictionaryInfo[0];
-                                            print(data.toMap());
                                             response = data.toMap();
                                             isLoaded = true;
                                             if (data.phonetics?.isNotEmpty ??

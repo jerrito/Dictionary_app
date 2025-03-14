@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:riverpod_learn/core/onboarding/page_view.dart';
 import 'package:riverpod_learn/core/themes/theme.dart';
 import 'package:riverpod_learn/features/database/database.dart';
+import 'package:riverpod_learn/features/home/presentation/bloc/home_bloc.dart';
 import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
+import 'package:riverpod_learn/initial_page.dart';
 import 'package:riverpod_learn/locator.dart';
 
 AppDatabase? database;
@@ -27,6 +29,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final homeBloc = sl<HomeBloc>();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -42,7 +51,11 @@ class _MyAppState extends State<MyApp> {
             DefaultThemeData(context: context).defaultTheme(Brightness.light),
         darkTheme:
             DefaultThemeData(context: context).defaultTheme(Brightness.dark),
-        home: const OnboardingPageViews(),
+        home: homeBloc.checkIfUserExist()
+            ? const InitialPage(
+                userExist: true,
+              )
+            : const OnboardingPageViews(),
       ),
     );
   }

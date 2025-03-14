@@ -5,7 +5,7 @@ class DefaultTextFormField extends StatelessWidget {
   final Widget? suffixIcon;
   final bool? showSuffixIcon;
   final String? initialValue, hint;
-  final void Function()? suffixOnTap;
+  final void Function()? suffixOnTap, prefixOnTap;
   final TextEditingController controller;
   final void Function(String?)? onChanged, onSubmitted;
   final FocusNode? focusNode;
@@ -21,6 +21,7 @@ class DefaultTextFormField extends StatelessWidget {
     required this.onChanged,
     required this.onSubmitted,
     required this.controller,
+    this.prefixOnTap,
   });
 
   @override
@@ -29,6 +30,7 @@ class DefaultTextFormField extends StatelessWidget {
       initialValue: initialValue,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       builder: (field) => DefaultTextField(
+        prefixOnTap: prefixOnTap,
         showSuffixIcon: showSuffixIcon ?? false,
         onSubmitted: onSubmitted,
         onChange: onChanged,
