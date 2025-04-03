@@ -44,4 +44,14 @@ class WordSuggestionRepositoryImpl implements WordSuggestionRepository {
       return const Left("");
     }
   }
+
+  @override
+  Future<Either<String, bool>> deleteWord(Map<String, dynamic> params) async {
+    final word = await wordLocalDatasource.deleteWord(params);
+    if (word == true) {
+      return Right(word);
+    } else {
+      return const Left("");
+    }
+  }
 }

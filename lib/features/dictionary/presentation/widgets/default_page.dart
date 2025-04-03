@@ -141,11 +141,10 @@ class _DefaultPageState extends State<DefaultPage> {
                     final clear = await clearAllHistory();
                     if (clear) {
                       widget.wordBloc.add(
-                        DeleteWordEvent(
+                        DeleteWordsEvent(
                           words: widget.words ?? [],
                         ),
                       );
-                      print("ss");
                     }
                   },
                   child: const Text(
@@ -159,6 +158,7 @@ class _DefaultPageState extends State<DefaultPage> {
               (widget.words?.length ?? 0) > 8 ? 8 : widget.words?.length ?? 0,
               (index) {
             return SearchedWordsWidget(
+              wordBloc: widget.wordBloc,
               wordTitle: widget.words?[index] ?? "",
               onTap: () async {
                 final response = await widget.dictionaryBloc
@@ -194,10 +194,8 @@ class _DefaultPageState extends State<DefaultPage> {
         responses.add(response);
       }
     }
-    print(responses);
     final response =
         await widget.dictionaryBloc.deleteDictionaryList(responses);
-    print(response);
     return response;
   }
 }

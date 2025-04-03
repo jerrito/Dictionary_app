@@ -12,6 +12,7 @@ import 'package:riverpod_learn/features/dictionary/presentation/widgets/definiti
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_widget.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/new_result_app_bar.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/word_phonetic.dart';
+import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 import 'package:riverpod_learn/locator.dart';
 
 class NewResultPage extends StatefulWidget {
@@ -25,6 +26,7 @@ class NewResultPage extends StatefulWidget {
 class _NewResultPageState extends State<NewResultPage>
     with SingleTickerProviderStateMixin {
   final dictionaryBloc = sl<DictionaryBloc>();
+  final wordBloc = sl<WordBloc>();
   final player = AudioPlayer();
   TabController? controller;
   final scrollController = ScrollController();
@@ -45,6 +47,8 @@ class _NewResultPageState extends State<NewResultPage>
     }
   }
 
+  Map<dynamic, dynamic>? response;
+
   @override
   initState() {
     final Map<String, dynamic> params = {"text": widget.word};
@@ -56,235 +60,253 @@ class _NewResultPageState extends State<NewResultPage>
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer(
-        bloc: dictionaryBloc,
-        listener: (context, state) {
-          if (state is SearchDictionaryLoaded) {
-            controller = TabController(
-              length: state.dictionaryInfo[0].meanings!.length,
-              vsync: this,
-            );
-            values = state.dictionaryInfo[0].meanings!
-                .map((e) => e.partOfSpeech)
-                .toList();
-            selectedValue = values[0];
-            audioUrl = state.dictionaryInfo[0].phonetics != null
-                ? (state.dictionaryInfo[0].phonetics?[0].audio)
-                : null;
-            final data = state.dictionaryInfo[0];
-            phonetics = data.phonetics!;
+    return BlocListener(
+      bloc: wordBloc,
+      listener: (context, state) {
+        if (state is SaveWordLoaded) {
+          dictionaryBloc.insertData(response!, widget.word);
+        }
+      },
+      child: BlocConsumer(
+          bloc: dictionaryBloc,
+          listener: (context, state) {
+            if (state is SearchDictionaryLoaded) {
+              controller = TabController(
+                length: state.dictionaryInfo[0].meanings!.length,
+                vsync: this,
+              );
+              values = state.dictionaryInfo[0].meanings!
+                  .map((e) => e.partOfSpeech)
+                  .toList();
+              selectedValue = values[0];
+              audioUrl = state.dictionaryInfo[0].phonetics != null
+                  ? (state.dictionaryInfo[0].phonetics?[0].audio)
+                  : null;
+              final data = state.dictionaryInfo[0];
+              phonetics = data.phonetics!;
+              response = data.toMap();
 
-            setState(() {});
-          }
-          // v
-        },
-        builder: (context, state) {
-          if (state is SearchDictionaryLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is SearchDictionaryLoaded) {
-            final data = state.dictionaryInfo[0].meanings;
-            final meanings = state.dictionaryInfo[0].meanings;
+              setState(() {});
+              final Map<String, dynamic> params = {
+                "word": data.word ?? widget.word
+              };
+              wordBloc.add(
+                SaveWordEvent(
+                  params: params,
+                ),
+              );
+            }
+            // v
+          },
+          builder: (context, state) {
+            if (state is SearchDictionaryLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (state is SearchDictionaryLoaded) {
+              final data = state.dictionaryInfo[0].meanings;
+              final meanings = state.dictionaryInfo[0].meanings;
 
-            return DefaultTabController(
-                length: data!.length,
-                child: Scaffold(
-                    appBar: AppBar(
-                      automaticallyImplyLeading: false,
-                      title: const NewResultAppBar(),
-                      bottom: PreferredSize(
-                        preferredSize: const Size(double.infinity, 140),
-                        child: Container(
+              return DefaultTabController(
+                  length: data!.length,
+                  child: Scaffold(
+                      appBar: AppBar(
+                        automaticallyImplyLeading: false,
+                        title: const NewResultAppBar(),
+                        bottom: PreferredSize(
+                          preferredSize: const Size(double.infinity, 140),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: Sizes.width(
+                                context,
+                                0.04,
+                              ),
+                            ),
+                            // decoration: BoxDecoration(
+                            //   border: Border.all(
+                            //     color: context.themeData.brightness != Brightness.dark
+                            //         ? DictionaryColors.blackBackground
+                            //         : DictionaryColors.darkShadow,
+                            //   ),
+                            //   borderRadius: BorderRadius.circular(10),
+                            // ),
+                            child:
+                                // TabBar(
+                                //   controller: controller,
+                                //   isScrollable: true,
+                                //   tabs: [
+                                Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                WordPhonetic(
+                                  onSoundTap: (audioUrl != null &&
+                                          (audioUrl?.isNotEmpty ?? false))
+                                      ? () async {
+                                          try {
+                                            await player.play(
+                                              UrlSource(
+                                                audioUrl ?? "",
+                                              ),
+                                              volume: 1.0,
+                                            );
+                                          } catch (e) {
+                                            print(e.toString());
+                                          }
+                                        }
+                                      : null,
+                                  hasSound: audioUrl != null,
+                                  phonetic: phonetics[0].text,
+                                  word: widget.word,
+                                ),
+                                Space.height(context, 0.012),
+                                // data.takeWhile((e)=> e.partOfSpeech)
+                                TabsWidget(
+                                  selected: {selectedValue},
+                                  onSelectionChanged: (p0) {
+                                    selectedValue = p0.first;
+                                    if (p0.first != null) {
+                                      scrollToPartOfSpeech(p0.first);
+                                    }
+                                    setState(() {});
+                                  },
+                                  buttonSegments: data
+                                      .map((e) => ButtonSegment(
+                                            value: e.partOfSpeech,
+                                            label: Text(
+                                              e.partOfSpeech ?? "",
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400,
+                                                color: e.partOfSpeech ==
+                                                            selectedValue &&
+                                                        context.themeData
+                                                                .brightness ==
+                                                            Brightness.dark
+                                                    ? DictionaryColors
+                                                        .blackBackground
+                                                    : e.partOfSpeech !=
+                                                                selectedValue &&
+                                                            context.themeData
+                                                                    .brightness !=
+                                                                Brightness.dark
+                                                        ? DictionaryColors
+                                                            .blackBackground
+                                                        : DictionaryColors
+                                                            .whiteBackground,
+                                              ),
+                                            ),
+                                          ))
+                                      .toList(),
+                                  data: selectedValue ?? "",
+                                  // isSelected: selectedValue != null,
+                                  hasBorder: true,
+                                ),
+                              ],
+                            ),
+                            // TabsWidget(
+                            //   data: "Definition",
+                            //   isSelected: controller?.index == 1,
+                            //   hasBorder: true,
+                            // ),
+                            // TabsWidget(
+                            //   b
+                            //   data: "Definition",
+                            //   isSelected: controller?.index == 2,
+                            //   hasBorder: true,
+                            // ),
+                            // TabsWidget(
+                            //   data: "Definition",
+                            //   hasBorder: false,
+                            //   isSelected: controller?.index == 3,
+                            // ),
+                            // Tab(text: 'Definition'),
+                            // Tab(text: 'Parts of Speech'),
+                            // Tab(text: 'Origin'),
+                            // Tab(text: 'Similar'),
+                            //   ],
+                            // ),
+                          ),
+                        ),
+                      ),
+                      body: SingleChildScrollView(
+                        controller: scrollController,
+                        child: Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: Sizes.width(
                               context,
                               0.04,
                             ),
+                            vertical: Sizes.height(
+                              context,
+                              0.022,
+                            ),
                           ),
-                          // decoration: BoxDecoration(
-                          //   border: Border.all(
-                          //     color: context.themeData.brightness != Brightness.dark
-                          //         ? DictionaryColors.blackBackground
-                          //         : DictionaryColors.darkShadow,
-                          //   ),
-                          //   borderRadius: BorderRadius.circular(10),
-                          // ),
-                          child:
-                              // TabBar(
-                              //   controller: controller,
-                              //   isScrollable: true,
-                              //   tabs: [
-                              Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Column(
                             children: [
-                              WordPhonetic(
-                                onSoundTap: (audioUrl != null &&
-                                        (audioUrl?.isNotEmpty ?? false))
-                                    ? () async {
-                                        try {
-                                          await player.play(
-                                            UrlSource(
-                                              audioUrl ?? "",
-                                            ),
-                                            volume: 1.0,
-                                          );
-                                        } catch (e) {
-                                          print(e.toString());
-                                        }
-                                      }
-                                    : null,
-                                hasSound: audioUrl != null,
-                                phonetic: phonetics[0].text,
-                                word: widget.word,
-                              ),
-                              Space.height(context, 0.012),
-                              // data.takeWhile((e)=> e.partOfSpeech)
-                              TabsWidget(
-                                selected: {selectedValue},
-                                onSelectionChanged: (p0) {
-                                  selectedValue = p0.first;
-                                  if (p0.first != null) {
-                                    scrollToPartOfSpeech(p0.first);
+                              Column(
+                                spacing: Sizes.height(
+                                  context,
+                                  0.024,
+                                ),
+                                children: List.generate(
+                                    state.dictionaryInfo[0].meanings?.length ??
+                                        0, (index) {
+                                  final data = state.dictionaryInfo[0];
+                                  // final meaningsLength = data.meanings?.length;
+                                  final meanings = data.meanings?[index];
+                                  final partOfSpeech =
+                                      meanings?.partOfSpeech ?? "";
+                                  if (!partOfSpeechKeys
+                                      .containsKey(partOfSpeech)) {
+                                    partOfSpeechKeys[partOfSpeech] =
+                                        GlobalKey();
                                   }
-                                  setState(() {});
-                                },
-                                buttonSegments: data
-                                    .map((e) => ButtonSegment(
-                                          value: e.partOfSpeech,
-                                          label: Text(
-                                            e.partOfSpeech ?? "",
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w400,
-                                              color: e.partOfSpeech ==
-                                                          selectedValue &&
-                                                      context.themeData
-                                                              .brightness ==
-                                                          Brightness.dark
-                                                  ? DictionaryColors
-                                                      .blackBackground
-                                                  : e.partOfSpeech !=
-                                                              selectedValue &&
-                                                          context.themeData
-                                                                  .brightness !=
-                                                              Brightness.dark
-                                                      ? DictionaryColors
-                                                          .blackBackground
-                                                      : DictionaryColors
-                                                          .whiteBackground,
-                                            ),
-                                          ),
-                                        ))
-                                    .toList(),
-                                data: selectedValue ?? "",
-                                // isSelected: selectedValue != null,
-                                hasBorder: true,
+                                  return DefinitionWidget(
+                                    key: partOfSpeechKeys[partOfSpeech],
+                                    isNew: true,
+                                    image: PartOfSpeechImage.values
+                                        .singleWhere((e) =>
+                                            e.name == meanings?.partOfSpeech)
+                                        .image,
+                                    index: "${index + 1}",
+                                    partOfSpeech: meanings?.partOfSpeech ?? "",
+                                    definition: List.generate(
+                                        meanings!.definitions!.length,
+                                        (int index) => Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: Sizes.height(
+                                                      context, 0.01)),
+                                              child: Column(
+                                                children: [
+                                                  DefinitionRow(
+                                                    index: index,
+                                                    definition: meanings
+                                                        .definitions?[index]
+                                                        .definition,
+                                                  ),
+                                                  ExampleRow(
+                                                    isExample: meanings
+                                                            .definitions?[index]
+                                                            .example !=
+                                                        null,
+                                                    example: meanings
+                                                        .definitions?[index]
+                                                        .example,
+                                                  )
+                                                ],
+                                              ),
+                                            )),
+                                  );
+                                }),
                               ),
                             ],
                           ),
-                          // TabsWidget(
-                          //   data: "Definition",
-                          //   isSelected: controller?.index == 1,
-                          //   hasBorder: true,
-                          // ),
-                          // TabsWidget(
-                          //   b
-                          //   data: "Definition",
-                          //   isSelected: controller?.index == 2,
-                          //   hasBorder: true,
-                          // ),
-                          // TabsWidget(
-                          //   data: "Definition",
-                          //   hasBorder: false,
-                          //   isSelected: controller?.index == 3,
-                          // ),
-                          // Tab(text: 'Definition'),
-                          // Tab(text: 'Parts of Speech'),
-                          // Tab(text: 'Origin'),
-                          // Tab(text: 'Similar'),
-                          //   ],
-                          // ),
                         ),
-                      ),
-                    ),
-                    body: SingleChildScrollView(
-                      controller: scrollController,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: Sizes.width(
-                            context,
-                            0.04,
-                          ),
-                          vertical: Sizes.height(
-                            context,
-                            0.022,
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            Column(
-                              spacing: Sizes.height(
-                                context,
-                                0.024,
-                              ),
-                              children: List.generate(
-                                  state.dictionaryInfo[0].meanings?.length ?? 0,
-                                  (index) {
-                                final data = state.dictionaryInfo[0];
-                                // final meaningsLength = data.meanings?.length;
-                                final meanings = data.meanings?[index];
-                                final partOfSpeech =
-                                    meanings?.partOfSpeech ?? "";
-                                if (!partOfSpeechKeys
-                                    .containsKey(partOfSpeech)) {
-                                  partOfSpeechKeys[partOfSpeech] = GlobalKey();
-                                }
-                                return DefinitionWidget(
-                                  key: partOfSpeechKeys[partOfSpeech],
-                                  isNew: true,
-                                  image: PartOfSpeechImage.values
-                                      .singleWhere((e) =>
-                                          e.name == meanings?.partOfSpeech)
-                                      .image,
-                                  index: "${index + 1}",
-                                  partOfSpeech: meanings?.partOfSpeech ?? "",
-                                  definition: List.generate(
-                                      meanings!.definitions!.length,
-                                      (int index) => Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: Sizes.height(
-                                                    context, 0.01)),
-                                            child: Column(
-                                              children: [
-                                                DefinitionRow(
-                                                  index: index,
-                                                  definition: meanings
-                                                      .definitions?[index]
-                                                      .definition,
-                                                ),
-                                                ExampleRow(
-                                                  isExample: meanings
-                                                          .definitions?[index]
-                                                          .example !=
-                                                      null,
-                                                  example: meanings
-                                                      .definitions?[index]
-                                                      .example,
-                                                )
-                                              ],
-                                            ),
-                                          )),
-                                );
-                              }),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )));
-          }
-          return const SizedBox.shrink();
-        });
+                      )));
+            }
+            return const SizedBox.shrink();
+          }),
+    );
   }
 }
 

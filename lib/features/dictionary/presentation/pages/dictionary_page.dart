@@ -135,7 +135,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                 bloc: wordSuggestBloc,
                 listener: (context, state) {
                   if (state is WordSuggestError) {}
-                  if (state is DeleteWordLoaded) {
+                  if (state is DeleteWordsLoaded) {
                     wordSuggestBloc.add(const RetrieveWordEvent());
                   }
                   if (state is DeleteWordError) {

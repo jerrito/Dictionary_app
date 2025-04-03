@@ -4,8 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:riverpod_learn/core/assets/svgs.dart';
 import 'package:riverpod_learn/core/size.dart';
+import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/core/themes/colors.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
+import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 import 'package:riverpod_learn/locator.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -14,9 +16,11 @@ class SearchedWordsWidget extends StatefulWidget {
     super.key,
     required this.wordTitle,
     this.onTap,
+    required this.wordBloc,
   });
   final String wordTitle;
   final VoidCallback? onTap;
+  final WordBloc wordBloc;
 
   @override
   State<SearchedWordsWidget> createState() => _SearchedWordsWidgetState();
@@ -24,6 +28,7 @@ class SearchedWordsWidget extends StatefulWidget {
 
 class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
   final DictionaryBloc dictionaryBloc = sl<DictionaryBloc>();
+  final WordBloc wordsBloc = sl<WordBloc>();
   @override
   void initState() {
     // TODO: implement initState
@@ -79,6 +84,11 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
           spacing: Sizes.height(context, 0.012),
           children: [
             _FirstRow(
+                moreOptionsOnTap: (details) => showPopMenu(
+                      context,
+                      details,
+                      widget.wordTitle,
+                    ),
                 hasAudio: audioUrl == null,
                 wordTitle: widget.wordTitle,
                 onAudioOnTap:
@@ -96,53 +106,121 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
                             }
                           }
                         : null),
-            BlocConsumer(
-              bloc: dictionaryBloc,
+            BlocListener(
+              bloc: wordsBloc,
               listener: (context, state) async {
-                if (state is SearchWordMeaningLoaded) {
-                  if (state.dictionaryInfo.phonetic != null) {
-                    audioUrl = state.dictionaryInfo.phonetic;
-                  } else if (state.dictionaryInfo.phonetics?.isNotEmpty ??
-                      false) {
-                    audioUrl = state.dictionaryInfo.phonetics?[0].audio ??
-                        state.dictionaryInfo.phonetics?[1].audio ??
-                        "";
-                  }
+                if (state is DeleteWordLoaded) {
+                  final response =
+                      await dictionaryBloc.getResponse(widget.wordTitle);
+                  await dictionaryBloc.deleteDictionaryData(response!);
+                  widget.wordBloc.add(const RetrieveWordEvent());
+                }
+              },
+              child: BlocConsumer(
+                bloc: dictionaryBloc,
+                listener: (context, state) async {
+                  if (state is SearchWordMeaningLoaded) {
+                    if (state.dictionaryInfo.phonetic != null) {
+                      audioUrl = state.dictionaryInfo.phonetic;
+                    } else if (state.dictionaryInfo.phonetics?.isNotEmpty ??
+                        false) {
+                      audioUrl = state.dictionaryInfo.phonetics?[0].audio ??
+                          state.dictionaryInfo.phonetics?[1].audio ??
+                          "";
+                    }
 
-                  setState(() {});
-                }
-              },
-              builder: (context, state) {
-                if (state is SearchWordMeaningLoading) {
-                  return const Skeletonizer(
-                    enabled: true,
-                    effect: ShimmerEffect(
-                        baseColor: DictionaryColors.primary100,
-                        highlightColor: DictionaryColors.primary200),
-                    child: Text("datassjafhahasjjss"),
-                  );
-                }
-                if (state is SearchWordMeaningLoaded) {
-                  final String definition = state.dictionaryInfo.meanings?[0]
-                          .definitions?[0].definition ??
-                      "";
-                  return SizedBox(
-                    width: Sizes.width(context, 0.5),
-                    child: Text(
-                      (definition.length > 45)
-                          ? definition.substring(0, 44)
-                          : definition,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  );
-                }
-                return const Text("");
-              },
+                    setState(() {});
+                  }
+                },
+                builder: (context, state) {
+                  if (state is SearchWordMeaningLoading) {
+                    return const Skeletonizer(
+                      enabled: true,
+                      effect: ShimmerEffect(
+                          baseColor: DictionaryColors.primary100,
+                          highlightColor: DictionaryColors.primary200),
+                      child: Text("datassjafhahasjjss"),
+                    );
+                  }
+                  if (state is SearchWordMeaningLoaded) {
+                    final String definition = state.dictionaryInfo.meanings?[0]
+                            .definitions?[0].definition ??
+                        "";
+                    return SizedBox(
+                      width: Sizes.width(context, 0.5),
+                      child: Text(
+                        (definition.length > 45)
+                            ? definition.substring(0, 44)
+                            : definition,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    );
+                  }
+                  return const Text("");
+                },
+              ),
             ),
             const _LastRow("duration"),
           ],
         ),
       ),
+    );
+  }
+
+  deleteWord(String word) {
+    final params = {"word": word};
+    wordsBloc.add(DeleteWordEvent(params: params));
+  }
+
+  showPopMenu(BuildContext context, TapDownDetails details, String word) {
+    final offset = details.globalPosition;
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        offset.dx,
+        offset.dy,
+        Sizes.width(context, 1) - offset.dx,
+        Sizes.height(context, 1) - offset.dy,
+      ),
+      items: popUps(context, word),
+    );
+  }
+
+  List<PopupMenuEntry<dynamic>> popUps(BuildContext context, String word) => [
+        PopupMenuItem(
+          onTap: () => deleteWord(word),
+          child: const PopRows(
+            isDeleteWord: true,
+          ),
+        ),
+        PopupMenuItem(
+          // onTap: bookmarkWord,
+          child: const PopRows(
+            isDeleteWord: false,
+          ),
+        ),
+      ];
+}
+
+class PopRows extends StatelessWidget {
+  const PopRows({
+    super.key,
+    required this.isDeleteWord,
+  });
+  final bool isDeleteWord;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(
+          isDeleteWord ? Icons.delete_forever : Icons.bookmark_outline,
+        ),
+        Space.width(context, 0.016),
+        Text(
+          isDeleteWord ? "Delete word" : "Bookmark word",
+        )
+      ],
     );
   }
 }
@@ -152,10 +230,12 @@ class _FirstRow extends StatelessWidget {
     this.hasAudio,
     required this.wordTitle,
     this.onAudioOnTap,
+    this.moreOptionsOnTap,
   });
   final bool? hasAudio;
   final String wordTitle;
   final VoidCallback? onAudioOnTap;
+  final void Function(TapDownDetails)? moreOptionsOnTap;
 
   @override
   Widget build(BuildContext context) {
@@ -182,13 +262,16 @@ class _FirstRow extends StatelessWidget {
             )
           ],
         ),
-        SvgPicture.asset(
-          DictionarySvgs.moreHorizontalSVG,
-          colorFilter: ColorFilter.mode(
-            Theme.of(context).brightness != Brightness.dark
-                ? DictionaryColors.blackBackground
-                : DictionaryColors.whiteBackground,
-            BlendMode.srcIn,
+        GestureDetector(
+          onTapDown: moreOptionsOnTap,
+          child: SvgPicture.asset(
+            DictionarySvgs.moreHorizontalSVG,
+            colorFilter: ColorFilter.mode(
+              Theme.of(context).brightness != Brightness.dark
+                  ? DictionaryColors.blackBackground
+                  : DictionaryColors.whiteBackground,
+              BlendMode.srcIn,
+            ),
           ),
         )
       ],

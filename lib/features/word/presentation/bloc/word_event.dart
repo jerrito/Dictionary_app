@@ -31,9 +31,15 @@ class SaveWordEvent extends WordEvent {
 }
 
 class DeleteWordEvent extends WordEvent {
+  final Map<String, dynamic> params;
+
+  const DeleteWordEvent({required this.params});
+}
+
+class DeleteWordsEvent extends WordEvent {
   final List<String> words;
 
-  const DeleteWordEvent({required this.words});
+  const DeleteWordsEvent({required this.words});
 }
 
 class TakePictureEvent extends WordEvent {
