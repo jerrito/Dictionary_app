@@ -5,6 +5,7 @@ import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/core/themes/colors.dart';
 import 'package:riverpod_learn/core/widgets/text_form_field.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/pages/new_result_page.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/pages/results_page.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/default_page.dart';
@@ -42,7 +43,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ResultsPage(
+        builder: (context) => NewResultPage(
           word: data,
         ),
       ),
@@ -60,7 +61,8 @@ class _DictionaryPageState extends State<DictionaryPage> {
           ? DictionaryColors.blackBackground
           : DictionaryColors.whiteBackground,
       floatingActionButton: FloatingSearchButton(
-          hasJobs: wordsProvider?.hasWords ?? false,
+          hasJobs: (wordsProvider?.hasWords ?? false) &&
+              widget.controller.position.maxScrollExtent > 300,
           onTap: () => widget.controller.animateTo(
                 Sizes.height(context, 0.03),
                 duration: const Duration(seconds: 1),
@@ -92,6 +94,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                 if (p0?.isNotEmpty ?? false) {
                   await SystemChannels.textInput.invokeMethod("TextInput.hide");
                   if (!context.mounted) return;
+
                   navigate(p0!);
                 }
               },
@@ -136,7 +139,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                     wordSuggestBloc.add(const RetrieveWordEvent());
                   }
                   if (state is DeleteWordError) {
-                    print(state.errorMessage);
+                    // print(state.errorMessage);
                   }
                 },
                 builder: (context, state) {

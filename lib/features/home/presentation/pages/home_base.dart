@@ -249,7 +249,7 @@ enum NavItems {
     indexGet: 0,
   ),
   dashboard(
-    image: DictionarySvgs.bookmarkSVG,
+    image: DictionarySvgs.allBookmarkSVG,
     label: "Bookmark",
     indexGet: 1,
   ),
