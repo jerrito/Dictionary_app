@@ -2,6 +2,8 @@ import 'package:data_connection_checker_nulls/data_connection_checker_nulls.dart
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_learn/core/network_info.dart';
+import 'package:riverpod_learn/features/bookmark/presentation/bloc/bookmark_bloc.dart';
+import 'package:riverpod_learn/features/bookmark/presentation/providers/bookmark_provider.dart';
 import 'package:riverpod_learn/features/dictionary/data/datasources/remote_ds.dart';
 import 'package:riverpod_learn/features/dictionary/data/repositories/dictionary_repository_impl.dart';
 import 'package:riverpod_learn/features/dictionary/domain/repositories/dictionary_repository.dart';
@@ -50,6 +52,22 @@ initDependencies() async {
 
   // home call
   homeImplementer();
+
+  // bookmark call
+  bookmark();
+}
+
+// bookmark
+bookmark() {
+//bloc
+  sl.registerFactory(() => BookmarkBloc(provider: sl()));
+
+  sl.registerFactory(() => BookmarkProvider());
+// usecase
+
+// repositories
+
+// datasources
 }
 
 // word locator

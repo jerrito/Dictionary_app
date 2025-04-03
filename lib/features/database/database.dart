@@ -11,7 +11,8 @@ import 'dao/word_dao.dart';
 
 part 'database.g.dart'; // the generated code will be there
 
-@Database(version: 1, entities: [DictionaryResponse])
+@Database(
+    version: 1, entities: [DictionaryResponse, DictionaryBookmarkResponse])
 @TypeConverters([DictionaryResponseConveter])
 abstract class AppDatabase extends FloorDatabase {
   WordDao get wordDao;

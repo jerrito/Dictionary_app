@@ -21,3 +21,24 @@ class DictionaryResponse extends Equatable {
         dictionary,
       ];
 }
+
+@entity
+class DictionaryBookmarkResponse extends Equatable {
+  @primaryKey
+  final int? id;
+  final String word;
+  final Map<dynamic, dynamic>? dictionary;
+
+  const DictionaryBookmarkResponse({
+    this.id,
+    required this.word,
+    required this.dictionary,
+  });
+
+  @override
+  List<Object?> get props => [
+        id,
+        word,
+        dictionary,
+      ];
+}

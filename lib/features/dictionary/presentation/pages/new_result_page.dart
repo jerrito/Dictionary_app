@@ -6,6 +6,7 @@ import 'package:riverpod_learn/core/extensions.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/core/themes/colors.dart';
+import 'package:riverpod_learn/features/bookmark/presentation/bloc/bookmark_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/domain/entities/phonetics.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_row.dart';
@@ -27,6 +28,7 @@ class _NewResultPageState extends State<NewResultPage>
     with SingleTickerProviderStateMixin {
   final dictionaryBloc = sl<DictionaryBloc>();
   final wordBloc = sl<WordBloc>();
+  final bookmarkBloc = sl<BookmarkBloc>();
   final player = AudioPlayer();
   TabController? controller;
   final scrollController = ScrollController();
@@ -60,13 +62,22 @@ class _NewResultPageState extends State<NewResultPage>
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener(
-      bloc: wordBloc,
-      listener: (context, state) {
-        if (state is SaveWordLoaded) {
-          dictionaryBloc.insertData(response!, widget.word);
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener(
+          bloc: bookmarkBloc,
+          listener: (context, state) {
+            
+          },
+        ),
+        BlocListener(
+            bloc: wordBloc,
+            listener: (context, state) {
+              if (state is SaveWordLoaded) {
+                dictionaryBloc.insertData(response!, widget.word);
+              }
+            })
+      ],
       child: BlocConsumer(
           bloc: dictionaryBloc,
           listener: (context, state) {
@@ -111,7 +122,9 @@ class _NewResultPageState extends State<NewResultPage>
                   child: Scaffold(
                       appBar: AppBar(
                         automaticallyImplyLeading: false,
-                        title: const NewResultAppBar(),
+                        title: NewResultAppBar(
+                          onBookmarkTap: onBookmarkTap,
+                        ),
                         bottom: PreferredSize(
                           preferredSize: const Size(double.infinity, 140),
                           child: Container(
@@ -306,6 +319,14 @@ class _NewResultPageState extends State<NewResultPage>
             }
             return const SizedBox.shrink();
           }),
+    );
+  }
+
+  onBookmarkTap() {
+    bookmarkBloc.insertData(
+      response,
+      widget.word,
+      context,
     );
   }
 }

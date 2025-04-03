@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +8,7 @@ import 'package:riverpod_learn/core/assets/svgs.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/core/themes/colors.dart';
+import 'package:riverpod_learn/features/bookmark/presentation/bloc/bookmark_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 import 'package:riverpod_learn/locator.dart';
@@ -29,6 +32,7 @@ class SearchedWordsWidget extends StatefulWidget {
 class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
   final DictionaryBloc dictionaryBloc = sl<DictionaryBloc>();
   final WordBloc wordsBloc = sl<WordBloc>();
+  final bookmarkBloc = sl<BookmarkBloc>();
   @override
   void initState() {
     // TODO: implement initState
@@ -88,6 +92,7 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
                       context,
                       details,
                       widget.wordTitle,
+                      {},
                     ),
                 hasAudio: audioUrl == null,
                 wordTitle: widget.wordTitle,
@@ -172,7 +177,16 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
     wordsBloc.add(DeleteWordEvent(params: params));
   }
 
-  showPopMenu(BuildContext context, TapDownDetails details, String word) {
+  bookmarkWord(String word, Map<dynamic, dynamic> json) {
+    bookmarkBloc.insertData(
+      json,
+      word,
+      context,
+    );
+  }
+
+  showPopMenu(BuildContext context, TapDownDetails details, String word,
+      Map<dynamic, dynamic> json) {
     final offset = details.globalPosition;
     showMenu(
       context: context,
@@ -182,11 +196,13 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
         Sizes.width(context, 1) - offset.dx,
         Sizes.height(context, 1) - offset.dy,
       ),
-      items: popUps(context, word),
+      items: popUps(context, word, json),
     );
   }
 
-  List<PopupMenuEntry<dynamic>> popUps(BuildContext context, String word) => [
+  List<PopupMenuEntry<dynamic>> popUps(
+          BuildContext context, String word, Map<dynamic, dynamic> json) =>
+      [
         PopupMenuItem(
           onTap: () => deleteWord(word),
           child: const PopRows(
@@ -194,7 +210,7 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
           ),
         ),
         PopupMenuItem(
-          // onTap: bookmarkWord,
+          onTap: () => bookmarkWord(word, json),
           child: const PopRows(
             isDeleteWord: false,
           ),

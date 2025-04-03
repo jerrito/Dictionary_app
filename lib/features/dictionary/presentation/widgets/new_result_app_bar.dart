@@ -6,8 +6,11 @@ import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/themes/colors.dart';
 
 class NewResultAppBar extends StatelessWidget {
-  const NewResultAppBar({super.key});
-
+  const NewResultAppBar({
+    super.key,
+    this.onBookmarkTap,
+  });
+  final VoidCallback? onBookmarkTap;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -21,7 +24,7 @@ class NewResultAppBar extends StatelessWidget {
           ),
           children: [
             SVGWidget(
-              onTap: () => print("object"),
+              onTap: onBookmarkTap,
               svg: DictionarySvgs.bookmarkSVG,
             ),
             const SVGWidget(
