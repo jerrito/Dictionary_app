@@ -96,9 +96,9 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `DictionaryResponse` (`id` INTEGER, `word` TEXT NOT NULL, `dictionary` TEXT, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `DictionaryResponse` (`id` INTEGER, `word` TEXT NOT NULL, `dateTime` TEXT NOT NULL, `dictionary` TEXT, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `DictionaryBookmarkResponse` (`id` INTEGER, `word` TEXT NOT NULL, `dictionary` TEXT, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `DictionaryBookmarkResponse` (`id` INTEGER, `word` TEXT NOT NULL, `dateTime` TEXT NOT NULL, `dictionary` TEXT, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -123,6 +123,7 @@ class _$WordDao extends WordDao {
             (DictionaryResponse item) => <String, Object?>{
                   'id': item.id,
                   'word': item.word,
+                  'dateTime': item.dateTime,
                   'dictionary':
                       _dictionaryResponseConveter.encode(item.dictionary)
                 },
@@ -133,6 +134,7 @@ class _$WordDao extends WordDao {
             (DictionaryBookmarkResponse item) => <String, Object?>{
                   'id': item.id,
                   'word': item.word,
+                  'dateTime': item.dateTime,
                   'dictionary':
                       _dictionaryResponseConveter.encode(item.dictionary)
                 },
@@ -144,6 +146,7 @@ class _$WordDao extends WordDao {
             (DictionaryResponse item) => <String, Object?>{
                   'id': item.id,
                   'word': item.word,
+                  'dateTime': item.dateTime,
                   'dictionary':
                       _dictionaryResponseConveter.encode(item.dictionary)
                 },
@@ -155,6 +158,7 @@ class _$WordDao extends WordDao {
             (DictionaryBookmarkResponse item) => <String, Object?>{
                   'id': item.id,
                   'word': item.word,
+                  'dateTime': item.dateTime,
                   'dictionary':
                       _dictionaryResponseConveter.encode(item.dictionary)
                 },
@@ -181,6 +185,7 @@ class _$WordDao extends WordDao {
   Stream<List<DictionaryResponse>> getList() {
     return _queryAdapter.queryListStream('SELECT * FROM DictionaryResponse',
         mapper: (Map<String, Object?> row) => DictionaryResponse(
+            dateTime: row['dateTime'] as String,
             id: row['id'] as int?,
             word: row['word'] as String,
             dictionary: _dictionaryResponseConveter
@@ -196,8 +201,9 @@ class _$WordDao extends WordDao {
         mapper: (Map<String, Object?> row) => DictionaryBookmarkResponse(
             id: row['id'] as int?,
             word: row['word'] as String,
-            dictionary: _dictionaryResponseConveter
-                .decode(row['dictionary'] as String)),
+            dictionary:
+                _dictionaryResponseConveter.decode(row['dictionary'] as String),
+            dateTime: row['dateTime'] as String),
         queryableName: 'DictionaryBookmarkResponse',
         isView: false);
   }
@@ -206,6 +212,7 @@ class _$WordDao extends WordDao {
   Future<List<DictionaryResponse>> getAll() async {
     return _queryAdapter.queryList('SELECT * FROM DictionaryResponse',
         mapper: (Map<String, Object?> row) => DictionaryResponse(
+            dateTime: row['dateTime'] as String,
             id: row['id'] as int?,
             word: row['word'] as String,
             dictionary: _dictionaryResponseConveter
@@ -218,8 +225,9 @@ class _$WordDao extends WordDao {
         mapper: (Map<String, Object?> row) => DictionaryBookmarkResponse(
             id: row['id'] as int?,
             word: row['word'] as String,
-            dictionary: _dictionaryResponseConveter
-                .decode(row['dictionary'] as String)));
+            dictionary:
+                _dictionaryResponseConveter.decode(row['dictionary'] as String),
+            dateTime: row['dateTime'] as String));
   }
 
   @override
@@ -227,6 +235,7 @@ class _$WordDao extends WordDao {
     return _queryAdapter.query(
         'SELECT * FROM DictionaryResponse WHERE word= ?1',
         mapper: (Map<String, Object?> row) => DictionaryResponse(
+            dateTime: row['dateTime'] as String,
             id: row['id'] as int?,
             word: row['word'] as String,
             dictionary: _dictionaryResponseConveter
@@ -242,8 +251,9 @@ class _$WordDao extends WordDao {
         mapper: (Map<String, Object?> row) => DictionaryBookmarkResponse(
             id: row['id'] as int?,
             word: row['word'] as String,
-            dictionary: _dictionaryResponseConveter
-                .decode(row['dictionary'] as String)),
+            dictionary:
+                _dictionaryResponseConveter.decode(row['dictionary'] as String),
+            dateTime: row['dateTime'] as String),
         arguments: [word]);
   }
 

@@ -48,9 +48,9 @@ class BookmarkBloc extends Bloc<BookmarkEvent, BookmarkState> {
       if (!isWordStored) {
         await database?.wordDao.insertBookmarkData(
           DictionaryBookmarkResponse(
-            word: word,
-            dictionary: json,
-          ),
+              word: word,
+              dictionary: json,
+              dateTime: DateTime.now().toIso8601String()),
         );
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(

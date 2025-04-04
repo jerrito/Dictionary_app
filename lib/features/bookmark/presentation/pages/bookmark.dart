@@ -57,13 +57,14 @@ class _BookmarkState extends State<Bookmark> {
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: Sizes.width(context, 0.04),
-          ),
+              horizontal: Sizes.width(context, 0.04),
+              vertical: Sizes.height(context, 0.02)),
           child: Column(
             spacing: 20,
             mainAxisAlignment: MainAxisAlignment.center,
             children: bookmarkProvider.dictionaryBookmarkData
                 .map((e) => SearchedWordsWidget(
+                      dateTime: e.dateTime,
                       wordTitle: e.word,
                       onTap: () async {
                         if (!context.mounted) return;

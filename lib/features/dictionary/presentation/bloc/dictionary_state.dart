@@ -20,8 +20,12 @@ class SearchDictionaryLoading extends DictionaryState {}
 
 class SearchWordMeaningLoaded extends DictionaryState {
   final Dictionary dictionaryInfo;
+  final String? dateTime;
 
-  SearchWordMeaningLoaded({required this.dictionaryInfo});
+  SearchWordMeaningLoaded({
+    required this.dictionaryInfo,
+    required this.dateTime,
+  });
 }
 
 class SearchWordMeaningError extends DictionaryState {

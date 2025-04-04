@@ -6,9 +6,11 @@ class DictionaryResponse extends Equatable {
   @primaryKey
   final int? id;
   final String word;
+  final String dateTime;
   final Map<dynamic, dynamic>? dictionary;
 
   const DictionaryResponse({
+    required this.dateTime,
     this.id,
     required this.word,
     required this.dictionary,
@@ -27,12 +29,14 @@ class DictionaryBookmarkResponse extends Equatable {
   @primaryKey
   final int? id;
   final String word;
+  final String dateTime;
   final Map<dynamic, dynamic>? dictionary;
 
   const DictionaryBookmarkResponse({
     this.id,
     required this.word,
     required this.dictionary,
+    required this.dateTime,
   });
 
   @override

@@ -158,6 +158,7 @@ class _DefaultPageState extends State<DefaultPage> {
               (widget.words?.length ?? 0) > 8 ? 8 : widget.words?.length ?? 0,
               (index) {
             return SearchedWordsWidget(
+              dateTime: "",
               wordBloc: widget.wordBloc,
               wordTitle: widget.words?[index] ?? "",
               onTap: () async {

@@ -66,9 +66,7 @@ class _NewResultPageState extends State<NewResultPage>
       listeners: [
         BlocListener(
           bloc: bookmarkBloc,
-          listener: (context, state) {
-            
-          },
+          listener: (context, state) {},
         ),
         BlocListener(
             bloc: wordBloc,

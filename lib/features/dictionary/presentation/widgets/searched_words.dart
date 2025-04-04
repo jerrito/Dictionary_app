@@ -9,6 +9,7 @@ import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/space.dart';
 import 'package:riverpod_learn/core/themes/colors.dart';
 import 'package:riverpod_learn/features/bookmark/presentation/bloc/bookmark_bloc.dart';
+import 'package:riverpod_learn/features/bookmark/presentation/providers/bookmark_provider.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/word/presentation/bloc/word_bloc.dart';
 import 'package:riverpod_learn/locator.dart';
@@ -20,8 +21,9 @@ class SearchedWordsWidget extends StatefulWidget {
     required this.wordTitle,
     this.onTap,
     required this.wordBloc,
+    required this.dateTime,
   });
-  final String wordTitle;
+  final String wordTitle, dateTime;
   final VoidCallback? onTap;
   final WordBloc wordBloc;
 
@@ -33,6 +35,8 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
   final DictionaryBloc dictionaryBloc = sl<DictionaryBloc>();
   final WordBloc wordsBloc = sl<WordBloc>();
   final bookmarkBloc = sl<BookmarkBloc>();
+  late BookmarkProvider bookmarkProvider;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -46,9 +50,11 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
 
   final player = AudioPlayer();
   String? audioUrl;
-
   @override
   Widget build(BuildContext context) {
+    // print("sss");
+    bookmarkProvider = context.watch<BookmarkProvider>();
+
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
@@ -125,6 +131,11 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
                 bloc: dictionaryBloc,
                 listener: (context, state) async {
                   if (state is SearchWordMeaningLoaded) {
+                    bookmarkProvider.time = state.dateTime ??
+                        state.dictionaryInfo.dateTime ??
+                        DateTime.now().toIso8601String();
+                    print("mm ${state.dictionaryInfo.dateTime}");
+                    print(bookmarkProvider.dictionaryBookmarkData[0].dateTime);
                     if (state.dictionaryInfo.phonetic != null) {
                       audioUrl = state.dictionaryInfo.phonetic;
                     } else if (state.dictionaryInfo.phonetics?.isNotEmpty ??
@@ -133,6 +144,8 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
                           state.dictionaryInfo.phonetics?[1].audio ??
                           "";
                     }
+
+                    // state.dictionaryInfo["date"]
 
                     setState(() {});
                   }
@@ -165,12 +178,16 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
                 },
               ),
             ),
-            const _LastRow("duration"),
+            _LastRow(dictionaryBloc.getRelativeTime(DateTime.parse(
+              bookmarkProvider.time ?? dateTime,
+            )))
           ],
         ),
       ),
     );
   }
+
+  String dateTime = DateTime.now().toIso8601String();
 
   deleteWord(String word) {
     final params = {"word": word};

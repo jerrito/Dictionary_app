@@ -38,8 +38,10 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
         emit(SearchWordMeaningLoading());
         final response = await getResponse(event.params);
         if (response != null) {
+          print("ss${response.dateTime}");
           emit(
             SearchWordMeaningLoaded(
+              dateTime: response.dateTime,
               dictionaryInfo: DictionaryModel.fromJson(
                 response.dictionary,
               ),
@@ -133,6 +135,7 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
       if (!isWordStored) {
         await database?.wordDao.insertData(
           DictionaryResponse(
+            dateTime: DateTime.now().toIso8601String(),
             word: word,
             dictionary: json,
           ),

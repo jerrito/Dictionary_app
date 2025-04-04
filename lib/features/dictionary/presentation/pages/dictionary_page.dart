@@ -94,7 +94,6 @@ class _DictionaryPageState extends State<DictionaryPage> {
                 if (p0?.isNotEmpty ?? false) {
                   await SystemChannels.textInput.invokeMethod("TextInput.hide");
                   if (!context.mounted) return;
-
                   navigate(p0!);
                 }
               },
