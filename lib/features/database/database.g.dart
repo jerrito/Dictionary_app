@@ -96,7 +96,9 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `DictionaryResponse` (`id` INTEGER, `word` TEXT NOT NULL, `dictionary` TEXT, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `DictionaryResponse` (`id` INTEGER, `word` TEXT NOT NULL, `dateTime` TEXT NOT NULL, `dictionary` TEXT, PRIMARY KEY (`id`))');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `DictionaryBookmarkResponse` (`id` INTEGER, `word` TEXT NOT NULL, `dateTime` TEXT NOT NULL, `dictionary` TEXT, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -121,6 +123,18 @@ class _$WordDao extends WordDao {
             (DictionaryResponse item) => <String, Object?>{
                   'id': item.id,
                   'word': item.word,
+                  'dateTime': item.dateTime,
+                  'dictionary':
+                      _dictionaryResponseConveter.encode(item.dictionary)
+                },
+            changeListener),
+        _dictionaryBookmarkResponseInsertionAdapter = InsertionAdapter(
+            database,
+            'DictionaryBookmarkResponse',
+            (DictionaryBookmarkResponse item) => <String, Object?>{
+                  'id': item.id,
+                  'word': item.word,
+                  'dateTime': item.dateTime,
                   'dictionary':
                       _dictionaryResponseConveter.encode(item.dictionary)
                 },
@@ -132,6 +146,19 @@ class _$WordDao extends WordDao {
             (DictionaryResponse item) => <String, Object?>{
                   'id': item.id,
                   'word': item.word,
+                  'dateTime': item.dateTime,
+                  'dictionary':
+                      _dictionaryResponseConveter.encode(item.dictionary)
+                },
+            changeListener),
+        _dictionaryBookmarkResponseDeletionAdapter = DeletionAdapter(
+            database,
+            'DictionaryBookmarkResponse',
+            ['id'],
+            (DictionaryBookmarkResponse item) => <String, Object?>{
+                  'id': item.id,
+                  'word': item.word,
+                  'dateTime': item.dateTime,
                   'dictionary':
                       _dictionaryResponseConveter.encode(item.dictionary)
                 },
@@ -146,12 +173,19 @@ class _$WordDao extends WordDao {
   final InsertionAdapter<DictionaryResponse>
       _dictionaryResponseInsertionAdapter;
 
+  final InsertionAdapter<DictionaryBookmarkResponse>
+      _dictionaryBookmarkResponseInsertionAdapter;
+
   final DeletionAdapter<DictionaryResponse> _dictionaryResponseDeletionAdapter;
+
+  final DeletionAdapter<DictionaryBookmarkResponse>
+      _dictionaryBookmarkResponseDeletionAdapter;
 
   @override
   Stream<List<DictionaryResponse>> getList() {
     return _queryAdapter.queryListStream('SELECT * FROM DictionaryResponse',
         mapper: (Map<String, Object?> row) => DictionaryResponse(
+            dateTime: row['dateTime'] as String,
             id: row['id'] as int?,
             word: row['word'] as String,
             dictionary: _dictionaryResponseConveter
@@ -161,9 +195,24 @@ class _$WordDao extends WordDao {
   }
 
   @override
+  Stream<List<DictionaryBookmarkResponse>> getBookmarkList() {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM DictionaryBookmarkResponse',
+        mapper: (Map<String, Object?> row) => DictionaryBookmarkResponse(
+            id: row['id'] as int?,
+            word: row['word'] as String,
+            dictionary:
+                _dictionaryResponseConveter.decode(row['dictionary'] as String),
+            dateTime: row['dateTime'] as String),
+        queryableName: 'DictionaryBookmarkResponse',
+        isView: false);
+  }
+
+  @override
   Future<List<DictionaryResponse>> getAll() async {
     return _queryAdapter.queryList('SELECT * FROM DictionaryResponse',
         mapper: (Map<String, Object?> row) => DictionaryResponse(
+            dateTime: row['dateTime'] as String,
             id: row['id'] as int?,
             word: row['word'] as String,
             dictionary: _dictionaryResponseConveter
@@ -171,14 +220,40 @@ class _$WordDao extends WordDao {
   }
 
   @override
+  Future<List<DictionaryBookmarkResponse>> getAllBookmark() async {
+    return _queryAdapter.queryList('SELECT * FROM DictionaryBookmarkResponse',
+        mapper: (Map<String, Object?> row) => DictionaryBookmarkResponse(
+            id: row['id'] as int?,
+            word: row['word'] as String,
+            dictionary:
+                _dictionaryResponseConveter.decode(row['dictionary'] as String),
+            dateTime: row['dateTime'] as String));
+  }
+
+  @override
   Future<DictionaryResponse?> getDictionaryResponse(String word) async {
     return _queryAdapter.query(
         'SELECT * FROM DictionaryResponse WHERE word= ?1',
         mapper: (Map<String, Object?> row) => DictionaryResponse(
+            dateTime: row['dateTime'] as String,
             id: row['id'] as int?,
             word: row['word'] as String,
             dictionary: _dictionaryResponseConveter
                 .decode(row['dictionary'] as String)),
+        arguments: [word]);
+  }
+
+  @override
+  Future<DictionaryBookmarkResponse?> getDictionaryBookmarkResponse(
+      String word) async {
+    return _queryAdapter.query(
+        'SELECT * FROM DictionaryBookmarkResponse WHERE word= ?1',
+        mapper: (Map<String, Object?> row) => DictionaryBookmarkResponse(
+            id: row['id'] as int?,
+            word: row['word'] as String,
+            dictionary:
+                _dictionaryResponseConveter.decode(row['dictionary'] as String),
+            dateTime: row['dateTime'] as String),
         arguments: [word]);
   }
 
@@ -189,14 +264,32 @@ class _$WordDao extends WordDao {
   }
 
   @override
+  Future<void> insertBookmarkData(DictionaryBookmarkResponse response) async {
+    await _dictionaryBookmarkResponseInsertionAdapter.insert(
+        response, OnConflictStrategy.abort);
+  }
+
+  @override
   Future<void> deleteDictionaryResponse(DictionaryResponse response) async {
     await _dictionaryResponseDeletionAdapter.delete(response);
+  }
+
+  @override
+  Future<void> deleteBookmarkDictionaryResponse(
+      DictionaryBookmarkResponse response) async {
+    await _dictionaryBookmarkResponseDeletionAdapter.delete(response);
   }
 
   @override
   Future<void> deleteListDictionaryResponse(
       List<DictionaryResponse> list) async {
     await _dictionaryResponseDeletionAdapter.deleteList(list);
+  }
+
+  @override
+  Future<void> deleteListDictionaryBookmarkResponse(
+      List<DictionaryBookmarkResponse> list) async {
+    await _dictionaryBookmarkResponseDeletionAdapter.deleteList(list);
   }
 }
 

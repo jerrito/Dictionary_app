@@ -32,75 +32,81 @@ class DefaultTextField extends StatelessWidget {
             color: Theme.of(context).brightness == Brightness.light
                 ? DictionaryColors.primary50
                 : DictionaryColors.primary300));
-    return TextField(
-      cursorColor: DictionaryColors.success300,
-      style: TextStyle(
-          color: Theme.of(context).brightness == Brightness.light
-              ? DictionaryColors.primaryBase
-              : DictionaryColors.whiteBackground),
-      maxLines: 1,
-      controller: controller,
-      onChanged: onChange,
-      focusNode: focusNode,
-      onSubmitted: onSubmitted,
-      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-      textInputAction: TextInputAction.search,
-      decoration: InputDecoration(
-        hintStyle: TextStyle(
-            color: Theme.of(context).brightness != Brightness.light
-                ? DictionaryColors.primary50
-                : DictionaryColors.primary300),
-        filled: true,
-        fillColor: Theme.of(context).brightness == Brightness.light
-            ? DictionaryColors.primary50
-            : DictionaryColors.primary300,
-        enabledBorder: border,
-        border: border,
-        focusedBorder: border,
-        // suffixIconColor: Colors.white,
+    return SizedBox(
+      height: Sizes.height(
+        context,
+        0.055,
+      ),
+      child: TextField(
+        cursorColor: DictionaryColors.success300,
+        style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? DictionaryColors.primaryBase
+                : DictionaryColors.whiteBackground),
+        maxLines: 1,
+        controller: controller,
+        onChanged: onChange,
+        focusNode: focusNode,
+        onSubmitted: onSubmitted,
+        onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+        textInputAction: TextInputAction.search,
+        decoration: InputDecoration(
+          hintStyle: TextStyle(
+              color: Theme.of(context).brightness != Brightness.light
+                  ? DictionaryColors.primary50
+                  : DictionaryColors.primary300),
+          filled: true,
+          fillColor: Theme.of(context).brightness == Brightness.light
+              ? DictionaryColors.primary50
+              : DictionaryColors.primary300,
+          enabledBorder: border,
+          border: border,
+          focusedBorder: border,
+          // suffixIconColor: Colors.white,
 
-        hintText: hint,
-        suffixIcon: showSuffixIcon
-            ? GestureDetector(
-                onTap: suffixOnTap,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-                  child: CircleAvatar(
-                      radius: Sizes.height(
-                        context,
-                        0.015,
-                      ),
-                      backgroundColor:
-                          Theme.of(context).brightness == Brightness.dark
+          hintText: hint,
+          suffixIcon: showSuffixIcon
+              ? GestureDetector(
+                  onTap: suffixOnTap,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                    child: CircleAvatar(
+                        radius: Sizes.height(
+                          context,
+                          0.012,
+                        ),
+                        backgroundColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? DictionaryColors.whiteBackground
+                                : DictionaryColors.blackBackground,
+                        child: Icon(
+                          size: Sizes.height(context, 0.02),
+                          Icons.clear,
+                          color: Theme.of(context).brightness != Brightness.dark
                               ? DictionaryColors.whiteBackground
                               : DictionaryColors.blackBackground,
-                      child: Icon(
-                        // size: Sizes.height(context, 0.01),
-                        Icons.clear,
-                        color: Theme.of(context).brightness != Brightness.dark
-                            ? DictionaryColors.whiteBackground
-                            : DictionaryColors.blackBackground,
-                      )),
-                ))
-            : const SizedBox.shrink(),
+                        )),
+                  ))
+              : const SizedBox.shrink(),
 
-        prefixIcon: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 11),
-          child: GestureDetector(
-            onTap: prefixOnTap,
-            child: SvgPicture.asset(
-              DictionarySvgs.searchSVG,
-              colorFilter: ColorFilter.mode(
-                Theme.of(context).brightness == Brightness.dark
-                    ? DictionaryColors.primary50
-                    : DictionaryColors.primary400,
-                BlendMode.srcIn,
+          prefixIcon: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 11),
+            child: GestureDetector(
+              onTap: prefixOnTap,
+              child: SvgPicture.asset(
+                DictionarySvgs.searchSVG,
+                colorFilter: ColorFilter.mode(
+                  Theme.of(context).brightness == Brightness.dark
+                      ? DictionaryColors.primary50
+                      : DictionaryColors.primary400,
+                  BlendMode.srcIn,
+                ),
               ),
             ),
           ),
+          errorText: errorText,
         ),
-        errorText: errorText,
       ),
     );
   }

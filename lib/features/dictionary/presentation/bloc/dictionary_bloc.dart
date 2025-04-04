@@ -38,8 +38,10 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
         emit(SearchWordMeaningLoading());
         final response = await getResponse(event.params);
         if (response != null) {
+          print("ss${response.dateTime}");
           emit(
             SearchWordMeaningLoaded(
+              dateTime: response.dateTime,
               dictionaryInfo: DictionaryModel.fromJson(
                 response.dictionary,
               ),
@@ -133,6 +135,7 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
       if (!isWordStored) {
         await database?.wordDao.insertData(
           DictionaryResponse(
+            dateTime: DateTime.now().toIso8601String(),
             word: word,
             dictionary: json,
           ),
@@ -150,6 +153,43 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
       return response;
     } catch (e) {
       throw Exception(e.toString());
+    }
+  }
+
+  String getRelativeTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    // Less than a minute
+    if (difference.inSeconds < 60) {
+      return 'Just now';
+    }
+
+    // Less than an hour
+    else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago';
+    }
+
+    // Less than a day
+    else if (difference.inHours < 24) {
+      return '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
+    }
+
+    // Less than a month (approximating a month as 30 days)
+    else if (difference.inDays < 30) {
+      return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
+    }
+
+    // Less than a year
+    else if (difference.inDays < 365) {
+      final months = (difference.inDays / 30).floor();
+      return '$months ${months == 1 ? 'month' : 'months'} ago';
+    }
+
+    // More than a year
+    else {
+      final years = (difference.inDays / 365).floor();
+      return '$years ${years == 1 ? 'year' : 'years'} ago';
     }
   }
 

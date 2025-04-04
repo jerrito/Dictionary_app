@@ -3,6 +3,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:riverpod_learn/core/onboarding/page_view.dart';
 import 'package:riverpod_learn/core/themes/theme.dart';
+import 'package:riverpod_learn/features/bookmark/presentation/providers/bookmark_provider.dart';
 import 'package:riverpod_learn/features/database/database.dart';
 import 'package:riverpod_learn/features/home/presentation/bloc/home_bloc.dart';
 import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
@@ -42,6 +43,9 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider(
           create: (context) => WordsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => BookmarkProvider(),
         ),
       ],
       child: MaterialApp(

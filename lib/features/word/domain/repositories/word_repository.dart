@@ -13,4 +13,6 @@ abstract class WordSuggestionRepository {
 
 // delete words
   Future<Either<String, bool>> deleteWords(List<String> words);
+// delete word
+  Future<Either<String, bool>> deleteWord(Map<String, dynamic> params);
 }

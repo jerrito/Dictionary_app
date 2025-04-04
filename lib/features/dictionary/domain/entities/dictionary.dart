@@ -28,11 +28,12 @@ import 'package:riverpod_learn/features/dictionary/domain/entities/phonetics.dar
 //         ]
 //       },
 class Dictionary extends Equatable {
-  final String? word, phonetic, origin;
+  final String? word, phonetic, origin, dateTime;
   final List<Phonetics>? phonetics;
   final List<Meanings>? meanings;
 
   const Dictionary({
+    required this.dateTime,
     required this.word,
     required this.phonetic,
     required this.origin,
@@ -43,6 +44,7 @@ class Dictionary extends Equatable {
   @override
   List<Object?> get props => [
         word,
+        dateTime,
         phonetic,
         origin,
         phonetics,
@@ -55,6 +57,7 @@ class Dictionary extends Equatable {
         "word": word,
         "phonetic": phonetic,
         "origin": origin,
+        "dateTime": DateTime.now().toIso8601String(),
         'phonetics': phonetics?.map((e) => e.toJson()).toList(),
         'meanings': meanings?.map((e) => e.toJson()).toList(),
       };

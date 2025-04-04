@@ -7,6 +7,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_learn/core/json.dart';
 import 'package:riverpod_learn/core/use_case.dart';
+import 'package:riverpod_learn/features/word/domain/usecases/delete_word.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/delete_words.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/retrieve_save_words.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/save_word.dart';
@@ -20,6 +21,7 @@ class WordBloc extends Bloc<WordEvent, WordState> {
   final RetrieveSaveWords retrieveSaveWords;
   final SaveWord saveWord;
   final DeleteWords deleteWords;
+  final DeleteWord deleteWord;
   final ImagePicker imagePicker;
   StreamController<List<String>> streamController =
       StreamController<List<String>>();
@@ -28,6 +30,7 @@ class WordBloc extends Bloc<WordEvent, WordState> {
     required this.suggestWord,
     required this.saveWord,
     required this.deleteWords,
+    required this.deleteWord,
     required this.imagePicker,
   }) : super(WordInitial()) {
     on<WordEvent>((event, emit) {
@@ -74,7 +77,7 @@ class WordBloc extends Bloc<WordEvent, WordState> {
       final words = await saveWord.call(event.params);
       emit(
         words.fold(
-          (error) => SaveWordError(
+          (error) => DeleteWordError(
             errorMessage: error,
           ),
           (isWordSaved) => SaveWordLoaded(
@@ -90,8 +93,16 @@ class WordBloc extends Bloc<WordEvent, WordState> {
       emit(DecodedWordsLoaded(data: response));
     });
 
-    on<DeleteWordEvent>((event, emit) async {
+    on<DeleteWordsEvent>((event, emit) async {
       final response = await deleteWords(event.words);
+      print(response);
+      emit(response.fold((error) => (DeleteWordsError(errorMessage: error)),
+          (response) {
+        return DeleteWordsLoaded(isSaved: response);
+      }));
+    });
+    on<DeleteWordEvent>((event, emit) async {
+      final response = await deleteWord(event.params);
       print(response);
       emit(response.fold((error) => (DeleteWordError(errorMessage: error)),
           (response) {

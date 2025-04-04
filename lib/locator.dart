@@ -2,6 +2,8 @@ import 'package:data_connection_checker_nulls/data_connection_checker_nulls.dart
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_learn/core/network_info.dart';
+import 'package:riverpod_learn/features/bookmark/presentation/bloc/bookmark_bloc.dart';
+import 'package:riverpod_learn/features/bookmark/presentation/providers/bookmark_provider.dart';
 import 'package:riverpod_learn/features/dictionary/data/datasources/remote_ds.dart';
 import 'package:riverpod_learn/features/dictionary/data/repositories/dictionary_repository_impl.dart';
 import 'package:riverpod_learn/features/dictionary/domain/repositories/dictionary_repository.dart';
@@ -11,6 +13,7 @@ import 'package:riverpod_learn/features/home/presentation/bloc/home_bloc.dart';
 import 'package:riverpod_learn/features/word/data/datasources/local_ds.dart';
 import 'package:riverpod_learn/features/word/data/repositories/word_repo_impl.dart';
 import 'package:riverpod_learn/features/word/domain/repositories/word_repository.dart';
+import 'package:riverpod_learn/features/word/domain/usecases/delete_word.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/delete_words.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/retrieve_save_words.dart';
 import 'package:riverpod_learn/features/word/domain/usecases/save_word.dart';
@@ -49,6 +52,22 @@ initDependencies() async {
 
   // home call
   homeImplementer();
+
+  // bookmark call
+  bookmark();
+}
+
+// bookmark
+bookmark() {
+//bloc
+  sl.registerFactory(() => BookmarkBloc(provider: sl()));
+
+  sl.registerFactory(() => BookmarkProvider());
+// usecase
+
+// repositories
+
+// datasources
 }
 
 // word locator
@@ -60,6 +79,7 @@ word() {
       retrieveSaveWords: sl(),
       saveWord: sl(),
       deleteWords: sl(),
+      deleteWord: sl(),
       imagePicker: sl(),
     ),
   );
@@ -76,6 +96,11 @@ word() {
   );
   sl.registerLazySingleton(
     () => DeleteWords(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => DeleteWord(
       repository: sl(),
     ),
   );

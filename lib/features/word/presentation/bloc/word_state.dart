@@ -71,6 +71,18 @@ final class DeleteWordError extends WordState {
   const DeleteWordError({required this.errorMessage});
 }
 
+final class DeleteWordsLoaded extends WordState {
+  final bool isSaved;
+
+  const DeleteWordsLoaded({required this.isSaved});
+}
+
+final class DeleteWordsError extends WordState {
+  final String errorMessage;
+
+  const DeleteWordsError({required this.errorMessage});
+}
+
 final class TakePictureLoaded extends WordState {
   final File? file;
 

@@ -9,6 +9,7 @@ class DictionaryModel extends Dictionary {
     required super.origin,
     required super.phonetics,
     required super.meanings,
+    required super.dateTime,
   });
 
   factory DictionaryModel.fromJson(Map<dynamic, dynamic>? json) =>
@@ -30,6 +31,7 @@ class DictionaryModel extends Dictionary {
                 ),
               )
             : null,
+        dateTime: DateTime.now().toIso8601String(),
       );
 
   //to map
@@ -39,6 +41,7 @@ class DictionaryModel extends Dictionary {
         "word": word,
         "phonetic": phonetic,
         "origin": origin,
+        "dateTime": dateTime,
         'phonetics': phonetics?.map((e) => e.toJson()).toList(),
         'meanings': meanings?.map((e) => e.toJson()).toList(),
       };
