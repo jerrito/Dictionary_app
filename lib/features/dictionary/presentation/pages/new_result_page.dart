@@ -32,7 +32,7 @@ class _NewResultPageState extends State<NewResultPage>
   final player = AudioPlayer();
   TabController? controller;
   final scrollController = ScrollController();
-  List<Phonetics> phonetics = [];
+  List<Phonetics>? phonetics = [];
 
   List<String?> values = [];
   String? selectedValue, audioUrl;
@@ -88,7 +88,9 @@ class _NewResultPageState extends State<NewResultPage>
                   .map((e) => e.partOfSpeech)
                   .toList();
               selectedValue = values[0];
-              audioUrl = state.dictionaryInfo[0].phonetics != null
+              print(state.dictionaryInfo[0].phonetics);
+              audioUrl = state.dictionaryInfo[0].phonetics != null &&
+                      state.dictionaryInfo[0].phonetics!.isNotEmpty
                   ? (state.dictionaryInfo[0].phonetics?[0].audio)
                   : null;
               final data = state.dictionaryInfo[0];
@@ -113,7 +115,7 @@ class _NewResultPageState extends State<NewResultPage>
             }
             if (state is SearchDictionaryLoaded) {
               final data = state.dictionaryInfo[0].meanings;
-              final meanings = state.dictionaryInfo[0].meanings;
+              // final meanings = state.dictionaryInfo[0].meanings;
 
               return DefaultTabController(
                   length: data!.length,
@@ -165,53 +167,61 @@ class _NewResultPageState extends State<NewResultPage>
                                         }
                                       : null,
                                   hasSound: audioUrl != null,
-                                  phonetic: phonetics[0].text,
+                                  phonetic: phonetics!.isNotEmpty
+                                      ? (phonetics?[0].text)
+                                      : null,
                                   word: widget.word,
                                 ),
                                 Space.height(context, 0.012),
                                 // data.takeWhile((e)=> e.partOfSpeech)
-                                TabsWidget(
-                                  selected: {selectedValue},
-                                  onSelectionChanged: (p0) {
-                                    selectedValue = p0.first;
-                                    if (p0.first != null) {
-                                      scrollToPartOfSpeech(p0.first);
-                                    }
-                                    setState(() {});
-                                  },
-                                  buttonSegments: data
-                                      .map((e) => ButtonSegment(
-                                            value: e.partOfSpeech,
-                                            label: Text(
-                                              e.partOfSpeech ?? "",
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                color: e.partOfSpeech ==
-                                                            selectedValue &&
-                                                        context.themeData
-                                                                .brightness ==
-                                                            Brightness.dark
-                                                    ? DictionaryColors
-                                                        .blackBackground
-                                                    : e.partOfSpeech !=
-                                                                selectedValue &&
-                                                            context.themeData
-                                                                    .brightness !=
-                                                                Brightness.dark
-                                                        ? DictionaryColors
-                                                            .blackBackground
-                                                        : DictionaryColors
-                                                            .whiteBackground,
-                                              ),
-                                            ),
-                                          ))
-                                      .toList(),
-                                  data: selectedValue ?? "",
-                                  // isSelected: selectedValue != null,
-                                  hasBorder: true,
-                                ),
+                                data.length > 2
+                                    ? TabsWidget(
+                                        selected: {selectedValue},
+                                        onSelectionChanged: (p0) {
+                                          selectedValue = p0.first;
+                                          if (p0.first != null) {
+                                            scrollToPartOfSpeech(p0.first);
+                                          }
+                                          setState(() {});
+                                        },
+                                        buttonSegments: data
+                                            .map((e) => ButtonSegment(
+                                                  value: e.partOfSpeech,
+                                                  label: Text(
+                                                    e.partOfSpeech ?? "",
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: e.partOfSpeech ==
+                                                                  selectedValue &&
+                                                              context.themeData
+                                                                      .brightness ==
+                                                                  Brightness
+                                                                      .dark
+                                                          ? DictionaryColors
+                                                              .blackBackground
+                                                          : e.partOfSpeech !=
+                                                                      selectedValue &&
+                                                                  context.themeData
+                                                                          .brightness !=
+                                                                      Brightness
+                                                                          .dark
+                                                              ? DictionaryColors
+                                                                  .blackBackground
+                                                              : DictionaryColors
+                                                                  .whiteBackground,
+                                                    ),
+                                                  ),
+                                                ))
+                                            .toList(),
+                                        data: selectedValue ?? "",
+                                        // isSelected: selectedValue != null,
+                                        hasBorder: true,
+                                      )
+                                    : const SizedBox.shrink()
                               ],
                             ),
                             // TabsWidget(

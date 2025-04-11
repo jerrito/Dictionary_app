@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:riverpod_learn/core/assets/svgs.dart';
+import 'package:riverpod_learn/core/assets/images.dart';
 import 'package:riverpod_learn/core/size.dart';
 import 'package:riverpod_learn/core/themes/colors.dart';
 import 'package:riverpod_learn/features/bookmark/presentation/pages/bookmark.dart';
@@ -184,7 +185,7 @@ class _HomeBaseState extends State<HomeBase> {
                 items: NavItems.values
                     .map(
                       (e) => barItem(
-                        e.image,
+                        e.indexGet == currentIndex ? e.selectedImage : e.image,
                         e.label,
                         e.indexGet == currentIndex,
                       ),
@@ -207,22 +208,9 @@ class _HomeBaseState extends State<HomeBase> {
   BottomNavigationBarItem barItem(String icon, String label, bool isSelected) =>
       BottomNavigationBarItem(
           icon: MediaQuery.of(context).orientation == Orientation.portrait
-              ? Visibility(
-                  visible: !isSelected,
-                  replacement: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Sizes.width(context, 0.01),
-                      vertical: Sizes.height(context, 0.005),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).brightness != Brightness.dark
-                          ? DictionaryColors.blackBackground
-                          : DictionaryColors.whiteBackground,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: _NavBarSvg(icon, isSelected),
-                  ),
-                  child: _NavBarSvg(icon, isSelected))
+              ? isSelected && Theme.of(context).brightness != Brightness.dark
+                  ? _NavBarImage(icon, isSelected)
+                  : _NavBarSvg(icon, isSelected)
               : SvgPicture.asset(
                   icon,
                   width: Sizes.height(context, 0.068),
@@ -247,27 +235,32 @@ enum NavItems {
     image: DictionarySvgs.searchSVG,
     label: "Search",
     indexGet: 0,
+    selectedImage: DictionaryImages.searchImage,
   ),
   dashboard(
     image: DictionarySvgs.allBookmarkSVG,
     label: "Bookmark",
     indexGet: 1,
+    selectedImage: DictionaryImages.bookmarkImage,
   ),
   saved(
     image: DictionarySvgs.discoverSVG,
     label: "Discover",
     indexGet: 2,
+    selectedImage: DictionaryImages.discoverImage,
   ),
   profile(
     image: DictionarySvgs.settingsSVG,
     label: "Settings",
     indexGet: 3,
+    selectedImage: DictionaryImages.settingsImage,
   );
 
-  final String image, label;
+  final String image, label, selectedImage;
   final int indexGet;
 
   const NavItems({
+    required this.selectedImage,
     required this.image,
     required this.label,
     required this.indexGet,
@@ -288,12 +281,33 @@ class _NavBarSvg extends StatelessWidget {
         isSelected && Theme.of(context).brightness != Brightness.dark
             ? DictionaryColors.whiteBackground
             : isSelected && Theme.of(context).brightness == Brightness.dark
-                ? DictionaryColors.blackBackground
+                ? DictionaryColors.white
                 : Theme.of(context).brightness == Brightness.dark
-                    ? DictionaryColors.whiteBackground
+                    ? DictionaryColors.whiteBackground.withValues(alpha: 0.5)
                     : DictionaryColors.blackBackground,
         BlendMode.srcIn,
       ),
+    );
+  }
+}
+
+class _NavBarImage extends StatelessWidget {
+  const _NavBarImage(this.icon, this.isSelected);
+  final String icon;
+  final bool isSelected;
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      icon,
+      width: Sizes.height(context, 0.028),
+      height: Sizes.height(context, 0.028),
+      // color: isSelected && Theme.of(context).brightness != Brightness.dark
+      //     ? DictionaryColors.whiteBackground
+      //     : isSelected && Theme.of(context).brightness == Brightness.dark
+      //         ? DictionaryColors.blackBackground
+      //         : Theme.of(context).brightness == Brightness.dark
+      //             ? DictionaryColors.whiteBackground
+      //             : DictionaryColors.blackBackground,
     );
   }
 }

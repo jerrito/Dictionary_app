@@ -134,8 +134,8 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
                     bookmarkProvider.time = state.dateTime ??
                         state.dictionaryInfo.dateTime ??
                         DateTime.now().toIso8601String();
-                    print("mm ${state.dictionaryInfo.dateTime}");
-                    print(bookmarkProvider.dictionaryBookmarkData[0].dateTime);
+                    // print("mm ${state.dictionaryInfo.dateTime}");
+                    // print(bookmarkProvider.dictionaryBookmarkData[0].dateTime);
                     if (state.dictionaryInfo.phonetic != null) {
                       audioUrl = state.dictionaryInfo.phonetic;
                     } else if (state.dictionaryInfo.phonetics?.isNotEmpty ??
