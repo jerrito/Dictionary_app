@@ -7,6 +7,7 @@ import 'package:riverpod_learn/features/bookmark/presentation/providers/bookmark
 import 'package:riverpod_learn/features/dictionary/data/datasources/remote_ds.dart';
 import 'package:riverpod_learn/features/dictionary/data/repositories/dictionary_repository_impl.dart';
 import 'package:riverpod_learn/features/dictionary/domain/repositories/dictionary_repository.dart';
+import 'package:riverpod_learn/features/dictionary/domain/usecases/get_similar_words.dart';
 import 'package:riverpod_learn/features/dictionary/domain/usecases/search_dictionary.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
 import 'package:riverpod_learn/features/home/presentation/bloc/home_bloc.dart';
@@ -137,10 +138,16 @@ void dictionaryIm() {
   sl.registerFactory(
     () => DictionaryBloc(
       searchDictionary: sl(),
+      similarWords: sl(),
     ),
   );
 
   //usecase
+  sl.registerLazySingleton(
+    () => GetSimilarWords(
+      repository: sl(),
+    ),
+  );
   sl.registerLazySingleton(
     () => SearchDictionary(
       repository: sl(),

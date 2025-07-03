@@ -18,6 +18,20 @@ class SearchDictionaryError extends DictionaryState {
 
 class SearchDictionaryLoading extends DictionaryState {}
 
+class SimilarWordsLoaded extends DictionaryState {
+  final GenerateContentResponse dictionaryInfo;
+
+  SimilarWordsLoaded({required this.dictionaryInfo});
+}
+
+class SimilarWordsError extends DictionaryState {
+  final String errorMessage;
+
+  SimilarWordsError({required this.errorMessage});
+}
+
+class SimilarWordsLoading extends DictionaryState {}
+
 class SearchWordMeaningLoaded extends DictionaryState {
   final Dictionary dictionaryInfo;
   final String? dateTime;

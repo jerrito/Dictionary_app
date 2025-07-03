@@ -12,6 +12,7 @@ import 'package:riverpod_learn/core/themes/colors.dart';
 import 'package:riverpod_learn/features/database/entity/dicitionary.dart';
 import 'package:riverpod_learn/features/dictionary/data/models/dictionary_model.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/provider/dictionary_provider.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/dictionary_scanner_widget.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/searched_words.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/show_meaning_modal.dart';
@@ -41,6 +42,9 @@ class DefaultPage extends StatefulWidget {
 
 class _DefaultPageState extends State<DefaultPage> {
   final wordBloc = sl<WordBloc>();
+  final dictionaryBloc = sl<DictionaryBloc>();
+  late DictionaryProvider dictionaryProvider;
+
   File? file;
   final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
   Future<void> scanWord() async {
@@ -88,10 +92,24 @@ class _DefaultPageState extends State<DefaultPage> {
     // TODO: implement initState
     super.initState();
   }
+
+  @override
+  didChangeDependencies() {
+    super.didChangeDependencies();
+    getAllData();
+    // print("object");
+  }
+
+  getAllData() async {
+    context.read<DictionaryProvider>().getAllData =
+        await dictionaryBloc.readAllDictionary();
+  }
   // textRecognizer.close();
 
   @override
   Widget build(BuildContext context) {
+    dictionaryProvider = context.watch<DictionaryProvider>();
+    // print(dictionaryProvider.getAllData);
     return Column(
       spacing: Sizes.height(context, 0.02),
       children: [
@@ -154,13 +172,17 @@ class _DefaultPageState extends State<DefaultPage> {
           ),
         Column(
           spacing: Sizes.height(context, 0.012),
-          children: List.generate(
-              (widget.words?.length ?? 0) > 8 ? 8 : widget.words?.length ?? 0,
+          children: List.generate(dictionaryProvider.getAllData?.length ?? 0,
+              // (widget.words?.length ?? 0) > 8 ? 8 : widget.words?.length ?? 0,
               (index) {
+            // final data = dictionaryProvider.getAllData?[index];
             return SearchedWordsWidget(
-              dateTime: "",
+              dateTime: dictionaryProvider.getAllData?[index].dateTime ?? "",
               wordBloc: widget.wordBloc,
               wordTitle: widget.words?[index] ?? "",
+              //  definition: definition.length > 45)
+              //                 ? definition.substring(0, 44)
+              //                 : definition,
               onTap: () async {
                 final response = await widget.dictionaryBloc
                     .getResponse(widget.words?[index] ?? "");
@@ -175,8 +197,11 @@ class _DefaultPageState extends State<DefaultPage> {
                         .momentumRetainVelocityThresholdFactor,
                     builder: (context) {
                       return ShowMeaningModal(
-                          dictionary:
-                              DictionaryModel.fromJson(response?.dictionary));
+                        dictionary: DictionaryModel.fromJson(
+                          response?.dictionary ??
+                              dictionaryProvider.getAllData?[index].dictionary,
+                        ),
+                      );
                     });
                 // print(result.meanings);
               },

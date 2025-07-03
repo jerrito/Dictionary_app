@@ -35,13 +35,14 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
   final DictionaryBloc dictionaryBloc = sl<DictionaryBloc>();
   final WordBloc wordsBloc = sl<WordBloc>();
   final bookmarkBloc = sl<BookmarkBloc>();
-  late BookmarkProvider bookmarkProvider;
+  // late BookmarkProvider bookmarkProvider;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getMeaning();
+    dateTime = widget.dateTime;
   }
 
   getMeaning() async {
@@ -53,7 +54,7 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
   @override
   Widget build(BuildContext context) {
     // print("sss");
-    bookmarkProvider = context.watch<BookmarkProvider>();
+    // bookmarkProvider = context.watch<BookmarkProvider>();
 
     return GestureDetector(
       onTap: widget.onTap,
@@ -131,10 +132,10 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
                 bloc: dictionaryBloc,
                 listener: (context, state) async {
                   if (state is SearchWordMeaningLoaded) {
-                    bookmarkProvider.time = state.dateTime ??
+                    dateTime = state.dateTime ??
                         state.dictionaryInfo.dateTime ??
                         DateTime.now().toIso8601String();
-                    // print("mm ${state.dictionaryInfo.dateTime}");
+                    print("mm ${state.dictionaryInfo.dateTime}");
                     // print(bookmarkProvider.dictionaryBookmarkData[0].dateTime);
                     if (state.dictionaryInfo.phonetic != null) {
                       audioUrl = state.dictionaryInfo.phonetic;
@@ -179,7 +180,7 @@ class _SearchedWordsWidgetState extends State<SearchedWordsWidget> {
               ),
             ),
             _LastRow(dictionaryBloc.getRelativeTime(DateTime.parse(
-              bookmarkProvider.time ?? dateTime,
+              dateTime,
             )))
           ],
         ),

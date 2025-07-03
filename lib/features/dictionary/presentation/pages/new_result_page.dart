@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +11,8 @@ import 'package:riverpod_learn/core/themes/colors.dart';
 import 'package:riverpod_learn/features/bookmark/presentation/bloc/bookmark_bloc.dart';
 import 'package:riverpod_learn/features/dictionary/domain/entities/phonetics.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/bloc/dictionary_bloc.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/pages/test.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/provider/dictionary_provider.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_row.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/definition_widget.dart';
 import 'package:riverpod_learn/features/dictionary/presentation/widgets/new_result_app_bar.dart';
@@ -27,12 +31,14 @@ class NewResultPage extends StatefulWidget {
 class _NewResultPageState extends State<NewResultPage>
     with SingleTickerProviderStateMixin {
   final dictionaryBloc = sl<DictionaryBloc>();
+  final dictionaryBloc2 = sl<DictionaryBloc>();
   final wordBloc = sl<WordBloc>();
   final bookmarkBloc = sl<BookmarkBloc>();
   final player = AudioPlayer();
   TabController? controller;
   final scrollController = ScrollController();
-  List<Phonetics>? phonetics = [];
+  List<Phonetics> phonetics = [];
+  late DictionaryProvider dictionaryProvider;
 
   List<String?> values = [];
   String? selectedValue, audioUrl;
@@ -60,8 +66,12 @@ class _NewResultPageState extends State<NewResultPage>
     super.initState();
   }
 
+  String? origin;
+  List<dynamic> similarWords = [];
+
   @override
   Widget build(BuildContext context) {
+    dictionaryProvider = context.read<DictionaryProvider>();
     return MultiBlocListener(
       listeners: [
         BlocListener(
@@ -69,10 +79,43 @@ class _NewResultPageState extends State<NewResultPage>
           listener: (context, state) {},
         ),
         BlocListener(
+          bloc: dictionaryBloc2,
+          listener: (context, state) {
+            if (state is SimilarWordsLoaded) {
+              RegExp curlyBraceRegex = RegExp(r'\{[^}]*\}');
+
+              Iterable<Match> matches =
+                  curlyBraceRegex.allMatches(state.dictionaryInfo.text ?? "");
+              for (Match match in matches) {
+                String jsonString = match.group(
+                    0)!; // ! operator is used because allMatches will only return a match when it exists.
+                try {
+                  // Attempt to parse the extracted string as JSON.
+                  Map<String, dynamic> jsonData = jsonDecode(jsonString);
+                  print('Parsed JSON: $jsonData');
+                  origin = jsonData["origin"];
+                  similarWords = jsonData["synonyms"] ?? [];
+                  setState(() {});
+                } catch (e) {
+                  print('Invalid JSON: $jsonString. Error: $e');
+                }
+              }
+              // String jsonString = matches.map(toElement).group(0)!;
+              // print(state.dictionaryInfo.text);
+              // print(curlyBraceRegex.stringMatch());
+            }
+            if (state is SimilarWordsError) {
+              print(state.errorMessage);
+            }
+          },
+        ),
+        BlocListener(
             bloc: wordBloc,
-            listener: (context, state) {
+            listener: (context, state) async {
               if (state is SaveWordLoaded) {
-                dictionaryBloc.insertData(response!, widget.word);
+                await dictionaryBloc.insertData(response!, widget.word);
+                dictionaryProvider.getAllData =
+                    await dictionaryBloc.readAllDictionary();
               }
             })
       ],
@@ -101,6 +144,11 @@ class _NewResultPageState extends State<NewResultPage>
               final Map<String, dynamic> params = {
                 "word": data.word ?? widget.word
               };
+              dictionaryBloc2.add(
+                SimilarWordsEvent(
+                  params: params,
+                ),
+              );
               wordBloc.add(
                 SaveWordEvent(
                   params: params,
@@ -265,61 +313,93 @@ class _NewResultPageState extends State<NewResultPage>
                           child: Column(
                             children: [
                               Column(
-                                spacing: Sizes.height(
-                                  context,
-                                  0.024,
+                                  spacing: Sizes.height(
+                                    context,
+                                    0.024,
+                                  ),
+                                  children: List.generate(
+                                      state.dictionaryInfo[0].meanings
+                                              ?.length ??
+                                          0, (index) {
+                                    final data = state.dictionaryInfo[0];
+                                    // final meaningsLength = data.meanings?.length;
+                                    final meanings = data.meanings?[index];
+                                    final partOfSpeech =
+                                        meanings?.partOfSpeech ?? "";
+                                    if (!partOfSpeechKeys
+                                        .containsKey(partOfSpeech)) {
+                                      partOfSpeechKeys[partOfSpeech] =
+                                          GlobalKey();
+                                    }
+                                    return DefinitionWidget(
+                                      key: partOfSpeechKeys[partOfSpeech],
+                                      isNew: true,
+                                      image: PartOfSpeechImage.values
+                                          .singleWhere((e) =>
+                                              e.name == meanings?.partOfSpeech)
+                                          .image,
+                                      index: "${index + 1}",
+                                      partOfSpeech:
+                                          meanings?.partOfSpeech ?? "",
+                                      definition: List.generate(
+                                          meanings!.definitions!.length,
+                                          (int index) => Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: Sizes.height(
+                                                        context, 0.01)),
+                                                child: Column(
+                                                  children: [
+                                                    DefinitionRow(
+                                                      index: index,
+                                                      definition: meanings
+                                                          .definitions?[index]
+                                                          .definition,
+                                                    ),
+                                                    ExampleRow(
+                                                      isExample: meanings
+                                                              .definitions?[
+                                                                  index]
+                                                              .example !=
+                                                          null,
+                                                      example: meanings
+                                                          .definitions?[index]
+                                                          .example,
+                                                    )
+                                                  ],
+                                                ),
+                                              )),
+                                    );
+                                  })),
+                              if (origin != null)
+                                DefinitionWidget(
+                                  isNew: true,
+                                  image: PartOfSpeechImage.values
+                                      .singleWhere((e) => e.name == "noun")
+                                      .image,
+                                  index: "1",
+                                  partOfSpeech: "Origin",
+                                  definition: [
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical:
+                                              Sizes.height(context, 0.01)),
+                                      child: Column(
+                                        children: [
+                                          DefinitionRow(
+                                            index: 0,
+                                            definition: origin,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                children: List.generate(
-                                    state.dictionaryInfo[0].meanings?.length ??
-                                        0, (index) {
-                                  final data = state.dictionaryInfo[0];
-                                  // final meaningsLength = data.meanings?.length;
-                                  final meanings = data.meanings?[index];
-                                  final partOfSpeech =
-                                      meanings?.partOfSpeech ?? "";
-                                  if (!partOfSpeechKeys
-                                      .containsKey(partOfSpeech)) {
-                                    partOfSpeechKeys[partOfSpeech] =
-                                        GlobalKey();
-                                  }
-                                  return DefinitionWidget(
-                                    key: partOfSpeechKeys[partOfSpeech],
-                                    isNew: true,
-                                    image: PartOfSpeechImage.values
-                                        .singleWhere((e) =>
-                                            e.name == meanings?.partOfSpeech)
-                                        .image,
-                                    index: "${index + 1}",
-                                    partOfSpeech: meanings?.partOfSpeech ?? "",
-                                    definition: List.generate(
-                                        meanings!.definitions!.length,
-                                        (int index) => Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: Sizes.height(
-                                                      context, 0.01)),
-                                              child: Column(
-                                                children: [
-                                                  DefinitionRow(
-                                                    index: index,
-                                                    definition: meanings
-                                                        .definitions?[index]
-                                                        .definition,
-                                                  ),
-                                                  ExampleRow(
-                                                    isExample: meanings
-                                                            .definitions?[index]
-                                                            .example !=
-                                                        null,
-                                                    example: meanings
-                                                        .definitions?[index]
-                                                        .example,
-                                                  )
-                                                ],
-                                              ),
-                                            )),
-                                  );
-                                }),
-                              ),
+                              if (similarWords.isNotEmpty)
+                                SimilarSection(
+                                  similarWords: similarWords
+                                      .map((e) => SimilarWord(text: e))
+                                      .toList(),
+                                )
                             ],
                           ),
                         ),

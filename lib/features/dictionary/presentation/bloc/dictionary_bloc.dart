@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:riverpod_learn/features/database/entity/dicitionary.dart';
 import 'package:riverpod_learn/features/dictionary/data/models/dictionary_model.dart';
 import 'package:riverpod_learn/features/dictionary/domain/entities/dictionary.dart';
+import 'package:riverpod_learn/features/dictionary/domain/usecases/get_similar_words.dart';
 import 'package:riverpod_learn/features/dictionary/domain/usecases/search_dictionary.dart';
 import 'package:riverpod_learn/main.dart';
 
@@ -14,8 +16,11 @@ part 'dictionary_state.dart';
 
 class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
   final SearchDictionary searchDictionary;
-  DictionaryBloc({required this.searchDictionary})
-      : super(DictionartInitState()) {
+  final GetSimilarWords similarWords;
+  DictionaryBloc({
+    required this.searchDictionary,
+    required this.similarWords,
+  }) : super(DictionartInitState()) {
     on<SearchDictionaryEvent>(
       (event, emit) async {
         emit(SearchDictionaryLoading());
@@ -26,6 +31,23 @@ class DictionaryBloc extends Bloc<DictionaryEvent, DictionaryState> {
               errorMessage: e,
             ),
             (response) => SearchDictionaryLoaded(
+              dictionaryInfo: response,
+            ),
+          ),
+        );
+      },
+      // transformer: restartable(),
+    );
+    on<SimilarWordsEvent>(
+      (event, emit) async {
+        emit(SimilarWordsLoading());
+        final response = await similarWords.call(event.params);
+        emit(
+          response.fold(
+            (e) => SimilarWordsError(
+              errorMessage: e,
+            ),
+            (response) => SimilarWordsLoaded(
               dictionaryInfo: response,
             ),
           ),

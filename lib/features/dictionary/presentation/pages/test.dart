@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:riverpod_learn/core/extensions.dart';
+import 'package:riverpod_learn/core/themes/colors.dart';
 
 class DictionaryTestPage extends StatelessWidget {
   const DictionaryTestPage({super.key});
@@ -103,7 +105,7 @@ class MilestoneDefinition extends StatelessWidget {
             const SizedBox(height: 24),
             const OriginSection(),
             const SizedBox(height: 24),
-            const SimilarSection(),
+            // const SimilarSection(),
             const SizedBox(height: 24),
             Center(
               child: TextButton(
@@ -271,7 +273,11 @@ class OriginSection extends StatelessWidget {
 }
 
 class SimilarSection extends StatelessWidget {
-  const SimilarSection({Key? key}) : super(key: key);
+  const SimilarSection({
+    super.key,
+    required this.similarWords,
+  });
+  final List<SimilarWord> similarWords;
 
   @override
   Widget build(BuildContext context) {
@@ -295,14 +301,7 @@ class SimilarSection extends StatelessWidget {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: [
-            SimilarWord(text: 'Landmark'),
-            SimilarWord(text: 'Breakthrough'),
-            SimilarWord(text: 'Turning point'),
-            SimilarWord(text: 'Benchmark'),
-            SimilarWord(text: 'Achievement'),
-            SimilarWord(text: 'Significant event'),
-          ],
+          children: similarWords,
         ),
       ],
     );
@@ -313,22 +312,27 @@ class SimilarWord extends StatelessWidget {
   final String text;
 
   const SimilarWord({
-    Key? key,
+    super.key,
     required this.text,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: context.themeData.brightness == Brightness.dark
+            ? DictionaryColors.secondary200
+            : DictionaryColors.secondary50,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
+          color: context.themeData.brightness == Brightness.dark
+              ? DictionaryColors.primary50
+              : DictionaryColors.primary400,
         ),
       ),
     );

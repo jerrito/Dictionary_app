@@ -27,3 +27,8 @@ class InterstatialAdFailedEvent extends DictionaryEvent {
   final String? errorMessage;
   InterstatialAdFailedEvent({required this.errorMessage});
 }
+
+class SimilarWordsEvent extends DictionaryEvent {
+  final Map<String, dynamic> params;
+  SimilarWordsEvent({required this.params});
+}

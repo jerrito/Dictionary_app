@@ -5,6 +5,7 @@ import 'package:riverpod_learn/core/onboarding/page_view.dart';
 import 'package:riverpod_learn/core/themes/theme.dart';
 import 'package:riverpod_learn/features/bookmark/presentation/providers/bookmark_provider.dart';
 import 'package:riverpod_learn/features/database/database.dart';
+import 'package:riverpod_learn/features/dictionary/presentation/provider/dictionary_provider.dart';
 import 'package:riverpod_learn/features/home/presentation/bloc/home_bloc.dart';
 import 'package:riverpod_learn/features/word/presentation/provider/words.dart';
 import 'package:riverpod_learn/initial_page.dart';
@@ -46,6 +47,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider(
           create: (context) => BookmarkProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DictionaryProvider(),
         ),
       ],
       child: MaterialApp(
